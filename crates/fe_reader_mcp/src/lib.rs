@@ -1,4 +1,3 @@
-
 //! Wave 0 scaffold for `fe_reader_mcp`.
 //!
 //! This crate is intentionally minimal in v7. Keep core contracts compiling before adding

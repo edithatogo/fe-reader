@@ -28,7 +28,11 @@ pub enum TextDirection {
 /// Normalises text for deterministic search.
 #[must_use]
 pub fn normalize_for_search(input: &str) -> String {
-    input.split_whitespace().collect::<Vec<_>>().join(" ").to_lowercase()
+    input
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .to_lowercase()
 }
 
 /// Guesses whether a string contains strong right-to-left characters.

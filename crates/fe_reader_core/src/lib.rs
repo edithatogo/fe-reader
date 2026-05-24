@@ -248,7 +248,11 @@ pub struct OperationIntent {
 impl OperationIntent {
     /// Creates a read-only operation intent.
     #[must_use]
-    pub fn read_only(source: OperationSource, document_id: DocumentId, label: impl Into<String>) -> Self {
+    pub fn read_only(
+        source: OperationSource,
+        document_id: DocumentId,
+        label: impl Into<String>,
+    ) -> Self {
         Self {
             intent_id: OperationId::new(),
             source,
@@ -263,7 +267,12 @@ impl OperationIntent {
 
     /// Creates a mutating intent that must be reviewed unless policy explicitly says otherwise.
     #[must_use]
-    pub fn mutation(source: OperationSource, document_id: DocumentId, kind: OperationKind, label: impl Into<String>) -> Self {
+    pub fn mutation(
+        source: OperationSource,
+        document_id: DocumentId,
+        kind: OperationKind,
+        label: impl Into<String>,
+    ) -> Self {
         Self {
             intent_id: OperationId::new(),
             source,
@@ -308,9 +317,15 @@ pub struct PatchPlan {
 impl PatchPlan {
     /// Creates a non-approved plan draft.
     #[must_use]
-    pub fn draft(intent: &OperationIntent, summary: impl Into<String>, operations: Vec<PatchOperation>) -> Self {
+    pub fn draft(
+        intent: &OperationIntent,
+        summary: impl Into<String>,
+        operations: Vec<PatchOperation>,
+    ) -> Self {
         let mut risk_level = intent.risk_level;
-        if operations.iter().any(PatchOperation::mutates_document) && risk_level == RiskLevel::ReadOnly {
+        if operations.iter().any(PatchOperation::mutates_document)
+            && risk_level == RiskLevel::ReadOnly
+        {
             risk_level = RiskLevel::DocumentMutation;
         }
         let write_mode = if operations.iter().any(PatchOperation::mutates_document) {
@@ -532,7 +547,10 @@ mod tests {
         let plan = PatchPlan::draft(
             &intent,
             "set metadata",
-            vec![PatchOperation::SetMetadata { key: "title".into(), value: "x".into() }],
+            vec![PatchOperation::SetMetadata {
+                key: "title".into(),
+                value: "x".into(),
+            }],
         );
         assert!(!plan.approved_for_apply);
         assert_eq!(plan.intent_id, intent.intent_id);
@@ -552,7 +570,8 @@ mod tests {
     fn transaction_transitions_are_copyable() {
         let intent = OperationIntent::read_only(OperationSource::Cli, DocumentId::new(), "inspect");
         let plan = PatchPlan::draft(&intent, "inspect", vec![PatchOperation::Noop]);
-        let journal = TransactionJournal::planned(&plan).transition(TransactionState::Journaled, "persisted");
+        let journal =
+            TransactionJournal::planned(&plan).transition(TransactionState::Journaled, "persisted");
         assert_eq!(journal.state, TransactionState::Journaled);
     }
 }

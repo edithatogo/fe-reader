@@ -4,7 +4,10 @@
 #![warn(missing_docs)]
 
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, Ordering},
+};
 use uuid::Uuid;
 
 /// Crate name exposed for smoke tests and workspace health checks.

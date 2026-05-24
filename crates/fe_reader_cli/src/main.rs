@@ -3,7 +3,7 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use fe_reader_core::{OperationIntent, OperationSource};
-use fe_reader_security::{evaluate_policy, PolicyAction, SecurityPolicy};
+use fe_reader_security::{PolicyAction, SecurityPolicy, evaluate_policy};
 
 /// Local-first PDF workflow platform CLI.
 #[derive(Debug, Parser)]
@@ -49,8 +49,13 @@ fn main() -> Result<()> {
                 OperationSource::Cli,
                 summary.document_id.clone(),
                 "inspect",
-            ).with_document_fingerprint(summary.fingerprint.clone());
-            let plan = fe_reader_core::PatchPlan::draft(&intent, format!("inspect {path}"), vec![fe_reader_core::PatchOperation::Noop]);
+            )
+            .with_document_fingerprint(summary.fingerprint.clone());
+            let plan = fe_reader_core::PatchPlan::draft(
+                &intent,
+                format!("inspect {path}"),
+                vec![fe_reader_core::PatchOperation::Noop],
+            );
             if json {
                 let value = serde_json::json!({
                     "intent": intent,
@@ -72,7 +77,12 @@ fn main() -> Result<()> {
         }
         Command::Policy { action } => {
             let action = parse_policy_action(&action);
-            let decision = evaluate_policy(&SecurityPolicy::default(), OperationSource::Cli, action, fe_reader_core::RiskLevel::HighRisk);
+            let decision = evaluate_policy(
+                &SecurityPolicy::default(),
+                OperationSource::Cli,
+                action,
+                fe_reader_core::RiskLevel::HighRisk,
+            );
             println!("{}", serde_json::to_string_pretty(&decision)?);
         }
     }

@@ -38,7 +38,12 @@ impl PdfRect {
     /// Creates a rectangle.
     #[must_use]
     pub fn new(x: f32, y: f32, width: f32, height: f32) -> Self {
-        Self { x, y, width, height }
+        Self {
+            x,
+            y,
+            width,
+            height,
+        }
     }
 
     /// Returns true when the rectangle has positive dimensions.
@@ -125,7 +130,8 @@ pub struct PdfDocumentSummary {
 ///
 /// Returns an error if the file cannot be read or does not begin with a PDF header.
 pub fn sniff_pdf_path(path: impl AsRef<Path>) -> Result<PdfDocumentSummary, FeError> {
-    let bytes = fs::read(path.as_ref()).map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    let bytes = fs::read(path.as_ref())
+        .map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
     sniff_pdf_bytes(&bytes)
 }
 
@@ -135,10 +141,16 @@ pub fn sniff_pdf_path(path: impl AsRef<Path>) -> Result<PdfDocumentSummary, FeEr
 ///
 /// Returns an error if the byte stream does not begin with a `%PDF-` header.
 pub fn sniff_pdf_bytes(bytes: &[u8]) -> Result<PdfDocumentSummary, FeError> {
-    let first_line_end = bytes.iter().position(|byte| *byte == b'\n' || *byte == b'\r').unwrap_or(bytes.len());
+    let first_line_end = bytes
+        .iter()
+        .position(|byte| *byte == b'\n' || *byte == b'\r')
+        .unwrap_or(bytes.len());
     let first_line = &bytes[..first_line_end.min(bytes.len())];
     if !first_line.starts_with(b"%PDF-") {
-        return Err(FeError::new(FeErrorKind::Parse, "file does not start with a PDF header"));
+        return Err(FeError::new(
+            FeErrorKind::Parse,
+            "file does not start with a PDF header",
+        ));
     }
     let raw = String::from_utf8_lossy(first_line).to_string();
     let version = raw.strip_prefix("%PDF-").unwrap_or("").trim().to_string();

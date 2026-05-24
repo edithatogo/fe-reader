@@ -1,0 +1,25 @@
+name: Rust Stable
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-stable-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - run: cargo metadata --format-version=1
+      - run: cargo fmt --all -- --check
+      - run: cargo test --workspace --all-targets
+      - run: cargo clippy --workspace --all-targets --all-features -- -D warnings

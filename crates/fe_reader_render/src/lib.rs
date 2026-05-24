@@ -89,7 +89,12 @@ impl RenderBackend for NullRenderBackend {
     fn render_tile(&self, request: RenderTileRequest) -> Result<RenderedTile, RenderError> {
         let width = (request.tile_rect.width * request.scale).max(1.0) as u32;
         let height = (request.tile_rect.height * request.scale).max(1.0) as u32;
-        Ok(RenderedTile { width, height, pixel_format: PixelFormat::Rgba8, bytes: vec![0; width as usize * height as usize * 4] })
+        Ok(RenderedTile {
+            width,
+            height,
+            pixel_format: PixelFormat::Rgba8,
+            bytes: vec![0; width as usize * height as usize * 4],
+        })
     }
 }
 
@@ -106,12 +111,14 @@ mod tests {
     #[test]
     fn null_renderer_returns_sized_tile() {
         let backend = NullRenderBackend;
-        let tile = backend.render_tile(RenderTileRequest {
-            page_index: PageIndex(0),
-            tile_rect: PdfRect::new(0.0, 0.0, 10.0, 10.0),
-            scale: 2.0,
-            color_mode: ColorMode::Normal,
-        }).unwrap();
+        let tile = backend
+            .render_tile(RenderTileRequest {
+                page_index: PageIndex(0),
+                tile_rect: PdfRect::new(0.0, 0.0, 10.0, 10.0),
+                scale: 2.0,
+                color_mode: ColorMode::Normal,
+            })
+            .unwrap();
         assert_eq!(tile.width, 20);
         assert_eq!(tile.height, 20);
         assert_eq!(tile.bytes.len(), 20 * 20 * 4);

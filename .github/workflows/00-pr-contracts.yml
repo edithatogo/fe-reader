@@ -1,0 +1,27 @@
+name: PR Contracts
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-contracts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  strict-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/setup-python@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          python-version: "3.x"
+      - run: python3 scripts/validate_schemas.py
+      - run: python3 scripts/v8_static_contract_check.py
+      - run: python3 scripts/strict_contract_check.py
+      - run: python3 scripts/ci_policy_check.py

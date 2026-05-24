@@ -1,0 +1,23 @@
+name: API Compatibility
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-compatibility-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - run: bash scripts/api_compat_check.sh
+      - run: python3 scripts/public_api_snapshot_check.py

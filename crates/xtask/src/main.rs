@@ -1,6 +1,6 @@
 //! Fe Reader xtask Wave 0 harness.
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
 use std::process::Command;
 

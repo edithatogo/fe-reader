@@ -63,11 +63,23 @@ pub enum MetadataOperation {
 
 /// Plans metadata operations as a core patch plan.
 #[must_use]
-pub fn plan_metadata_operations(intent: &OperationIntent, operations: &[MetadataOperation]) -> PatchPlan {
-    let patch_ops = operations.iter().map(|operation| match operation {
-        MetadataOperation::SetInfoField { field, value } => PatchOperation::SetMetadata { key: field.clone(), value: value.clone() },
-        MetadataOperation::Scrub { mode } => PatchOperation::SetMetadata { key: "metadata_scrub_mode".to_string(), value: format!("{mode:?}") },
-    }).collect();
+pub fn plan_metadata_operations(
+    intent: &OperationIntent,
+    operations: &[MetadataOperation],
+) -> PatchPlan {
+    let patch_ops = operations
+        .iter()
+        .map(|operation| match operation {
+            MetadataOperation::SetInfoField { field, value } => PatchOperation::SetMetadata {
+                key: field.clone(),
+                value: value.clone(),
+            },
+            MetadataOperation::Scrub { mode } => PatchOperation::SetMetadata {
+                key: "metadata_scrub_mode".to_string(),
+                value: format!("{mode:?}"),
+            },
+        })
+        .collect();
     PatchPlan::draft(intent, "metadata operations", patch_ops)
 }
 
@@ -84,8 +96,19 @@ mod tests {
 
     #[test]
     fn metadata_plan_is_not_auto_approved() {
-        let intent = OperationIntent::mutation(OperationSource::Cli, DocumentId::new(), OperationKind::PlanMutation, "metadata");
-        let plan = plan_metadata_operations(&intent, &[MetadataOperation::SetInfoField { field: "title".into(), value: "Fe".into() }]);
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "metadata",
+        );
+        let plan = plan_metadata_operations(
+            &intent,
+            &[MetadataOperation::SetInfoField {
+                field: "title".into(),
+                value: "Fe".into(),
+            }],
+        );
         assert!(!plan.approved_for_apply);
         assert_eq!(plan.operations.len(), 1);
     }

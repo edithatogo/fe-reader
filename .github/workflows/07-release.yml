@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/setup-python@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          python-version: "3.x"
+      - run: python3 scripts/release_evidence_check.py
+      - run: python3 scripts/release_readiness_check.py

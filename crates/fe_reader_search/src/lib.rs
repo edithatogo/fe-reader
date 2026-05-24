@@ -40,16 +40,27 @@ pub fn search_spans(spans: &[TextSpan], query: &SearchQuery) -> Vec<SearchHit> {
     if query.text.is_empty() {
         return Vec::new();
     }
-    let needle = if query.case_sensitive { query.text.clone() } else { query.text.to_lowercase() };
-    spans.iter().filter_map(|span| {
-        let haystack = if query.case_sensitive { span.text.clone() } else { span.text.to_lowercase() };
-        haystack.find(&needle).map(|char_offset| SearchHit {
-            page_index: span.page_index,
-            bbox: span.bbox,
-            text: span.text.clone(),
-            char_offset,
+    let needle = if query.case_sensitive {
+        query.text.clone()
+    } else {
+        query.text.to_lowercase()
+    };
+    spans
+        .iter()
+        .filter_map(|span| {
+            let haystack = if query.case_sensitive {
+                span.text.clone()
+            } else {
+                span.text.to_lowercase()
+            };
+            haystack.find(&needle).map(|char_offset| SearchHit {
+                page_index: span.page_index,
+                bbox: span.bbox,
+                text: span.text.clone(),
+                char_offset,
+            })
         })
-    }).collect()
+        .collect()
 }
 
 /// Returns a stable identity string for diagnostics.
@@ -71,7 +82,13 @@ mod tests {
             reading_order: Some(0),
             font_name: None,
         }];
-        let hits = search_spans(&spans, &SearchQuery { text: "reader".to_string(), case_sensitive: false });
+        let hits = search_spans(
+            &spans,
+            &SearchQuery {
+                text: "reader".to_string(),
+                case_sensitive: false,
+            },
+        );
         assert_eq!(hits.len(), 1);
         assert_eq!(hits[0].page_index, PageIndex(2));
     }

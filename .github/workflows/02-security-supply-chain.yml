@@ -1,0 +1,27 @@
+name: Security Supply Chain
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-supply-chain-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/setup-python@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          python-version: "3.x"
+      - run: python3 scripts/security_policy_check.py
+      - run: bash scripts/supply_chain_gate.sh

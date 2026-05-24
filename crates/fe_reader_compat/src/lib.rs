@@ -1,4 +1,3 @@
-
 //! Wave 0 scaffold for `fe_reader_compat`.
 //!
 //! This crate is intentionally minimal in v7. Keep core contracts compiling before adding
