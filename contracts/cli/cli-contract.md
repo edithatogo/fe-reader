@@ -24,6 +24,7 @@ fe-reader platform self-test --json
 ## Output rules
 
 - `--json` output must be stable and schema-backed.
+- `inspect --json` must emit `intent`, a non-mutating `plan`, and `summary.parser` with parser adapter, page count when safely available, encryption state when safely available, trailer keys, and non-fatal parser error details.
 - Destructive commands must support `--plan-only`.
 - Applying a plan requires matching input document hash.
 - Commands must return non-zero on verification failure.

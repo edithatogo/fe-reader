@@ -67,8 +67,13 @@ fn main() -> Result<()> {
                 println!("PDF {} detected", summary.header.version);
                 println!("sha256={}", summary.fingerprint.sha256_hex);
                 println!("bytes={}", summary.fingerprint.byte_len);
+                println!(
+                    "page_count={}",
+                    format_page_count(summary.parser.page_count)
+                );
                 println!("encrypted_hint={}", summary.encrypted_hint);
                 println!("linearized_hint={}", summary.linearized_hint);
+                println!("parser={}", summary.parser.adapter);
                 println!("plan_id={}", plan.plan_id.0);
             }
         }
@@ -87,6 +92,12 @@ fn main() -> Result<()> {
         }
     }
     Ok(())
+}
+
+fn format_page_count(page_count: Option<u32>) -> String {
+    page_count
+        .map(|count| count.to_string())
+        .unwrap_or_else(|| "unknown".to_string())
 }
 
 fn parse_policy_action(action: &str) -> PolicyAction {

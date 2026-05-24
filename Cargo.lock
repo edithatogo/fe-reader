@@ -1258,6 +1258,7 @@ name = "fe_reader_pdf_model"
 version = "0.1.0"
 dependencies = [
  "fe_reader_core",
+ "lopdf",
  "serde",
  "serde_json",
  "thiserror",

@@ -122,6 +122,38 @@ pub struct PdfDocumentSummary {
     pub linearized_hint: bool,
     /// Whether an EOF marker was observed.
     pub eof_marker_hint: bool,
+    /// Parser-backed inspection result when the document can be opened safely.
+    pub parser: PdfParserSummary,
+}
+
+/// Parser-backed inspection details for a PDF document.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PdfParserSummary {
+    /// Parser adapter used for this inspection.
+    pub adapter: String,
+    /// PDF version reported by the parser.
+    pub version: Option<String>,
+    /// Number of pages discovered through the page tree.
+    pub page_count: Option<u32>,
+    /// Whether the parser found an encryption dictionary.
+    pub encrypted: Option<bool>,
+    /// Root trailer dictionary keys visible to the parser.
+    pub trailer_keys: Vec<String>,
+    /// Non-fatal parser error, if the parser could not open the document.
+    pub error: Option<String>,
+}
+
+impl PdfParserSummary {
+    fn lopdf_error(error: impl ToString) -> Self {
+        Self {
+            adapter: "lopdf".to_string(),
+            version: None,
+            page_count: None,
+            encrypted: None,
+            trailer_keys: Vec::new(),
+            error: Some(error.to_string()),
+        }
+    }
 }
 
 /// Reads and sniffs a PDF file without mutating it.
@@ -164,6 +196,7 @@ pub fn sniff_pdf_bytes(bytes: &[u8]) -> Result<PdfDocumentSummary, FeError> {
         encrypted_hint: full.contains("/Encrypt"),
         linearized_hint: prefix.contains("/Linearized"),
         eof_marker_hint: full.contains("%%EOF"),
+        parser: inspect_pdf_with_lopdf(bytes),
     })
 }
 
@@ -171,6 +204,24 @@ pub fn sniff_pdf_bytes(bytes: &[u8]) -> Result<PdfDocumentSummary, FeError> {
 #[must_use]
 pub fn crate_identity() -> String {
     format!("{}@{}", CRATE_NAME, CRATE_VERSION)
+}
+
+fn inspect_pdf_with_lopdf(bytes: &[u8]) -> PdfParserSummary {
+    match lopdf::Document::load_mem(bytes) {
+        Ok(document) => PdfParserSummary {
+            adapter: "lopdf".to_string(),
+            version: Some(document.version.clone()),
+            page_count: Some(document.get_pages().len() as u32),
+            encrypted: Some(document.is_encrypted()),
+            trailer_keys: document
+                .trailer
+                .iter()
+                .map(|(key, _)| String::from_utf8_lossy(key).to_string())
+                .collect(),
+            error: None,
+        },
+        Err(error) => PdfParserSummary::lopdf_error(error),
+    }
 }
 
 #[cfg(test)]
@@ -185,6 +236,16 @@ mod tests {
     }
 
     #[test]
+    fn reports_lopdf_parser_page_count() {
+        let bytes = minimal_xref_stream_pdf();
+        let summary = sniff_pdf_bytes(&bytes).unwrap();
+        assert_eq!(summary.parser.adapter, "lopdf");
+        assert_eq!(summary.parser.page_count, Some(1));
+        assert_eq!(summary.parser.version, Some("1.5".to_string()));
+        assert_eq!(summary.parser.error, None);
+    }
+
+    #[test]
     fn rejects_non_pdf_header() {
         let error = sniff_pdf_bytes(b"hello").unwrap_err();
         assert_eq!(error.kind, FeErrorKind::Parse);
@@ -194,5 +255,43 @@ mod tests {
     fn rect_requires_positive_dimensions() {
         assert!(PdfRect::new(0.0, 0.0, 1.0, 1.0).is_non_empty());
         assert!(!PdfRect::new(0.0, 0.0, 0.0, 1.0).is_non_empty());
+    }
+
+    fn minimal_xref_stream_pdf() -> Vec<u8> {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(b"%PDF-1.5\n%\x80\x80\x80\x80\n");
+        let mut object_offsets = Vec::new();
+        for object in [
+            b"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n".as_slice(),
+            b"2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n".as_slice(),
+            b"3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>\nendobj\n"
+                .as_slice(),
+        ] {
+            object_offsets.push(bytes.len() as u32);
+            bytes.extend_from_slice(object);
+        }
+        let xref_offset = bytes.len() as u32;
+        let mut xref_entries = Vec::new();
+        push_xref_entry(&mut xref_entries, 0, 0, 65_535);
+        for object_offset in object_offsets.into_iter().chain([xref_offset]) {
+            push_xref_entry(&mut xref_entries, 1, object_offset, 0);
+        }
+        bytes.extend_from_slice(
+            format!(
+                "4 0 obj\n<< /Type /XRef /Size 5 /Root 1 0 R /W [1 4 2] /Length {} >>\nstream\n",
+                xref_entries.len()
+            )
+            .as_bytes(),
+        );
+        bytes.extend_from_slice(&xref_entries);
+        bytes.extend_from_slice(b"\nendstream\nendobj\n");
+        bytes.extend_from_slice(format!("startxref\n{xref_offset}\n%%EOF\n").as_bytes());
+        bytes
+    }
+
+    fn push_xref_entry(entries: &mut Vec<u8>, kind: u8, field_2: u32, field_3: u16) {
+        entries.push(kind);
+        entries.extend_from_slice(&field_2.to_be_bytes());
+        entries.extend_from_slice(&field_3.to_be_bytes());
     }
 }
