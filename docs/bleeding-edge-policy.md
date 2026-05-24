@@ -28,7 +28,7 @@ pdf-writer = "0.14.0"
 pdfium-render = "0.9.1"
 uniffi = "0.31.1"
 rmcp = "1.6.0"
-extism = "1.21.0"
+extism = "deferred until a non-vulnerable Wasmtime-backed release is available"
 wasmtime = { version = "44.0.1", optional = true }
 wgpu = "29.0.3"
 vello = "0.8.0"
@@ -50,7 +50,7 @@ Do not put nightly-only compiler features, GPU experiments, AI inference stacks,
 fe_reader_core             stable, deterministic, fuzzed
 fe_reader_render_pdfium    production render adapter
 fe_reader_render_gpu       optional compositor/overlay experiments
-fe_reader_plugin_host      optional WASM plugin runtime
+fe_reader_plugin_host      optional WASM plugin runtime, no runtime dependency in Wave 0
 fe_reader_intelligence_*   late-wave optional local NLP/RAG
 ```
 

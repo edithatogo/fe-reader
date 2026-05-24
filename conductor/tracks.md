@@ -99,16 +99,11 @@ Additional v6 parallelisation rules:
 
 ## v8 implementation-first tracks
 
-- Track AI: Executable Wave 0 Contracts
-- Track AJ: CLI First Integration
-- Track AK: Contract Acceptance Tests
-
-
-## v8 implementation-first tracks
-
-- Track AI: Executable Wave 0 Contracts
-- Track AJ: CLI First Integration
-- Track AK: Contract Acceptance Tests
+| Track | Theme | Main wave(s) | Status | Summary |
+|---|---|---:|---|---|
+| AI | Executable Wave 0 Contracts | 0 | complete | Workspace compiles, Wave 0 contract tests pass, CLI smoke and conservative policy checks succeed. |
+| AJ | CLI First Integration | 0 | planned | CLI-first integration work. |
+| AK | Contract Acceptance Tests | 0 | planned | Contract acceptance test hardening. |
 
 ## v9 repository and CI/CD hardening tracks
 

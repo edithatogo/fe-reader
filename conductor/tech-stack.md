@@ -31,7 +31,7 @@
 
 ## Plugins
 
-- `extism = "1.21.0"` target for WASM plugin MVP.
+- Extism runtime dependency deferred during Wave 0 because `extism = "1.21.0"` pins a vulnerable `wasmtime = "41"` line; keep the plugin host as a scaffold until a non-vulnerable release is available.
 - Direct Wasmtime integration deferred unless Component Model requirements justify it.
 
 ## Conversion

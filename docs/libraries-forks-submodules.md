@@ -31,7 +31,7 @@ Every fork must have:
 | Skia binding | `skia-safe` | `0.93.1` target | Optional experiment only | No |
 | Bindings | `uniffi` | `0.31.1` target | Swift/Kotlin/Python/Ruby; C# via third-party/fallback | No |
 | MCP | `rmcp` | `1.6.0` target | MCP server | No |
-| Plugins | `extism` | `1.21.0` target | WASM plugin MVP | No |
+| Plugins | `extism` | deferred | WASM plugin MVP once a non-vulnerable Wasmtime-backed release is available | No |
 | Preflight | `veraPDF` | external adapter | PDF/A/PDF/UA validation | No submodule; CLI adapter |
 | Conversion | `pandoc` | external provider | Markdown/DOCX/HTML/LaTeX conversion | No submodule |
 | Office conversion | LibreOffice | external provider | DOCX/ODT conversion fallback | No submodule |
