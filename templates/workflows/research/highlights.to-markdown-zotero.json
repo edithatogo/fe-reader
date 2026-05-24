@@ -1,0 +1,23 @@
+{
+  "workflow_id": "research.highlights.to_markdown_zotero",
+  "version": "0.1.0",
+  "display_name": "Export highlights to Markdown/Zotero",
+  "workflow_family": "research",
+  "risk_level": "low",
+  "requires_human_review": false,
+  "steps": [
+    {
+      "type": "extract_annotations"
+    },
+    {
+      "type": "extract_bibliographic_metadata"
+    },
+    {
+      "type": "export_markdown_notes",
+      "include_page_bbox_links": true
+    },
+    {
+      "type": "optional_zotero_export"
+    }
+  ]
+}

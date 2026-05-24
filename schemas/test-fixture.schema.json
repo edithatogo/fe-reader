@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Test Fixture",
+  "type": "object",
+  "required": [
+    "fixture_id",
+    "path",
+    "license",
+    "redistribution",
+    "expected_features"
+  ],
+  "properties": {
+    "fixture_id": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
+    "redistribution": {
+      "enum": [
+        "commit_allowed",
+        "generated_only",
+        "private_local_only",
+        "forbidden"
+      ]
+    },
+    "pdf_version": {
+      "type": "string"
+    },
+    "standard_profiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected_features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risk_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

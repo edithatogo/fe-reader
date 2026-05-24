@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/public-quality-dashboard.schema.json",
+  "title": "Fe Reader Public Quality Dashboard",
+  "type": "object",
+  "required": [
+    "dashboard_version",
+    "generated_at",
+    "reports"
+  ],
+  "properties": {
+    "dashboard_version": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "reports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "status",
+          "artifact"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "warn",
+              "fail",
+              "not_run"
+            ]
+          },
+          "artifact": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

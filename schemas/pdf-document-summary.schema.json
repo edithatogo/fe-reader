@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PdfDocumentSummary",
+  "type": "object",
+  "required": [
+    "document_id",
+    "fingerprint",
+    "header",
+    "encrypted_hint",
+    "linearized_hint",
+    "eof_marker_hint"
+  ],
+  "properties": {
+    "document_id": {
+      "type": "object"
+    },
+    "fingerprint": {
+      "type": "object",
+      "required": [
+        "sha256_hex",
+        "byte_len"
+      ],
+      "properties": {
+        "sha256_hex": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "byte_len": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "required": [
+        "version",
+        "raw"
+      ],
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "raw": {
+          "type": "string"
+        }
+      }
+    },
+    "encrypted_hint": {
+      "type": "boolean"
+    },
+    "linearized_hint": {
+      "type": "boolean"
+    },
+    "eof_marker_hint": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fereader.org/schemas/error-taxonomy.schema.json",
+  "title": "Fe Reader Error Envelope",
+  "type": "object",
+  "required": [
+    "code",
+    "category",
+    "user_message",
+    "retryable"
+  ],
+  "properties": {
+    "code": {
+      "type": "string",
+      "pattern": "^fe\\.[a-z0-9_]+\\.[a-z0-9_]+$"
+    },
+    "category": {
+      "enum": [
+        "file_access",
+        "pdf_compatibility",
+        "policy_denied",
+        "approval_required",
+        "verification_failed",
+        "platform_integration",
+        "integration",
+        "cancelled",
+        "resource_limit",
+        "internal"
+      ]
+    },
+    "user_message": {
+      "type": "string"
+    },
+    "diagnostic": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "retryable": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

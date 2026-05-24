@@ -1,0 +1,29 @@
+name: performance
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  perf-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt, llvm-tools-preview
+      - name: Install perf tooling
+        run: |
+          cargo install cargo-binstall || true
+          cargo binstall cargo-nextest cargo-deny cargo-audit cargo-fuzz cargo-flamegraph hyperfine --no-confirm || true
+      - name: Build benches
+        run: cargo bench --workspace --no-run
+      - name: Perf smoke
+        run: scripts/perf_smoke.sh
+      - name: Deterministic benchmark advisory
+        run: cargo bench --workspace || true
+      - name: Upload perf artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-artifacts
+          path: artifacts/perf

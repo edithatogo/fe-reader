@@ -1,0 +1,31 @@
+version: 0.9
+forbidden_dependencies_in_core:
+  - tauri
+  - pdfium-render
+  - rmcp
+  - extism
+  - wasmtime
+  - candle
+  - burn
+  - wgpu
+  - vello
+  - skia-safe
+  - keyring
+  - notify-rust
+  - zbus
+  - windows
+  - objc
+  - cocoa
+public_api_levels:
+  experimental:
+    breakage_allowed: true
+    requires_changelog: false
+  preview:
+    breakage_allowed: true
+    requires_changelog: true
+    requires_contract_test_update: true
+  stable:
+    breakage_allowed: false
+    requires_semver_check: true
+    requires_public_api_diff: true
+    requires_migration_note: true

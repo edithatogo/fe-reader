@@ -1,0 +1,9 @@
+flowchart TD
+  Corpus[Corpus Manifest] --> Fixture[Fixture PDF]
+  Fixture --> Render[Render Backend]
+  Render --> Actual[Actual PNG]
+  Fixture --> Expected[Expected PNG]
+  Actual --> Compare[Visual Comparator]
+  Expected --> Compare
+  Compare --> Report[Regression Report]
+  Report --> Gate[Phase / Release Gate]

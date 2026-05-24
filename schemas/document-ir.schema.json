@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/document-ir.schema.json",
+  "title": "Fe Reader Document IR",
+  "type": "object",
+  "required": [
+    "ir_version",
+    "document_id",
+    "source_sha256",
+    "pages",
+    "metadata"
+  ],
+  "properties": {
+    "ir_version": {
+      "type": "string"
+    },
+    "document_id": {
+      "type": "string"
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "pdf_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "pages": {
+      "type": "array"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "active_content": {
+      "type": "array"
+    },
+    "revisions": {
+      "type": "array"
+    },
+    "attachments": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

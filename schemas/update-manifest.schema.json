@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Signed Update Manifest",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "app_version",
+    "channel",
+    "artifacts",
+    "manifest_signature"
+  ],
+  "properties": {
+    "manifest_version": {
+      "type": "string"
+    },
+    "app_version": {
+      "type": "string"
+    },
+    "channel": {
+      "enum": [
+        "nightly",
+        "alpha",
+        "beta",
+        "stable",
+        "lts-enterprise"
+      ]
+    },
+    "min_supported_version": {
+      "type": "string"
+    },
+    "rollback": {
+      "type": "boolean"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "platform",
+          "arch",
+          "installer_kind",
+          "url",
+          "sha256",
+          "signature"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "arch": {
+            "type": "string"
+          },
+          "installer_kind": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": "integer"
+          },
+          "signature": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "manifest_signature": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

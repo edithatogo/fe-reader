@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/job-run.schema.json",
+  "title": "Fe Reader Job Run",
+  "type": "object",
+  "required": [
+    "job_id",
+    "kind",
+    "state",
+    "progress"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "Queued",
+        "Running",
+        "Paused",
+        "Cancelling",
+        "Cancelled",
+        "Completed",
+        "Failed"
+      ]
+    },
+    "progress": {
+      "type": "object"
+    },
+    "resource_limits": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

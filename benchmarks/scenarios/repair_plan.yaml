@@ -1,0 +1,5 @@
+scenario_id: repair.plan_suspect_pdf
+class: DiagnosticP2
+command: fe-reader repair plan fixtures/corpus/suspect.pdf --out target/repair-plan.json
+max_p95_ms: 500
+max_peak_rss_mb: 256

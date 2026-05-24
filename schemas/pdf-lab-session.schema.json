@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "title": "PdfLabSession",
+  "required": [
+    "session_id",
+    "document_sha256",
+    "mode",
+    "findings"
+  ],
+  "properties": {
+    "session_id": {
+      "type": "string"
+    },
+    "document_sha256": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string"
+    },
+    "findings": {
+      "type": "array"
+    }
+  }
+}

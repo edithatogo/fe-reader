@@ -1,0 +1,18 @@
+[package]
+name = "fe_reader_text"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[features]
+default = []
+text_layout = ["dep:cosmic-text", "dep:rustybuzz"]
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+cosmic-text = { workspace = true, optional = true }
+rustybuzz = { workspace = true, optional = true }

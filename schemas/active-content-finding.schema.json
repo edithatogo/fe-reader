@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/active-content-finding.schema.json",
+  "title": "Fe Reader Active Content Finding",
+  "type": "object",
+  "required": [
+    "finding_id",
+    "kind",
+    "risk",
+    "default_action"
+  ],
+  "properties": {
+    "finding_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "risk": {
+      "enum": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ]
+    },
+    "default_action": {
+      "enum": [
+        "AllowReadOnly",
+        "DisableByDefault",
+        "RequireUserApproval",
+        "Block"
+      ]
+    },
+    "object_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

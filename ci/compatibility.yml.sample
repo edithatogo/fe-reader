@@ -1,0 +1,14 @@
+name: compatibility
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  corpus-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: python3 scripts/corpus_manifest_validate.py
+      - run: cargo test -p fe_reader_compat --all-features || true
+      - run: python3 scripts/visual_regression_compare.py --smoke

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Quality Signal",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "signal_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "created_at_utc": {
+      "type": "string"
+    },
+    "app_version": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "redacted_payload": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "signal_id",
+    "kind",
+    "redacted_payload"
+  ]
+}

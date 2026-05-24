@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FePatchPlan",
+  "type": "object",
+  "required": [
+    "patch_plan_id",
+    "intent_id",
+    "document_sha256_before",
+    "write_mode",
+    "summary",
+    "operations",
+    "requires_approval"
+  ],
+  "properties": {
+    "patch_plan_id": {
+      "type": "string"
+    },
+    "intent_id": {
+      "type": "string"
+    },
+    "document_sha256_before": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "write_mode": {
+      "enum": [
+        "IncrementalAppend",
+        "FullRewritePreserveMetadata",
+        "FullSanitizingRewrite"
+      ]
+    },
+    "summary": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "requires_approval": {
+      "type": "boolean"
+    }
+  }
+}

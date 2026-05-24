@@ -1,0 +1,10 @@
+version: 0.1
+scenarios:
+  - scenario_id: mobile.render.scroll_10_pages_balanced
+    platform_classes: [android, ios, laptop]
+    mode: Balanced
+    metrics: [wall_time_ms, peak_rss_mb, avg_cpu_percent, avg_gpu_percent, battery_delta_estimate]
+  - scenario_id: laptop.search_index_1000_pages_battery_saver
+    platform_classes: [windows, macos, linux]
+    mode: BatterySaver
+    metrics: [wall_time_ms, peak_rss_mb, avg_cpu_percent]

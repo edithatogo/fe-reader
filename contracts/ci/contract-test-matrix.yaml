@@ -1,0 +1,29 @@
+version: 0.9
+matrix:
+  architecture:
+    command: python3 scripts/strict_contract_check.py
+    gate: P0
+  schemas:
+    command: python3 scripts/validate_schemas.py
+    gate: P0
+  rust_stable:
+    command: cargo nextest run --workspace --all-targets --all-features
+    gate: P0
+  clippy:
+    command: cargo clippy --workspace --all-targets --all-features -- -D warnings
+    gate: P0
+  public_api:
+    command: scripts/public_api_snapshot_check.sh
+    gate: P1_after_api_baseline
+  semver:
+    command: scripts/semver_check.sh
+    gate: release
+  supply_chain:
+    command: scripts/supply_chain_gate.sh
+    gate: P0_for_release_P1_for_pr
+  actions_security:
+    command: scripts/actions_security_gate.sh
+    gate: P0
+  performance:
+    command: scripts/perf_smoke.sh
+    gate: P1_after_budget_baseline

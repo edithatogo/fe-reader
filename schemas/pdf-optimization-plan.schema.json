@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader PDF Optimization Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "plan_id": {
+      "type": "string"
+    },
+    "document_sha256": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "inspect_only",
+        "safe_rewrite",
+        "size_optimise",
+        "aggressive",
+        "web_delivery_linearized"
+      ]
+    },
+    "preserve_signatures": {
+      "type": "boolean"
+    },
+    "preserve_metadata": {
+      "type": "boolean"
+    },
+    "allow_image_recompression": {
+      "type": "boolean"
+    },
+    "max_visual_delta": {
+      "type": [
+        "number",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "plan_id",
+    "document_sha256",
+    "level"
+  ]
+}

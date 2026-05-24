@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FeOperationIntent",
+  "type": "object",
+  "required": [
+    "intent_id",
+    "source",
+    "operation",
+    "risk_level",
+    "requires_user_review",
+    "created_at_utc",
+    "payload_json"
+  ],
+  "properties": {
+    "intent_id": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object"
+    },
+    "document_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "document_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "operation": {
+      "type": "string"
+    },
+    "risk_level": {
+      "enum": [
+        "read_only",
+        "low_mutation",
+        "high_mutation",
+        "destructive",
+        "external_disclosure"
+      ]
+    },
+    "requires_user_review": {
+      "type": "boolean"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "payload_json": {
+      "type": "object"
+    }
+  }
+}

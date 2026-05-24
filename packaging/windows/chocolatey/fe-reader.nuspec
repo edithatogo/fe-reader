@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>fe-reader</id>
+    <version>0.1.0</version>
+    <title>Fe Reader</title>
+    <authors>Fe Reader Project</authors>
+    <license type="expression">Apache-2.0 OR MIT</license>
+    <description>Local-first cross-platform PDF workflow platform.</description>
+  </metadata>
+</package>

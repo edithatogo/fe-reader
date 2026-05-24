@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "title": "ApiCompatibilityReport",
+  "required": [
+    "surface",
+    "current_version",
+    "stability",
+    "breaking_changes"
+  ],
+  "properties": {
+    "surface": {
+      "type": "string"
+    },
+    "previous_version": {
+      "type": "string"
+    },
+    "current_version": {
+      "type": "string"
+    },
+    "stability": {
+      "enum": [
+        "internal",
+        "experimental",
+        "preview",
+        "stable",
+        "lts"
+      ]
+    },
+    "breaking_changes": {
+      "type": "array"
+    },
+    "migration_notes": {
+      "type": "array"
+    }
+  }
+}

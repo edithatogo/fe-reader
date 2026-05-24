@@ -1,0 +1,8 @@
+{
+  "plan_id": "template.safe-rewrite",
+  "level": "safe_rewrite",
+  "preserve_signatures": true,
+  "preserve_metadata": true,
+  "allow_image_recompression": false,
+  "max_visual_delta": 0
+}

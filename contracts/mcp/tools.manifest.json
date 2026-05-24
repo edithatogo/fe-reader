@@ -1,0 +1,47 @@
+{
+  "protocol": "mcp",
+  "server_name": "fe-reader-mcp",
+  "default_mode": "read_only",
+  "tools": [
+    {
+      "name": "fe.open_document",
+      "risk": "read_only",
+      "description": "Open a document and return a document id."
+    },
+    {
+      "name": "fe.read_page_text",
+      "risk": "read_only",
+      "description": "Return text spans for a page."
+    },
+    {
+      "name": "fe.get_metadata",
+      "risk": "read_only",
+      "description": "Return metadata snapshot."
+    },
+    {
+      "name": "fe.search",
+      "risk": "read_only",
+      "description": "Search extracted text."
+    },
+    {
+      "name": "fe.plan_redaction",
+      "risk": "high_mutation_plan_only",
+      "description": "Return a reviewable redaction patch plan."
+    },
+    {
+      "name": "fe.plan_workflow",
+      "risk": "mutation_plan_only",
+      "description": "Return a reviewable workflow patch plan."
+    },
+    {
+      "name": "fe.apply_approved_patch",
+      "risk": "destructive",
+      "description": "Apply a patch plan only with approval token."
+    },
+    {
+      "name": "fe.convert_document",
+      "risk": "external_disclosure_possible",
+      "description": "Plan or run conversion depending on policy."
+    }
+  ]
+}

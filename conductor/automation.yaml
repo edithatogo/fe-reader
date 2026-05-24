@@ -1,0 +1,118 @@
+version: 0.5
+kind: fe-reader-project-owned-conductor-automation
+phase_gate:
+  command: scripts/conductor_phase_gate.sh --phase ${PHASE_ID} --auto-fix
+review_skill: .agents/skills/fe-reader-review-skill/SKILL.md
+parallelisation:
+  max_parallel_tracks: 8
+  rules:
+    - A0, K0, O0, P0, N0, V0 and Y0 must run before feature implementation tracks.
+    - B, C, D, E, Q and N may proceed in parallel after A0 contracts compile.
+    - F and G may proceed after metadata/page operation contracts exist.
+    - H and J may proceed after CLI and conversion contracts exist.
+    - I, L and automation portions of E may proceed after operation intent and platform contracts are stable.
+    - R starts in Wave 4 for packaging and signed update readiness.
+    - S starts in Wave 5 after public API surfaces are stabilised.
+    - M cannot start until Wave 6 and must not block Wave 7 release hardening.
+    - Z, AB, AD and AE can run early as contracts/docs tracks; implementation must wait for core policy contracts.
+    - AA and AC run after conversion/metadata/page contracts are ready.
+review_commands:
+  - cargo fmt --all -- --check
+  - cargo clippy --workspace --all-targets --all-features -- -D warnings
+  - cargo test --workspace --all-features
+  - python3 scripts/validate_schemas.py
+  - python3 scripts/architecture_compliance_check.py --workspace-root .
+  - python3 scripts/corpus_manifest_validate.py
+  - python3 scripts/visual_regression_compare.py --smoke || true
+  - scripts/security_policy_check.sh || true
+  - scripts/sbom_audit.sh || true
+  - scripts/smoke_cli_contract.sh || true
+  - scripts/perf_smoke.sh || true
+  - scripts/release_readiness_check.sh || true
+  - scripts/differential_oracle_smoke.sh || true
+  - scripts/pdf_repair_smoke.sh || true
+  - scripts/api_compat_check.sh || true
+  - scripts/release_evidence_check.sh || true
+  - scripts/prepress_smoke.sh || true
+  - python3 scripts/feature_flags_check.py || true
+  - python3 scripts/adr_validate.py || true
+  - python3 scripts/accessibility_audit_smoke.py || true
+  - scripts/source_linked_smoke.sh || true
+  - scripts/optimization_oracle_smoke.sh || true
+  - scripts/cache_workspace_smoke.sh || true
+  - cargo deny check || true
+  - cargo audit || true
+  - cargo vet || true
+notes:
+  - cargo deny/audit/vet may be advisory until tooling is configured; convert to hard failures in Wave 1.
+  - corpus and visual regression smoke are advisory until baselines are accepted; accepted regressions become hard failures.
+  - fuzz smoke is optional in normal phase gates and mandatory in nightly CI.
+  - performance smoke is advisory until baselines are accepted, then P0/P1 regressions become hard failures.
+  - release readiness is advisory before Wave 4 and mandatory for Wave 7.
+
+  - Track V API compatibility checks become mandatory for stable public surfaces.
+  - Track W release evidence checks become mandatory for beta/stable/LTS artifacts.
+  - Track U oracle smoke is advisory locally and mandatory in release-candidate CI when tools are available.
+
+
+v6_review_commands:
+  - python3 scripts/ir_schema_smoke.py || true
+  - python3 scripts/job_contract_smoke.py || true
+  - python3 scripts/policy_engine_smoke.py || true
+  - python3 scripts/quality_dashboard_smoke.py || true
+  - python3 scripts/active_content_firewall_smoke.py || true
+  - python3 scripts/agent_eval_smoke.py || true
+v6_notes:
+  - v6 smoke checks are advisory until their crates are materialised; they become mandatory after Wave 1 acceptance.
+  - UI E2E checks are platform-specific; failures are mandatory on release-candidate branches for supported platforms.
+  - Power/thermal budgets are advisory until real-device baselines exist.
+
+
+v6_notes:
+  - Accessibility smoke is advisory until baselines are accepted, then release-blocking for supported surfaces.
+  - Source-linked provider execution is disabled by default until policy and sandbox contracts are implemented.
+  - Optimisation that changes file bytes must emit a receipt and must warn when signatures or conformance could be affected.
+  - Cache and collaboration packets are privacy-sensitive and cannot be used as authoritative source data.
+
+v7_implementation_first:
+  enabled: true
+  bootstrap_script: scripts/wave0_bootstrap_check.sh
+  stop_rule: docs/implementation-stop-rule.md
+  first_pr_plan: docs/wave0-first-30-prs.md
+  auto_fix_policy:
+    allow:
+      - formatting
+      - missing_crate_stub
+      - schema_formatting
+    deny:
+      - redaction_write_mode_failure
+      - policy_gate_failure
+      - architecture_boundary_failure
+      - sidecar_migration_data_loss
+      - unsafe_automation_mutation
+
+v9_repository_hardening:
+  enabled: true
+  hard_gate_commands:
+    - python3 scripts/strict_contract_check.py
+    - python3 scripts/ci_policy_check.py
+    - python3 scripts/validate_schemas.py
+  repo_required_files:
+    - .github/workflows/00-pr-contracts.yml
+    - .github/workflows/01-rust-stable.yml
+    - .github/workflows/02-security-supply-chain.yml
+    - .github/workflows/03-cross-platform-smoke.yml
+    - .github/workflows/04-api-compatibility.yml
+    - .github/workflows/05-frontier-nightly.yml
+    - .github/workflows/06-performance-nightly.yml
+    - .github/workflows/07-release.yml
+    - .github/CODEOWNERS
+    - .github/dependabot.yml
+    - renovate.json
+  frontier_lanes:
+    blocking: false
+    require_adr_for_promotion: true
+  release_lanes:
+    require_sbom: true
+    require_attestation: true
+    require_release_evidence: true

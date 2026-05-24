@@ -1,0 +1,15 @@
+{
+  "top_level": [
+    "intent",
+    "plan",
+    "summary"
+  ],
+  "summary": [
+    "document_id",
+    "fingerprint",
+    "header",
+    "encrypted_hint",
+    "linearized_hint",
+    "eof_marker_hint"
+  ]
+}

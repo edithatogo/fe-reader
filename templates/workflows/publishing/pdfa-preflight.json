@@ -1,0 +1,21 @@
+{
+  "workflow_id": "publishing.pdfa.preflight",
+  "version": "0.1.0",
+  "display_name": "PDF/A preflight report",
+  "workflow_family": "publishing",
+  "risk_level": "read_only",
+  "requires_human_review": false,
+  "steps": [
+    {
+      "type": "metadata_snapshot"
+    },
+    {
+      "type": "run_external_validator",
+      "provider": "verapdf",
+      "profile": "pdfa"
+    },
+    {
+      "type": "emit_report"
+    }
+  ]
+}

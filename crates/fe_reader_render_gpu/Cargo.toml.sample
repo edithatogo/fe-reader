@@ -1,0 +1,18 @@
+[package]
+name = "fe_reader_render_gpu"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+wgpu.workspace = true
+vello = { workspace = true, optional = true }
+skia-safe = { workspace = true, optional = true }
+fe_reader_render = { path = "../fe_reader_render" }
+
+[features]
+default = []
+vello_overlay = ["dep:vello"]
+skia_experiment = ["dep:skia-safe"]

@@ -1,0 +1,9 @@
+{
+  "adr_id": "0005-platform-integration-boundary",
+  "title": "Platform integration boundary",
+  "status": "accepted",
+  "decision": "Platform APIs are exposed through adapters and contracts, never from core.",
+  "consequences": [
+    "Implementation agents must respect this decision unless an RFC supersedes it."
+  ]
+}

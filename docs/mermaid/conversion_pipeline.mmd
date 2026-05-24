@@ -1,0 +1,12 @@
+flowchart LR
+  Input[PDF or Source Project] --> Detect[Detect Type]
+  Detect --> PDF[PDF Extraction]
+  Detect --> Source[Source Build Provider]
+  PDF --> Structured[Structured Blocks]
+  Source --> Build[Quarto/Typst/LaTeX/Pandoc Build]
+  Build --> PDF
+  Structured --> MD[Markdown]
+  Structured --> HTML[HTML]
+  Structured --> JSON[JSON]
+  Structured --> DOCX[DOCX via Provider]
+  Structured --> Notes[Zotero/Obsidian Notes]

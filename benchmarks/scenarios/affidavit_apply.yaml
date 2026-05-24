@@ -1,0 +1,9 @@
+version: 0.1
+scenario_id: workflow.affidavit.apply_100_pages
+command: fe-reader apply-template fixtures/corpus/affidavit_100_pages.pdf templates/signature/au.affidavit.initial_every_page.json --out /tmp/fe-affidavit.pdf --receipt /tmp/fe-affidavit.receipt.json
+metrics:
+  - wall_time_ms
+  - peak_rss_mb
+  - output_bytes
+  - xobject_reuse_count
+  - verification_passed

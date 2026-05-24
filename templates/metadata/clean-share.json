@@ -1,0 +1,17 @@
+{
+  "operation_id": "metadata.clean_share.default",
+  "mode": "clean_share",
+  "scrub_profile": "default",
+  "fields": {
+    "remove_document_info": [
+      "Author",
+      "Creator",
+      "Producer",
+      "CreationDate",
+      "ModDate"
+    ],
+    "remove_xmp_private_fields": true,
+    "remove_embedded_thumbnails": true,
+    "preserve_title": false
+  }
+}

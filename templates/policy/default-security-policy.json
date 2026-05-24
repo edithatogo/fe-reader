@@ -1,0 +1,35 @@
+{
+  "policy_version": "0.1.0",
+  "default_decision": "require_interactive_approval",
+  "rules": [
+    {
+      "match": {
+        "risk_class": "ReadOnly"
+      },
+      "decision": "allow",
+      "reason": "read-only operations are allowed by default"
+    },
+    {
+      "match": {
+        "source": "Plugin",
+        "risk_class": "HighMutation"
+      },
+      "decision": "deny",
+      "reason": "plugins may propose but not directly mutate"
+    },
+    {
+      "match": {
+        "risk_class": "ExternalExecution"
+      },
+      "decision": "deny",
+      "reason": "embedded or external execution is disabled by default"
+    },
+    {
+      "match": {
+        "risk_class": "SecureRedaction"
+      },
+      "decision": "require_interactive_approval",
+      "reason": "secure redaction requires explicit review and verification"
+    }
+  ]
+}

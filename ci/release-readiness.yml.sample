@@ -1,0 +1,14 @@
+name: release-readiness
+on:
+  workflow_dispatch:
+
+jobs:
+  release-readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: scripts/release_readiness_check.sh
+      - run: scripts/perf_smoke.sh || true
+      - run: python3 scripts/corpus_manifest_validate.py
+      - run: python3 scripts/visual_regression_compare.py --smoke

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/transformation-pass.schema.json",
+  "title": "Fe Reader Transformation Graph",
+  "type": "object",
+  "required": [
+    "graph_id",
+    "input_document_sha256",
+    "passes",
+    "expected_write_mode"
+  ],
+  "properties": {
+    "graph_id": {
+      "type": "string"
+    },
+    "input_document_sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "passes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "pass_id",
+          "pass_type",
+          "maturity",
+          "policy_risk"
+        ],
+        "properties": {
+          "pass_id": {
+            "type": "string"
+          },
+          "pass_type": {
+            "type": "string"
+          },
+          "maturity": {
+            "enum": [
+              "Experimental",
+              "Preview",
+              "Stable"
+            ]
+          },
+          "policy_risk": {
+            "enum": [
+              "ReadOnly",
+              "LowMutation",
+              "HighRiskMutation",
+              "SecurityCritical"
+            ]
+          },
+          "parameters": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "expected_write_mode": {
+      "enum": [
+        "IncrementalAppend",
+        "FullRewrite",
+        "FullSanitizingRewrite"
+      ]
+    }
+  }
+}

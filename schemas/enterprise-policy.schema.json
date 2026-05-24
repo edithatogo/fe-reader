@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Enterprise Policy",
+  "type": "object",
+  "required": [
+    "policy_version",
+    "managed"
+  ],
+  "properties": {
+    "policy_version": {
+      "type": "string"
+    },
+    "managed": {
+      "type": "boolean"
+    },
+    "disabled_surfaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "disabled_features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "allow_plugins": {
+      "type": "boolean"
+    },
+    "allow_mcp": {
+      "type": "boolean"
+    },
+    "allow_external_converters": {
+      "type": "boolean"
+    },
+    "require_redaction_verification": {
+      "type": "boolean"
+    },
+    "require_metadata_clean_share_prompt": {
+      "type": "boolean"
+    },
+    "telemetry_mode": {
+      "enum": [
+        "disabled",
+        "local_only",
+        "user_approved_bundle_only",
+        "managed_upload_allowed"
+      ]
+    },
+    "allowed_update_channels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

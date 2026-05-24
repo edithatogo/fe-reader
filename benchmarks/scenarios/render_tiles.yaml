@@ -1,0 +1,8 @@
+version: 0.1
+scenario_id: render.tile.512_2x_warm
+command: fe-reader render-tile fixtures/corpus/sample.pdf --page 1 --tile 0,0,512,512 --scale 2.0 --warm-cache --out /tmp/fe-render-tile.png
+metrics:
+  - wall_time_ms
+  - peak_rss_mb
+  - output_bytes
+  - cache_hit_rate

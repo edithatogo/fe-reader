@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FePluginManifest",
+  "type": "object",
+  "required": [
+    "plugin_id",
+    "plugin_version",
+    "fe_plugin_api",
+    "publisher",
+    "license",
+    "capabilities",
+    "network_access",
+    "filesystem_access"
+  ],
+  "properties": {
+    "plugin_id": {
+      "type": "string"
+    },
+    "plugin_version": {
+      "type": "string"
+    },
+    "fe_plugin_api": {
+      "type": "string"
+    },
+    "publisher": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "network_access": {
+      "type": "boolean"
+    },
+    "filesystem_access": {
+      "type": "boolean"
+    },
+    "sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "signature": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

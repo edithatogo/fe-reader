@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "title": "ReleaseEvidenceBundle",
+  "required": [
+    "release_id",
+    "channel",
+    "source_commit",
+    "toolchain",
+    "artifacts"
+  ],
+  "properties": {
+    "release_id": {
+      "type": "string"
+    },
+    "channel": {
+      "enum": [
+        "dev",
+        "nightly",
+        "beta",
+        "stable",
+        "lts",
+        "store_submission"
+      ]
+    },
+    "source_commit": {
+      "type": "string"
+    },
+    "toolchain": {
+      "type": "string"
+    },
+    "artifacts": {
+      "type": "array"
+    },
+    "sbom_path": {
+      "type": "string"
+    },
+    "provenance_path": {
+      "type": "string"
+    }
+  }
+}

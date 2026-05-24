@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Source Linked Project",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "typst",
+        "quarto",
+        "pandoc",
+        "tectonic",
+        "latex",
+        "custom-external"
+      ]
+    },
+    "entrypoint": {
+      "type": "string"
+    },
+    "output_pdf": {
+      "type": "string"
+    },
+    "source_map": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "project_id",
+    "provider",
+    "entrypoint",
+    "output_pdf"
+  ]
+}

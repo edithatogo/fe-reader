@@ -1,0 +1,28 @@
+{
+  "recipe_id": "redaction.legal.deidentify.basic",
+  "version": "0.1.0",
+  "display_name": "Basic deterministic de-identification",
+  "security_level": "SanitizedRewrite",
+  "requires_human_review": true,
+  "detectors": [
+    {
+      "type": "regex",
+      "name": "email",
+      "pattern": "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+    },
+    {
+      "type": "regex",
+      "name": "phone",
+      "pattern": "(?:\\+?\\d[\\d ()-]{7,}\\d)"
+    },
+    {
+      "type": "dictionary",
+      "name": "user_supplied_names"
+    }
+  ],
+  "verification": [
+    "extract_text_absence",
+    "object_stream_scan",
+    "metadata_scan"
+  ]
+}

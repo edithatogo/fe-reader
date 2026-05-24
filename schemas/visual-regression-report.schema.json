@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Visual Regression Report",
+  "type": "object",
+  "required": [
+    "fixture_id",
+    "page_index",
+    "status"
+  ],
+  "properties": {
+    "fixture_id": {
+      "type": "string"
+    },
+    "page_index": {
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "accepted_difference",
+        "fail_needs_review"
+      ]
+    },
+    "max_delta": {
+      "type": "number"
+    },
+    "changed_pixels": {
+      "type": "integer"
+    },
+    "diff_image_path": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

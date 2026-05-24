@@ -1,0 +1,29 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/fereader/FeReader1">
+  <interface name="org.fereader.FeReader1">
+    <method name="OpenDocument">
+      <arg name="uri" type="s" direction="in"/>
+      <arg name="document_id" type="s" direction="out"/>
+    </method>
+    <method name="ReadPageText">
+      <arg name="document_id" type="s" direction="in"/>
+      <arg name="page_index" type="u" direction="in"/>
+      <arg name="json_text_spans" type="s" direction="out"/>
+    </method>
+    <method name="PlanWorkflow">
+      <arg name="document_id" type="s" direction="in"/>
+      <arg name="workflow_id" type="s" direction="in"/>
+      <arg name="json_parameters" type="s" direction="in"/>
+      <arg name="json_patch_plan" type="s" direction="out"/>
+    </method>
+    <method name="ApplyApprovedPatch">
+      <arg name="patch_plan_id" type="s" direction="in"/>
+      <arg name="approval_token" type="s" direction="in"/>
+      <arg name="json_receipt" type="s" direction="out"/>
+    </method>
+    <signal name="OperationCompleted">
+      <arg name="json_receipt" type="s"/>
+    </signal>
+  </interface>
+</node>

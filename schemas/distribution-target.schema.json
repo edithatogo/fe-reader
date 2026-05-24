@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DistributionTarget",
+  "type": "object",
+  "required": [
+    "target_id",
+    "platform",
+    "artifact_kind",
+    "install_scope",
+    "publishing_channel"
+  ],
+  "properties": {
+    "target_id": {
+      "type": "string"
+    },
+    "platform": {
+      "enum": [
+        "windows",
+        "macos",
+        "linux",
+        "android",
+        "ios"
+      ]
+    },
+    "artifact_kind": {
+      "type": "string"
+    },
+    "install_scope": {
+      "enum": [
+        "local_user",
+        "global_admin",
+        "portable",
+        "store"
+      ]
+    },
+    "publishing_channel": {
+      "type": "string"
+    },
+    "requires_signing": {
+      "type": "boolean"
+    },
+    "requires_notarization": {
+      "type": "boolean"
+    }
+  }
+}

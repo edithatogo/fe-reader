@@ -1,0 +1,15 @@
+name: fe-reader
+base: core24
+version: '0.1.0'
+summary: Local-first PDF workflow platform
+description: Local-first cross-platform PDF workflow platform.
+grade: devel
+confinement: strict
+apps:
+  fe-reader:
+    command: bin/fe-reader
+    plugs: [desktop, desktop-legacy, wayland, x11, home, cups-control]
+parts:
+  fe-reader:
+    plugin: dump
+    source: ./dist

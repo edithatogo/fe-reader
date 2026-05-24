@@ -1,0 +1,55 @@
+flowchart LR
+  subgraph Surfaces
+    Tauri[Tauri Desktop/Mobile]
+    Web[Web/PWA]
+    CLI[CLI]
+    MCP[MCP Server]
+    COM[Windows COM]
+    AS[AppleScript/App Intents]
+    DBus[Linux D-Bus]
+    Mobile[Android/iOS Intents]
+    Plugins[WASM Plugins]
+  end
+
+  subgraph Adapters
+    Platform[fe_reader_platform_*]
+    Integrations[fe_reader_integrations]
+    UniFFI[fe_reader_uniffi]
+    PluginHost[fe_reader_plugin_host]
+  end
+
+  subgraph Capabilities
+    Render[fe_reader_render]
+    Metadata[fe_reader_metadata]
+    Redaction[fe_reader_redaction]
+    Workflows[fe_reader_workflows]
+    Conversion[fe_reader_conversion]
+    Forms[fe_reader_forms]
+  end
+
+  subgraph Core
+    Core[fe_reader_core]
+    Model[fe_reader_pdf_model]
+  end
+
+  Tauri --> Platform
+  Tauri --> Core
+  Web --> Core
+  CLI --> Core
+  MCP --> Core
+  COM --> Platform
+  AS --> Platform
+  DBus --> Platform
+  Mobile --> Platform
+  Plugins --> PluginHost
+  PluginHost --> Core
+  Platform --> Core
+  Integrations --> Core
+  UniFFI --> Core
+  Core --> Model
+  Render --> Model
+  Metadata --> Model
+  Redaction --> Core
+  Workflows --> Core
+  Conversion --> Model
+  Forms --> Model

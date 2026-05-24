@@ -1,0 +1,12 @@
+{
+  "dashboard_version": "0.1",
+  "reports": [
+    "compatibility",
+    "performance",
+    "accessibility",
+    "security",
+    "release-readiness",
+    "api-compatibility"
+  ],
+  "output": "target/fe-quality/dashboard.html"
+}

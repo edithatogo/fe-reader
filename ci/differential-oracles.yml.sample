@@ -1,0 +1,10 @@
+name: differential-oracles
+on: [push, pull_request]
+jobs:
+  oracle-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y qpdf ghostscript poppler-utils || true
+      - run: scripts/differential_oracle_smoke.sh
+      - run: scripts/pdf_repair_smoke.sh

@@ -1,0 +1,9 @@
+{
+  "adr_id": "0006-deterministic-before-ml",
+  "title": "Deterministic before ML",
+  "status": "accepted",
+  "decision": "Search, redaction and workflows use deterministic methods before optional late-wave local intelligence.",
+  "consequences": [
+    "Implementation agents must respect this decision unless an RFC supersedes it."
+  ]
+}

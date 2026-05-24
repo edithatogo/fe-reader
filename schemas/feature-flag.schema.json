@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/feature-flag.schema.json",
+  "title": "Fe Reader Feature Flag",
+  "type": "object",
+  "required": [
+    "flag_id",
+    "owner",
+    "maturity",
+    "default_state",
+    "risk"
+  ],
+  "properties": {
+    "flag_id": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "maturity": {
+      "enum": [
+        "experimental",
+        "preview",
+        "stable",
+        "deprecated"
+      ]
+    },
+    "default_state": {
+      "type": "boolean"
+    },
+    "risk": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "requires_policy_check": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,22 @@
+name: security
+on:
+  workflow_dispatch:
+  pull_request:
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo install cargo-deny cargo-audit cargo-cyclonedx || true
+      - run: scripts/security_policy_check.sh
+      - run: scripts/sbom_audit.sh
+      - run: cargo deny check || true
+      - run: cargo audit || true

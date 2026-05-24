@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RedactionRecipe",
+  "type": "object",
+  "required": [
+    "recipe_id",
+    "version",
+    "display_name",
+    "security_level",
+    "detectors",
+    "verification"
+  ],
+  "properties": {
+    "recipe_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "security_level": {
+      "enum": [
+        "MarkupOnly",
+        "ContentRemoval",
+        "SanitizedRewrite"
+      ]
+    },
+    "detectors": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "requires_human_review": {
+      "type": "boolean"
+    },
+    "verification": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+# Maintainer: Fe Reader Project
+pkgname=fe-reader
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Local-first cross-platform PDF workflow platform"
+arch=('x86_64')
+url="https://example.invalid/fe-reader"
+license=('Apache-2.0' 'MIT')
+source=("fe-reader-${pkgver}.tar.gz")
+sha256sums=('PLACEHOLDER')
+package() {
+  install -Dm755 "${srcdir}/fe-reader" "${pkgdir}/usr/bin/fe-reader"
+}

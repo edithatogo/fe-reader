@@ -1,0 +1,13 @@
+channels:
+  nightly:
+    signing: optional
+    publishing: github_prerelease
+    notes: developer/test only
+  preview:
+    signing: required_where_supported
+    publishing: prerelease_registries
+    notes: beta users
+  stable:
+    signing: required
+    notarization: required_on_macos
+    publishing: all_configured_registries

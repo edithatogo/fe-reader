@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "title": "DifferentialTestReport",
+  "required": [
+    "run_id",
+    "fixture_id",
+    "operation",
+    "tools",
+    "comparison"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "fixture_id": {
+      "type": "string"
+    },
+    "operation": {
+      "type": "string"
+    },
+    "tools": {
+      "type": "array"
+    },
+    "comparison": {
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Offline Review Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "packet_id": {
+      "type": "string"
+    },
+    "base_document_sha256": {
+      "type": "string"
+    },
+    "author_label": {
+      "type": "string"
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "proposed_patch_plans": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "signature_hint": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "packet_id",
+    "base_document_sha256",
+    "comments"
+  ]
+}

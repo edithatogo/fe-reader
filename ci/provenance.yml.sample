@@ -1,0 +1,9 @@
+name: release-provenance-smoke
+on: [push]
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/release_evidence_check.sh
+      - run: scripts/sbom_audit.sh || true

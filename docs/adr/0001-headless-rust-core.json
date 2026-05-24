@@ -1,0 +1,9 @@
+{
+  "adr_id": "0001-headless-rust-core",
+  "title": "Headless Rust core",
+  "status": "accepted",
+  "decision": "Core document logic is isolated from UI, rendering adapters, platform APIs and automation surfaces.",
+  "consequences": [
+    "Implementation agents must respect this decision unless an RFC supersedes it."
+  ]
+}

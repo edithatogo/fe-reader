@@ -1,0 +1,10 @@
+flowchart LR
+  Source[UI / CLI / MCP / Plugin / COM / AppleScript / D-Bus / Web] --> Intent[OperationIntent]
+  Intent --> Plan[PatchPlan]
+  Plan --> Policy[SecurityPolicyEngine]
+  Policy -->|Allow| Apply[Apply Patch]
+  Policy -->|Needs approval| Approval[User or managed approval]
+  Approval --> Apply
+  Policy -->|Deny| Stop[Abort with reason]
+  Apply --> Verify[Verifier]
+  Verify --> Receipt[AuditReceipt]

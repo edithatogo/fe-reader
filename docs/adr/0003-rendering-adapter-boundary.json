@@ -1,0 +1,9 @@
+{
+  "adr_id": "0003-rendering-adapter-boundary",
+  "title": "Rendering adapter boundary",
+  "status": "accepted",
+  "decision": "PDFium and GPU rendering live behind RenderBackend and outside fe_reader_core.",
+  "consequences": [
+    "Implementation agents must respect this decision unless an RFC supersedes it."
+  ]
+}

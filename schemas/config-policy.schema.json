@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/config-policy.schema.json",
+  "title": "Fe Reader Config Policy",
+  "type": "object",
+  "required": [
+    "policy_id",
+    "version",
+    "rules"
+  ],
+  "properties": {
+    "policy_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_id",
+          "effect"
+        ],
+        "properties": {
+          "rule_id": {
+            "type": "string"
+          },
+          "effect": {
+            "enum": [
+              "allow",
+              "deny",
+              "require_approval",
+              "require_stronger_auth"
+            ]
+          },
+          "action": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

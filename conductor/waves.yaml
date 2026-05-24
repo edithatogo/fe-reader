@@ -1,0 +1,246 @@
+version: 0.5
+product: fe-reader
+principles:
+  - local_first
+  - domain_neutral_workflow_platform
+  - operation_intent_before_mutation
+  - deterministic_before_ml
+  - core_has_no_platform_or_ui_dependencies
+  - security_and_performance_are_product_requirements
+  - compatibility_corpus_before_feature_claims
+  - public_api_surfaces_are_versioned
+  - release_artifacts_have_evidence
+  - repair_is_plan_first_and_copy_only_by_default
+  - accessibility_and_usability_are_release_requirements
+  - cache_is_privacy_sensitive_and_never_authoritative
+  - source_linked_workflows_are_provider_based_and_policy_gated
+  - optimisation_must_emit_receipts_and_preserve_signatures_unless_approved
+waves:
+  - id: wave_0_foundation
+    name: Foundation contracts, CLI harness, security policy and corpus baseline
+    tracks: [A, K, N, O, P, V, Y, Z, AB, AD, AE]
+    exit_criteria:
+      - workspace compiles with sample crates after manifests are materialised
+      - schemas validate
+      - architecture compliance passes
+      - CLI skeleton supports inspect/help/version
+      - fixture directories and corpus manifest exist
+      - ADR seed list exists
+      - API stability levels exist
+      - baseline threat model and automation policy exist
+      - performance budget registry exists
+      - accessibility, cache/workspace, source-linked, optimisation and experiment schemas exist
+  - id: wave_1_reader_native_shell
+    name: Reader fundamentals, native shell basics, search and text baseline
+    tracks: [B, C, D, E, N, P, Q, O, T, U, Z, AB]
+    depends_on: [wave_0_foundation]
+    exit_criteria:
+      - render tile command works for fixture PDF
+      - text extraction returns spans with page geometry
+      - deterministic search index can index fixture text
+      - recent document registration stubs per platform
+      - UniFFI smoke generation
+      - first visual-regression fixtures exist
+      - PDF lab object/page graph inspection works for simple fixture
+      - first differential oracle smoke report exists
+  - id: wave_2_annotation_metadata_pageops
+    name: Annotation, metadata, page operations, i18n and visual regression
+    tracks: [A, F, G, D, N, P, Q, T, X, V, Z, AA, AC]
+    depends_on: [wave_1_reader_native_shell]
+    exit_criteria:
+      - metadata snapshot/diff/scrub plan
+      - page operations patch plan
+      - annotation patch plan
+      - CLI golden tests
+      - CJK/RTL/font fallback test fixtures exist
+      - visual regression runner compares rendered page images
+      - content stream/text-map diagnostics work for accepted fixture
+      - page box/font/prepress report baseline exists
+  - id: wave_3_workflows_verified_ops
+    name: Workflow packs and verified high-risk operations
+    tracks: [F, G, K, N, O, P, T, U, AB]
+    depends_on: [wave_2_annotation_metadata_pageops]
+    exit_criteria:
+      - legal/healthcare/government/research/publishing workflow packs plan operations
+      - redaction verification receipt exists
+      - secure redaction rejects incremental append
+      - automation policy blocks high-risk mutation without approval
+      - compatibility corpus includes redaction and signed-document fixtures
+      - repair plan mode saves copy only and emits receipt
+  - id: wave_4_conversion_distribution
+    name: Conversion, packaging, signed updates and distribution
+    tracks: [H, J, C, N, P, R, W, U, AA, AC, AE]
+    depends_on: [wave_3_workflows_verified_ops]
+    exit_criteria:
+      - conversion providers are contract-tested
+      - installer matrix generated
+      - registry manifests validate syntactically
+      - signed-update manifest contract exists
+      - SBOM/provenance check scripts exist
+      - release evidence bundle schema validates
+  - id: wave_5_integrations_automation_web
+    name: Integrations, automation, web, enterprise policy and SDKs
+    tracks: [I, L, E, C, N, O, R, S, Q, V, Z, AA, AB, AE]
+    depends_on: [wave_4_conversion_distribution]
+    exit_criteria:
+      - COM/AppleScript/D-Bus/App Intent/Android intent contracts implemented as stubs
+      - MCP read-only tools implemented
+      - web postMessage contract implemented
+      - plugin host proposal-only MVP
+      - enterprise policy schema can disable risky integrations
+      - SDK versioning policy exists
+      - public contract snapshots exist for CLI, MCP and plugin ABI
+  - id: wave_6_frontier_optional
+    name: Optional local intelligence and frontier acceleration
+    tracks: [M, B, N, O, P, S, X, AD]
+    depends_on: [wave_5_integrations_automation_web]
+    optional: true
+    exit_criteria:
+      - local intelligence remains optional
+      - evidence-cited suggestions only
+      - no high-risk auto-mutation
+      - GPU/PGO/local-intelligence features remain feature-gated unless benchmark evidence supports default enablement
+  - id: wave_7_release_hardening
+    name: Release hardening and operating excellence
+    tracks: [J, K, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AB, AC, AD, AE]
+    depends_on: [wave_5_integrations_automation_web]
+    exit_criteria:
+      - signed installers and update manifests for target release channel
+      - SBOM and build provenance artifacts generated
+      - compatibility report covers the accepted corpus
+      - performance report covers P0/P1 budgets
+      - accessibility report covers keyboard, screen reader, contrast and PDF/UA inspection flows
+      - enterprise deployment policy templates exist
+      - privacy and diagnostics policy reviewed
+      - release evidence bundle complete
+      - API compatibility report complete
+      - differential oracle report complete for release corpus
+      - accessibility report covers app and web/PWA paths
+      - optimisation receipt tests cover signature-preserve and warning cases
+      - cache and review-packet privacy controls pass smoke tests
+
+  - id: wave_8_adoption_and_ecosystem_excellence
+    name: Adoption, documentation, accessibility certification and ecosystem polish
+    tracks: [Z, AA, AB, AC, AE, S, Y]
+    depends_on: [wave_7_release_hardening]
+    exit_criteria:
+      - user/admin/developer guides exist for release features
+      - examples cover CLI, workflows, source-linked projects, review packets and plugin stubs
+      - accessibility audit report is release-ready
+      - support bundle UX and privacy policy reviewed
+      - source-linked authoring examples have provider capability discovery
+      - optimisation and cache documentation explain risks, receipts and privacy
+      - community contribution templates and issue templates are ready
+review:
+  run_after_every_phase: true
+  skill: fe-reader-review-skill
+auto_fix:
+  enabled: true
+  allowed:
+    - cargo_fmt
+    - clippy_machine_applicable
+    - frontend_formatting
+    - schema_formatting
+  disallowed:
+    - architecture_compliance_failure
+    - redaction_verification_failure
+    - mcp_security_policy_failure
+    - automation_policy_failure
+    - sandbox_escape_risk
+    - platform_permission_failure
+    - distribution_signing_failure
+    - corpus_regression
+    - accepted_performance_regression
+    - public_api_break_without_versioning
+    - release_evidence_missing
+    - repair_overwrites_original_without_explicit_approval
+    - failing_tests_after_first_fix_attempt
+    - accessibility_release_blocker
+    - source_linked_provider_executes_without_policy
+    - cache_privacy_failure
+    - review_packet_mutates_without_approval
+    - optimization_invalidates_signature_without_receipt
+
+
+# v6 wave extensions
+v6_wave_extensions:
+  wave_0:
+    add:
+      - Track AA: Document IR contract and transformation graph schema
+      - Track AC: Job scheduler/resource-limit contract
+      - Track AG: Config and policy engine contract
+      - Track AH: coding-agent evaluation harness skeleton
+  wave_1:
+    add:
+      - Track AB: design-token baseline and keyboard/accessibility smoke scenarios
+      - Track AC: job progress/cancellation stubs exposed through CLI
+      - Track AD: quality signal output directory and dashboard skeleton
+  wave_2:
+    add:
+      - Track AA: first transformation passes for page boxes, text spans and metadata
+      - Track AB: visual/accessibility/E2E baseline scenarios
+      - Track AE: active content detection read-only report
+  wave_3:
+    add:
+      - Track AC: background workflow jobs with crash recovery
+      - Track AE: PDF revision/time-machine read-only report
+      - Track AG: policy gates for redaction, plugins, local API and automation surfaces
+  wave_4:
+    add:
+      - Track AF: reproducible source pipeline contracts for Markdown/Pandoc/Typst/Quarto/LaTeX
+      - Track AD: public benchmark and compatibility dashboard generation
+  wave_5:
+    add:
+      - Track AF: notebook/workspace mode prototype
+      - Track AE: active-content firewall UI and receipts
+      - Track AH: agent evaluation tasks for automation and plugin surfaces
+  wave_6:
+    add:
+      - Track AC: battery/thermal profiling experiments on real hardware where available
+      - Track AA: optional frontier transformation passes remain feature-gated
+  wave_7:
+    add:
+      - Track AD: public release quality dashboard published with release artifacts
+      - Track AH: spec-drift audit before release candidate
+
+v7_overlay:
+  principle: "Stop expanding the spec; make Wave 0 executable unless implementation reveals a concrete contract gap."
+  added_tracks:
+    - track-AF-implementation-readiness-pr-sequencing
+    - track-AG-errors-migrations-compatibility
+    - track-AH-ip-brand-originality-governance
+  wave_0_extra_gates:
+    - scripts/wave0_bootstrap_check.sh
+    - contracts/rust/operation_transaction.rs exists
+    - contracts/rust/error_taxonomy.rs exists
+    - schemas/operation-transaction.schema.json validates
+    - schemas/error-taxonomy.schema.json validates
+    - docs/wave0-first-30-prs.md reviewed
+
+
+# v8 overlay
+v8_implementation_first:
+  rule: "Compile and test Wave 0 contracts before expanding scope."
+  immediate_tracks:
+    - track-AI-executable-wave0-contracts
+    - track-AJ-cli-first-integration
+    - track-AK-contract-acceptance-tests
+  commands:
+    - cargo metadata --format-version=1
+    - cargo test --workspace --all-targets
+    - cargo run -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json
+    - python3 scripts/validate_schemas.py
+
+
+# v8 overlay
+v8_implementation_first:
+  rule: "Compile and test Wave 0 contracts before expanding scope."
+  immediate_tracks:
+    - track-AI-executable-wave0-contracts
+    - track-AJ-cli-first-integration
+    - track-AK-contract-acceptance-tests
+  commands:
+    - cargo metadata --format-version=1
+    - cargo test --workspace --all-targets
+    - cargo run -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json
+    - python3 scripts/validate_schemas.py

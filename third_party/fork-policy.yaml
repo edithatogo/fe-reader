@@ -1,0 +1,42 @@
+fork_policy:
+  default: contribute_upstream
+  fork_only_if:
+    - blocking_bug
+    - inactive_upstream
+    - security_patch_needed
+    - temporary_pr_branch
+  required_fields:
+    - upstream_url
+    - reason
+    - owner
+    - divergence_policy
+    - rebase_cadence
+    - exit_criteria
+libraries:
+  lopdf:
+    strategy: upstream_dependency
+    fork: false
+  pdf_writer:
+    strategy: upstream_dependency
+    fork: false
+  pdf_oxide:
+    strategy: evaluate_and_contribute
+    fork: false
+  pdfium_render:
+    strategy: adapter_dependency
+    fork: false
+  verapdf:
+    strategy: external_cli_adapter
+    fork: false
+  pandoc:
+    strategy: external_provider
+    fork: false
+  libreoffice:
+    strategy: external_provider
+    fork: false
+  typst:
+    strategy: external_provider_and_pdf_writer_dependency_ecosystem
+    fork: false
+  quarto:
+    strategy: external_provider
+    fork: false

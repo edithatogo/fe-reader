@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/accessibility-test-report.schema.json",
+  "title": "Fe Reader Accessibility Test Report",
+  "type": "object",
+  "required": [
+    "report_id",
+    "target",
+    "standard",
+    "findings",
+    "summary"
+  ],
+  "properties": {
+    "report_id": {
+      "type": "string"
+    },
+    "target": {
+      "enum": [
+        "AppUi",
+        "PdfDocument",
+        "WorkflowUi"
+      ]
+    },
+    "standard": {
+      "type": "string"
+    },
+    "findings": {
+      "type": "array"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "passed",
+        "error_count",
+        "warning_count"
+      ],
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "error_count": {
+          "type": "integer"
+        },
+        "warning_count": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

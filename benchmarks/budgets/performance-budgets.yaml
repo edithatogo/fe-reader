@@ -1,0 +1,48 @@
+version: 0.1
+budgets:
+  - scenario_id: cli.inspect.small_text_pdf
+    class: InteractiveP0
+    hard_gate_wave: wave_1_reader_native_shell
+    max_p95_ms: 200
+    max_peak_rss_mb: 128
+  - scenario_id: render.first_page.150dpi
+    class: InteractiveP0
+    hard_gate_wave: wave_1_reader_native_shell
+    max_p95_ms: 600
+    max_peak_rss_mb: 256
+  - scenario_id: render.tile.512_2x_warm
+    class: InteractiveP0
+    hard_gate_wave: wave_2_annotation_metadata_pageops
+    max_p95_ms: 40
+    max_peak_rss_mb: 512
+  - scenario_id: core.extract_text.single_page
+    class: InteractiveP0
+    hard_gate_wave: wave_2_annotation_metadata_pageops
+    max_p95_ms: 30
+  - scenario_id: workflow.affidavit.apply_100_pages
+    class: WorkflowP1
+    hard_gate_wave: wave_3_workflows_verified_ops
+    max_p95_ms: 1000
+    max_peak_rss_mb: 512
+  - scenario_id: metadata.snapshot_diff_100_pages
+    class: WorkflowP1
+    hard_gate_wave: wave_2_annotation_metadata_pageops
+    max_p95_ms: 150
+  - scenario_id: redaction.secure_rewrite_100_pages
+    class: WorkflowP1
+    hard_gate_wave: wave_3_workflows_verified_ops
+    max_p95_ms: 5000
+    max_peak_rss_mb: 768
+  - scenario_id: ui.annotation_stroke_latency
+    class: InteractiveP0
+    hard_gate_wave: wave_2_annotation_metadata_pageops
+    max_p95_ms: 16
+    max_p99_ms: 33
+  - scenario_id: app.cold_start.desktop
+    class: InteractiveP0
+    hard_gate_wave: wave_4_conversion_distribution
+    max_p95_ms: 1500
+  - scenario_id: conversion.markdown.research_paper
+    class: BatchP2
+    hard_gate_wave: wave_5_integrations_automation_web
+    max_p95_ms: 3000

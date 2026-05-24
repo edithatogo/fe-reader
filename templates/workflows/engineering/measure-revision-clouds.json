@@ -1,0 +1,22 @@
+{
+  "workflow_id": "engineering.measure.revision_clouds",
+  "version": "0.1.0",
+  "display_name": "Engineering markup and revision clouds",
+  "workflow_family": "engineering",
+  "risk_level": "low",
+  "requires_human_review": true,
+  "steps": [
+    {
+      "type": "inspect_layers"
+    },
+    {
+      "type": "add_measurement_annotations"
+    },
+    {
+      "type": "add_revision_clouds"
+    },
+    {
+      "type": "emit_receipt"
+    }
+  ]
+}

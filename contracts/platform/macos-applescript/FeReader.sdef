@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="Fe Reader Suite">
+  <suite name="Fe Reader" code="FeRd" description="Fe Reader automation suite">
+    <command name="open document" code="FeRdOpen" description="Open a PDF document">
+      <direct-parameter type="text" description="Path or URL"/>
+      <result type="text" description="Document ID"/>
+    </command>
+    <command name="read page text" code="FeRdText" description="Read page text as JSON spans">
+      <parameter name="document id" code="docu" type="text"/>
+      <parameter name="page index" code="page" type="integer"/>
+      <result type="text" description="JSON text spans"/>
+    </command>
+    <command name="plan workflow" code="FeRdPlan" description="Create a reviewable workflow patch plan">
+      <parameter name="document id" code="docu" type="text"/>
+      <parameter name="workflow id" code="wfid" type="text"/>
+      <parameter name="parameters" code="json" type="text"/>
+      <result type="text" description="JSON patch plan"/>
+    </command>
+    <command name="apply approved patch" code="FeRdAppl" description="Apply an approved patch plan">
+      <parameter name="patch plan id" code="ppid" type="text"/>
+      <parameter name="approval token" code="tokn" type="text"/>
+      <result type="text" description="JSON audit receipt"/>
+    </command>
+  </suite>
+</dictionary>

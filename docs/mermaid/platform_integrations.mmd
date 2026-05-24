@@ -1,0 +1,32 @@
+flowchart TB
+  Contract[PlatformIntegration Trait]
+  Contract --> Win[Windows Adapter]
+  Contract --> Mac[macOS Adapter]
+  Contract --> Lin[Linux Adapter]
+  Contract --> And[Android Adapter]
+  Contract --> IOS[iOS/iPadOS Adapter]
+
+  Win --> W1[Recent docs / Jump Lists]
+  Win --> W2[Notifications]
+  Win --> W3[COM Automation]
+  Win --> W4[Search IFilter later]
+
+  Mac --> M1[Open Recent]
+  Mac --> M2[Security-scoped bookmarks]
+  Mac --> M3[AppleScript / App Intents]
+  Mac --> M4[Spotlight / Quick Look]
+
+  Lin --> L1[XDG portals]
+  Lin --> L2[recently-used.xbel]
+  Lin --> L3[D-Bus]
+  Lin --> L4[Flatpak/Snap/AppImage]
+
+  And --> A1[Storage Access Framework]
+  And --> A2[Persistable URI grants]
+  And --> A3[DocumentsProvider]
+  And --> A4[AppSearch]
+
+  IOS --> I1[Document Browser]
+  IOS --> I2[PencilKit]
+  IOS --> I3[App Intents]
+  IOS --> I4[Spotlight]

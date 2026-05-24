@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WorkflowPack",
+  "type": "object",
+  "required": [
+    "workflow_id",
+    "version",
+    "display_name",
+    "workflow_family",
+    "risk_level",
+    "requires_human_review",
+    "steps"
+  ],
+  "properties": {
+    "workflow_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "workflow_family": {
+      "type": "string"
+    },
+    "risk_level": {
+      "enum": [
+        "read_only",
+        "low",
+        "high",
+        "destructive"
+      ]
+    },
+    "requires_human_review": {
+      "type": "boolean"
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

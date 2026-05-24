@@ -1,0 +1,8 @@
+flowchart LR
+  Build[CI Build] --> Test[Test / Corpus / Perf]
+  Test --> Package[Package Artifacts]
+  Package --> Sign[Code Sign / Notarize]
+  Sign --> SBOM[SBOM]
+  Sign --> Prov[Provenance]
+  Sign --> Manifest[Signed Update Manifest]
+  Manifest --> Publish[Registry / Store / Release Channel]

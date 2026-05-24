@@ -1,0 +1,13 @@
+flowchart LR
+  UI[Viewport] --> Scheduler[Tile Scheduler]
+  Scheduler --> Cache{Tile Cache}
+  Cache -- hit --> Compose[Compositor]
+  Cache -- miss --> Backend[RenderBackend]
+  Backend --> Pdfium[PDFium Adapter]
+  Backend --> GPU[GPU Compositor Optional]
+  Pdfium --> Bitmap[Rendered Tile]
+  Bitmap --> Cache
+  Compose --> TextLayer[Text Layer]
+  Compose --> AnnotationLayer[Annotation Overlay]
+  Compose --> RedactionLayer[Redaction Preview]
+  Compose --> Screen[Display]

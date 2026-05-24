@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "title": "RecoveryReport",
+  "required": [
+    "plan_id",
+    "original_sha256",
+    "mode",
+    "actions",
+    "write_policy"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string"
+    },
+    "original_sha256": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "NormalOpen",
+        "SafeOpen",
+        "DiagnosticOpen",
+        "RepairPlanOnly",
+        "RepairAndSaveCopy"
+      ]
+    },
+    "actions": {
+      "type": "array"
+    },
+    "write_policy": {
+      "type": "string"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

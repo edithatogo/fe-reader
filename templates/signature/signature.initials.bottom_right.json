@@ -1,0 +1,34 @@
+{
+  "template_id": "signature.initials.bottom_right",
+  "version": "0.1.0",
+  "display_name": "Initials at bottom-right margin",
+  "jurisdiction": {
+    "country": "generic"
+  },
+  "page_selector": {
+    "mode": "all_except",
+    "exclude_first": false,
+    "exclude_last": false
+  },
+  "placements": [
+    {
+      "field_id": "initials_1",
+      "role": "initials",
+      "placement": {
+        "coordinate_space": "normalized_page",
+        "anchor": "bottom_right_margin",
+        "x_offset": -0.08,
+        "y_offset": 0.05,
+        "width": 0.08,
+        "height": 0.04,
+        "avoid_existing_text": true,
+        "collision_strategy": "search_nearest_clear_region"
+      }
+    }
+  ],
+  "evidence": {
+    "capture_user_confirmation": true,
+    "receipt_required": true,
+    "include_template_version": true
+  }
+}

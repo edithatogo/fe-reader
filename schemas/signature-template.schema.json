@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignatureTemplate",
+  "type": "object",
+  "required": [
+    "template_id",
+    "version",
+    "display_name",
+    "placements"
+  ],
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "jurisdiction": {
+      "type": "object"
+    },
+    "page_selector": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "enum": [
+            "all",
+            "all_except",
+            "range",
+            "matching_text",
+            "explicit"
+          ]
+        },
+        "exclude_first": {
+          "type": "boolean"
+        },
+        "exclude_last": {
+          "type": "boolean"
+        },
+        "only_pages_matching_text": {
+          "type": "string"
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "placements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field_id",
+          "role",
+          "placement"
+        ],
+        "properties": {
+          "field_id": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "initials",
+              "signature",
+              "date",
+              "name",
+              "witness",
+              "stamp"
+            ]
+          },
+          "placement": {
+            "type": "object",
+            "required": [
+              "coordinate_space",
+              "anchor"
+            ],
+            "properties": {
+              "coordinate_space": {
+                "enum": [
+                  "pdf_user_space",
+                  "normalized_page",
+                  "margin_box"
+                ]
+              },
+              "anchor": {
+                "type": "string"
+              },
+              "x_offset": {
+                "type": "number"
+              },
+              "y_offset": {
+                "type": "number"
+              },
+              "width": {
+                "type": "number"
+              },
+              "height": {
+                "type": "number"
+              },
+              "avoid_existing_text": {
+                "type": "boolean"
+              },
+              "collision_strategy": {
+                "enum": [
+                  "none",
+                  "search_nearest_clear_region",
+                  "fail"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object"
+    }
+  }
+}

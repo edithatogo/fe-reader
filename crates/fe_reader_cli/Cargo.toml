@@ -1,0 +1,18 @@
+[package]
+name = "fe_reader_cli"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "fe-reader"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+serde_json.workspace = true
+clap = { version = "4", features = ["derive"] }
+fe_reader_core = { path = "../fe_reader_core" }
+fe_reader_pdf_model = { path = "../fe_reader_pdf_model" }
+fe_reader_security = { path = "../fe_reader_security" }

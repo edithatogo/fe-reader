@@ -1,0 +1,13 @@
+{
+  "profile_id": "prepress.pdfx.initial",
+  "version": "0.1.0",
+  "checks": [
+    "output_intents",
+    "page_boxes",
+    "embedded_fonts",
+    "spot_colour_detection",
+    "transparency_detection",
+    "overprint_detection"
+  ],
+  "mode": "inspect_only"
+}

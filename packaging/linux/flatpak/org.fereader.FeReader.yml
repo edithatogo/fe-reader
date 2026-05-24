@@ -1,0 +1,19 @@
+app-id: org.fereader.FeReader
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: fe-reader
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=cups
+  - --talk-name=org.freedesktop.portal.Desktop
+modules:
+  - name: fe-reader
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 fe-reader /app/bin/fe-reader
+    sources:
+      - type: file
+        path: fe-reader

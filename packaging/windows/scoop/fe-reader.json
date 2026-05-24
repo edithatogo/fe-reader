@@ -1,0 +1,19 @@
+{
+  "version": "0.1.0",
+  "description": "Local-first cross-platform PDF workflow platform.",
+  "homepage": "https://example.invalid/fe-reader",
+  "license": "Apache-2.0 OR MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://example.invalid/fe-reader-0.1.0-windows-x64.zip",
+      "hash": "PLACEHOLDER"
+    }
+  },
+  "bin": "fe-reader.exe",
+  "shortcuts": [
+    [
+      "FeReader.exe",
+      "Fe Reader"
+    ]
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "workflow_id": "government.foi.redaction.exemption_tags",
+  "version": "0.1.0",
+  "display_name": "FOI/RTI redaction with exemption tags",
+  "workflow_family": "government",
+  "risk_level": "destructive",
+  "requires_human_review": true,
+  "steps": [
+    {
+      "type": "mark_redactions_with_exemption_codes"
+    },
+    {
+      "type": "review_candidates"
+    },
+    {
+      "type": "apply_redactions",
+      "write_mode": "FullSanitizingRewrite"
+    },
+    {
+      "type": "generate_disclosure_index"
+    },
+    {
+      "type": "emit_receipt"
+    }
+  ]
+}

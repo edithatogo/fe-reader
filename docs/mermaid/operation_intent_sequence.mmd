@@ -1,0 +1,22 @@
+sequenceDiagram
+  participant Surface as UI/CLI/MCP/COM/AppIntent
+  participant Policy as Policy Engine
+  participant Core as fe_reader_core
+  participant Workflow as Workflow/Redaction/Metadata
+  participant Writer as PDF Writer
+  participant Verify as Verification
+  participant Receipt as Audit Receipt
+
+  Surface->>Core: FeOperationIntent
+  Core->>Policy: evaluate(intent)
+  Policy-->>Core: allow/read_only/requires_approval/deny
+  Core->>Workflow: plan(intent)
+  Workflow-->>Core: FePatchPlan
+  Core-->>Surface: plan for review
+  Surface->>Core: ApprovalToken + PatchPlanId
+  Core->>Writer: apply(plan, write_mode)
+  Writer-->>Core: FeApplyResult
+  Core->>Verify: verify(result, plan)
+  Verify-->>Core: FeVerificationReport
+  Core->>Receipt: emit(intent, plan, result, verification)
+  Receipt-->>Surface: FeAuditReceipt

@@ -1,0 +1,35 @@
+{
+  "features": [
+    {
+      "feature_id": "render.gpu_compositor",
+      "owner": "track-B",
+      "maturity": "frontier_experimental",
+      "compile_time_flag": "gpu",
+      "runtime_available": false,
+      "policy_rule": "allow_frontier_render"
+    },
+    {
+      "feature_id": "plugin.extism_host",
+      "owner": "track-M",
+      "maturity": "frontier_experimental",
+      "compile_time_flag": "plugins-extism",
+      "runtime_available": false,
+      "policy_rule": "allow_plugins"
+    },
+    {
+      "feature_id": "redaction.secure_rewrite",
+      "owner": "track-K",
+      "maturity": "security_sensitive",
+      "compile_time_flag": "redaction",
+      "runtime_available": true,
+      "policy_rule": "require_human_review"
+    },
+    {
+      "feature_id": "automation.com_write_tools",
+      "owner": "track-E",
+      "maturity": "security_sensitive",
+      "runtime_available": false,
+      "policy_rule": "allow_destructive_automation"
+    }
+  ]
+}

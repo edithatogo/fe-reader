@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Toolchain Experiment",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "experiment_id": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "feature_flag": {
+      "type": "string"
+    },
+    "risk": {
+      "type": "string"
+    },
+    "fallback": {
+      "type": "string"
+    },
+    "benchmark_target": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "review_date": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "experiment_id",
+    "owner",
+    "feature_flag",
+    "fallback"
+  ]
+}

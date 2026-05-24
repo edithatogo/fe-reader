@@ -1,0 +1,12 @@
+# Contract placeholder for winget manifest. Generate final manifests with winget-create.
+PackageIdentifier: FeReader.FeReader
+PackageVersion: 0.1.0
+PackageName: Fe Reader
+Publisher: Fe Reader Project
+License: Apache-2.0 OR MIT
+ShortDescription: Local-first cross-platform PDF workflow platform.
+Installers:
+  - Architecture: x64
+    InstallerType: wix
+    InstallerUrl: https://example.invalid/fe-reader-0.1.0-x64.msi
+    InstallerSha256: PLACEHOLDER

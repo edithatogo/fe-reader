@@ -1,0 +1,33 @@
+// Fe Reader Windows COM automation contract.
+// Prefer out-of-process COM server. Destructive operations return patch plans.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+  object,
+  uuid(1C7E9A11-0C1E-4E22-A7DD-FE0000000001),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+interface IFeReaderApplication : IDispatch {
+  [id(1)] HRESULT OpenDocument([in] BSTR pathOrUri, [out, retval] BSTR documentId);
+  [id(2)] HRESULT ReadPageText([in] BSTR documentId, [in] LONG pageIndex, [out, retval] BSTR jsonTextSpans);
+  [id(3)] HRESULT GetMetadata([in] BSTR documentId, [out, retval] BSTR jsonMetadata);
+  [id(4)] HRESULT PlanWorkflow([in] BSTR documentId, [in] BSTR workflowId, [in] BSTR jsonParameters, [out, retval] BSTR jsonPatchPlan);
+  [id(5)] HRESULT PlanRedaction([in] BSTR documentId, [in] BSTR jsonRecipe, [out, retval] BSTR jsonPatchPlan);
+  [id(6)] HRESULT ApplyApprovedPatch([in] BSTR patchPlanId, [in] BSTR approvalToken, [out, retval] BSTR jsonAuditReceipt);
+  [id(7)] HRESULT ConvertDocument([in] BSTR documentId, [in] BSTR jsonConversionJob, [out, retval] BSTR jsonConversionResult);
+};
+
+[
+  uuid(1C7E9A11-0C1E-4E22-A7DD-FE0000000002),
+  version(0.1),
+]
+library FeReaderAutomation {
+  importlib("stdole2.tlb");
+  [uuid(1C7E9A11-0C1E-4E22-A7DD-FE0000000003)] coclass FeReaderApplication {
+    [default] interface IFeReaderApplication;
+  };
+};

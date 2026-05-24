@@ -1,0 +1,11 @@
+{
+  "project_id": "example.typst.paper",
+  "provider": "typst",
+  "entrypoint": "main.typ",
+  "output_pdf": "main.pdf",
+  "source_map": null,
+  "permissions": {
+    "allow_external_build": false,
+    "allow_network": false
+  }
+}

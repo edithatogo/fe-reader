@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PlatformEvent",
+  "type": "object",
+  "required": [
+    "event_id",
+    "platform",
+    "kind"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "platform": {
+      "enum": [
+        "windows",
+        "macos",
+        "linux",
+        "android",
+        "ios",
+        "web"
+      ]
+    },
+    "kind": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    }
+  }
+}

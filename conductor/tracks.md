@@ -1,0 +1,126 @@
+# Tracks
+
+| Track | Theme | Main wave(s) | Summary |
+|---|---|---:|---|
+| A Core Engine | Foundation | 0-3 | Core contracts, patch planning, PDF operations |
+| B Rendering & Hardware | Reader | 1-6 | PDFium rendering, tiles, GPU compositor option |
+| C Bindings & ABI | Native | 1-5 | UniFFI, C# wrapper, stable ABI |
+| D UI & Native Shell | Reader | 1-4 | Tauri/Svelte shell, mobile wrappers, document UX |
+| E Platform Integration | Native | 1-5 | Windows/macOS/Linux/Android/iOS OS integration |
+| F Workflow Packs | Workflows | 2-4 | Domain workflow packs and template engine |
+| G Metadata, Standards & Preflight | Pro docs | 2-5 | XMP, scrub, PDF 2.0, PDF/A/UA/X adapters |
+| H Conversion & Source Pipelines | Publishing | 4-5 | Markdown/DOCX/HTML/Typst/Quarto/LaTeX/Pandoc |
+| I External Integrations | Integrations | 5 | Zotero, Obsidian, browser extension, storage providers |
+| J Distribution & Publishing | Release | 4-7 | installers, registries, stores, local/global install, signed updates |
+| K Security & Quality | Foundation | 0-7 | fuzzing, supply chain, redaction verification, review skill |
+| L Web & Browser | Integrations | 5 | Web local/PWA and browser extension |
+| M Frontier Intelligence | Frontier | 6 | optional local NLP, embeddings, grounded Q&A |
+| N Performance Engineering | Performance | 0-7 | budgets, benchmarks, profiling, PGO/LTO, perf gates |
+| O Security Isolation & Policy | Safety | 0-7 | threat model, sandboxing, permissions, automation policy |
+| P Compatibility Corpus & Visual QA | Quality | 0-7 | fixtures, visual regression, differential tests, corpus governance |
+| Q Search, Text, Fonts & I18N | Reader | 1-7 | deterministic index, Unicode, CJK/RTL, font fallback, accessibility text |
+| R Release Ops & Enterprise | Operations | 4-7 | signed updates, SBOM/provenance, policy templates, supportability |
+| S Developer Ecosystem & SDK | Ecosystem | 5-7 | public SDK contracts, API versioning, plugin devkit, docs |
+
+## Parallelisation rules
+
+- A0, K0, O0 and P0 run first.
+- B, C, D, E, N and Q may proceed in parallel after A0 core types compile.
+- P visual-regression harness may begin as soon as B can render a fixture.
+- R begins in Wave 4, but release-policy documents may be drafted earlier.
+- S begins in Wave 5 after the CLI, MCP and plugin surfaces have stable contracts.
+- M is optional and cannot block release hardening.
+
+| T PDF Engineering Lab & Repair | Diagnostics | 1-7 | Object tree, content streams, safe-open, repair planning, incremental timeline |
+| U Differential Oracles | Quality | 0-7 | qpdf/veraPDF/PDFium/Poppler/MuPDF/Ghostscript/Pandoc/LibreOffice comparison harness |
+| V API Stability Governance | Ecosystem | 0-7 | SemVer, ABI, CLI/MCP/plugin/automation contract snapshots and diffs |
+| W Reproducible Builds & Provenance | Release | 4-7 | SBOM, attestations, release evidence, reproducible build policy |
+| X Advanced Prepress, Colour & Fonts | Standards | 2-7 | ICC, OutputIntents, spot colours, overprint, font diagnostics, PDF/X bridge |
+| Y Maintainer RFCs & ADRs | Governance | 0-7 | ADRs, RFCs, maintainer domains, contribution gates |
+
+Additional v5 parallelisation rules:
+
+- Y0 and V0 can run during Wave 0 without waiting on code.
+- T0 and U0 can run once A0/P0/O0 contracts exist.
+- X0 can run during Wave 2 after metadata/page contracts exist.
+- W starts in Wave 4, but W0 schema work can be drafted earlier.
+- No public API surface can move from preview to stable without Track V review.
+
+
+## v6 additional tracks
+
+| Track | Theme | Purpose |
+|---|---|---|
+| AA | Document IR | Typed intermediate representation and transformation-pass compiler |
+| AB | UX QA | UI design system, E2E shell tests and accessibility audit strategy |
+| AC | Jobs & Power | Job scheduler, progress/cancellation, resource limits and power/thermal budgets |
+| AD | Governance/Public Signals | Community governance, open quality dashboards and public benchmark reports |
+| AE | PDF Safety Frontier | PDF Time Machine, revision diffing and Active Content Firewall |
+| AF | Source Pipelines | Quarto, Typst, LaTeX, Markdown, Pandoc and reproducible document workspace mode |
+| AG | Config & Policy | Unified settings, feature flags, enterprise policy and automation policy engine |
+| AH | Agent Evaluation | Coding-agent evaluation tasks and spec-drift detection harness |
+
+## v6 parallelisation rules
+
+- AA0 starts in Wave 0 after A0 because IR contracts must shape patch planning.
+- AC0 starts in Wave 0 because long-running work and cancellation must not be retrofitted.
+- AB0 starts in Wave 1 with the first UI shell and becomes mandatory by Wave 2.
+- AE0 starts in Wave 2 for detection-only work; mutating restore/export waits until Wave 5+.
+- AF starts in Wave 4 with conversion providers and becomes workflow-focused in Wave 5.
+- AG starts in Wave 0 and must gate automation, plugins and enterprise policy before Wave 5.
+- AD/AH run continuously as project-operating-system tracks.
+
+
+## v6 additional tracks
+
+| Track | Theme | Main wave(s) | Summary |
+|---|---|---:|---|
+| Z UX, Accessibility & Human Factors | UX | 0-8 | Command palette, keyboard parity, WCAG-targeted web/PWA, screen-reader support and accessibility reports. |
+| AA Source-Linked Authoring | Publishing | 2-6 | Typst, Quarto, LaTeX/Tectonic and Pandoc source-linked project workflows. |
+| AB Cache, Workspace & Offline Collaboration | Workspace | 0-8 | Content-addressed cache, workspace catalogue, review packets and mergeable sidecars. |
+| AC PDF Optimisation & Linearisation | Performance | 2-7 | Safe rewrites, compression, dedupe, linearisation and optimisation receipts. |
+| AD Toolchain Optimisation & Experimental Lanes | Performance | 0-7 | Build-speed, PGO/BOLT/linker/allocator/SIMD experiments with evidence gates. |
+| AE Documentation, Training & Community | Adoption | 0-8 | User/admin/developer docs, tutorials, examples, contribution and support playbooks. |
+
+Additional v6 parallelisation rules:
+
+- Z0, AB0, AD0 and AE0 can start in Wave 0 after core policy contracts are present.
+- AA0 starts once conversion provider contracts exist; AA implementation must not execute arbitrary shell commands without explicit policy.
+- AC0 starts after metadata/page-operation contracts exist and before optimisation claims are made.
+- AB collaboration work can proceed without cloud sync; cloud/network collaboration remains explicitly out of scope unless separately approved.
+- AE documentation work can run continuously and should update examples after each accepted contract change.
+
+## v7 implementation-readiness tracks
+
+- Track AF: Implementation Readiness & PR Sequencing — Wave 0 executable scaffold, first-30-PR plan, bootstrap checks and stop-expanding rules.
+- Track AG: Errors, Migrations & Compatibility — stable error taxonomy, sidecar versioning and migration contracts.
+- Track AH: IP, Brand & Originality Governance — neutral product positioning, dependency license hygiene and originality gates.
+
+
+## v8 implementation-first tracks
+
+- Track AI: Executable Wave 0 Contracts
+- Track AJ: CLI First Integration
+- Track AK: Contract Acceptance Tests
+
+
+## v8 implementation-first tracks
+
+- Track AI: Executable Wave 0 Contracts
+- Track AJ: CLI First Integration
+- Track AK: Contract Acceptance Tests
+
+## v9 repository and CI/CD hardening tracks
+
+| Track | Theme | Main wave(s) | Summary |
+|---|---|---:|---|
+| AL | Strict Contracts | 0-7 | Contract manifest, public API gates, CLI/MCP/plugin/platform contract enforcement. |
+| AM | Repo CI/CD | 0-7 | GitHub workflows, branch ruleset, CODEOWNERS, dependency automation, release evidence. |
+| AN | Frontier CI | 0-7 | Beta/nightly, Miri, sanitizers, fuzz campaigns, GPU/PGO/BOLT experiment gates. |
+| AO | Release Provenance | 4-7 | SBOM, artifact attestations, auditable binaries, package-manager release evidence. |
+
+v9 parallelisation rules:
+
+- AL0 and AM0 are Wave 0 hardening tasks and should run before expanding product features.
+- AN can run immediately as a non-blocking scheduled/manual lane.
+- AO starts during Wave 4, but provenance and SBOM scripts can be scaffolded in Wave 0.

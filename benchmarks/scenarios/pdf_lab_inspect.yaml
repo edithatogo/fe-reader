@@ -1,0 +1,5 @@
+scenario_id: lab.inspect_object_tree
+class: DiagnosticP2
+command: fe-reader lab inspect fixtures/corpus/simple.pdf --json
+max_p95_ms: 250
+max_peak_rss_mb: 256

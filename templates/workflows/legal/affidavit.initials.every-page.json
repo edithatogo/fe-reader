@@ -1,0 +1,33 @@
+{
+  "workflow_id": "legal.affidavit.initials.every_page",
+  "version": "0.1.0",
+  "display_name": "Initial every selected page",
+  "workflow_family": "legal",
+  "risk_level": "high",
+  "requires_human_review": true,
+  "inputs": {
+    "document_types": [
+      "affidavit",
+      "generic_pdf"
+    ]
+  },
+  "steps": [
+    {
+      "type": "load_signature_template",
+      "template_id": "signature.initials.bottom_right"
+    },
+    {
+      "type": "preview_placements"
+    },
+    {
+      "type": "review_patch_plan"
+    },
+    {
+      "type": "apply_stamps",
+      "write_mode": "IncrementalAppend"
+    },
+    {
+      "type": "emit_receipt"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fereader.org/schemas/operation-transaction.schema.json",
+  "title": "Fe Reader Operation Transaction Journal Entry",
+  "type": "object",
+  "required": [
+    "transaction_id",
+    "intent_id",
+    "phase",
+    "sequence",
+    "note"
+  ],
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "intent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plan_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "phase": {
+      "enum": [
+        "intent_received",
+        "plan_generated",
+        "approved",
+        "applying",
+        "verifying",
+        "committed",
+        "aborted",
+        "recovery_required"
+      ]
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Accessibility Audit",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "surface_id": {
+      "type": "string"
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "wcag_target": {
+      "type": "string",
+      "enum": [
+        "none",
+        "wcag22-a",
+        "wcag22-aa",
+        "wcag22-aaa"
+      ]
+    }
+  },
+  "required": [
+    "surface_id",
+    "findings"
+  ]
+}

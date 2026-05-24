@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ConversionJob",
+  "type": "object",
+  "required": [
+    "job_id",
+    "input_kind",
+    "output_kind",
+    "input_uri"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string"
+    },
+    "input_kind": {
+      "enum": [
+        "pdf",
+        "markdown",
+        "quarto",
+        "typst",
+        "latex",
+        "docx",
+        "odt",
+        "image_set"
+      ]
+    },
+    "output_kind": {
+      "enum": [
+        "pdf",
+        "text",
+        "markdown",
+        "html",
+        "docx",
+        "odt",
+        "json",
+        "png",
+        "svg",
+        "typst",
+        "latex",
+        "quarto"
+      ]
+    },
+    "input_uri": {
+      "type": "string"
+    },
+    "output_uri": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "preserve_metadata": {
+      "type": "boolean"
+    },
+    "create_source_map": {
+      "type": "boolean"
+    },
+    "provider_hint": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "options": {
+      "type": "object"
+    }
+  }
+}

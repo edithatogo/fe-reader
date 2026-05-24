@@ -1,0 +1,20 @@
+{
+  "policy_version": "0.1.0",
+  "managed": false,
+  "allowed_update_channels": [
+    "stable",
+    "beta"
+  ],
+  "disabled_surfaces": [],
+  "disabled_features": [
+    "pdf_javascript_execution",
+    "richmedia_execution",
+    "external_launch_actions"
+  ],
+  "require_redaction_verification": true,
+  "require_metadata_clean_share_prompt": true,
+  "allow_plugins": false,
+  "allow_mcp": false,
+  "allow_external_converters": true,
+  "telemetry_mode": "local_only"
+}

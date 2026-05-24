@@ -1,0 +1,9 @@
+{
+  "adr_id": "0004-secure-redaction-full-rewrite",
+  "title": "Secure redaction write mode",
+  "status": "accepted",
+  "decision": "Secure redaction requires sanitising full rewrite rather than incremental append.",
+  "consequences": [
+    "Implementation agents must respect this decision unless an RFC supersedes it."
+  ]
+}

@@ -1,0 +1,43 @@
+# Track G: Metadata, Standards & Preflight Plan
+
+## Parallelisation
+
+This track may proceed when its wave dependencies in `conductor/waves.yaml` are satisfied. Coordinate with dependent tracks through contracts rather than ad-hoc shared code.
+
+### Phase G1 — XMP
+
+- Implement contract skeleton.
+- Add unit/smoke test.
+- Add CLI or adapter path where applicable.
+- Run `scripts/conductor_phase_gate.sh --phase G1 --auto-fix`.
+### Phase G2 — scrub/preserve
+
+- Implement contract skeleton.
+- Add unit/smoke test.
+- Add CLI or adapter path where applicable.
+- Run `scripts/conductor_phase_gate.sh --phase G2 --auto-fix`.
+### Phase G3 — PDF 2.0 features
+
+- Implement contract skeleton.
+- Add unit/smoke test.
+- Add CLI or adapter path where applicable.
+- Run `scripts/conductor_phase_gate.sh --phase G3 --auto-fix`.
+### Phase G4 — PDF/A/UA/X adapters
+
+- Implement contract skeleton.
+- Add unit/smoke test.
+- Add CLI or adapter path where applicable.
+- Run `scripts/conductor_phase_gate.sh --phase G4 --auto-fix`.
+### Phase G5 — accessibility inspection
+
+- Implement contract skeleton.
+- Add unit/smoke test.
+- Add CLI or adapter path where applicable.
+- Run `scripts/conductor_phase_gate.sh --phase G5 --auto-fix`.
+
+## Exit criteria
+
+- Track-specific contracts implemented or stubbed.
+- Tests pass.
+- Review skill passes.
+- Any blocked/forked dependency is recorded in `third_party/fork-policy.yaml`.

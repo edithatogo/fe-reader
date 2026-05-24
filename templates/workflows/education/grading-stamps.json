@@ -1,0 +1,19 @@
+{
+  "workflow_id": "education.grading.stamps",
+  "version": "0.1.0",
+  "display_name": "Grading stamps and feedback pack",
+  "workflow_family": "education",
+  "risk_level": "low",
+  "requires_human_review": false,
+  "steps": [
+    {
+      "type": "load_stamp_palette"
+    },
+    {
+      "type": "apply_feedback_annotations"
+    },
+    {
+      "type": "export_summary"
+    }
+  ]
+}

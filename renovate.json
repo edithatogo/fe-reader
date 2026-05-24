@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "dependencyDashboard": true,
+  "labels": ["dependencies"],
+  "separateMajorMinor": true,
+  "packageRules": [
+    {
+      "matchManagers": ["cargo"],
+      "groupName": "Rust patch/minor dependencies",
+      "matchUpdateTypes": ["patch", "minor"]
+    },
+    {
+      "matchPackageNames": ["pdfium-render", "lopdf", "pdf-writer", "rmcp", "uniffi"],
+      "labels": ["dependencies", "high-risk-pdf-contract"]
+    },
+    {
+      "matchPackageNames": ["extism", "wasmtime", "wgpu", "vello", "skia-safe"],
+      "labels": ["dependencies", "frontier-lane"]
+    }
+  ]
+}

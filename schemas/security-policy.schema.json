@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Security Policy",
+  "type": "object",
+  "required": [
+    "policy_version",
+    "rules"
+  ],
+  "properties": {
+    "policy_version": {
+      "type": "string"
+    },
+    "default_decision": {
+      "enum": [
+        "allow",
+        "require_interactive_approval",
+        "deny"
+      ]
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "match",
+          "decision"
+        ],
+        "properties": {
+          "match": {
+            "type": "object"
+          },
+          "decision": {
+            "enum": [
+              "allow",
+              "require_interactive_approval",
+              "require_managed_approval",
+              "deny"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

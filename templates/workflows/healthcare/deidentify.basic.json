@@ -1,0 +1,38 @@
+{
+  "workflow_id": "healthcare.deidentify.basic",
+  "version": "0.1.0",
+  "display_name": "Basic healthcare de-identification",
+  "workflow_family": "healthcare",
+  "risk_level": "destructive",
+  "requires_human_review": true,
+  "steps": [
+    {
+      "type": "detect_entities",
+      "detectors": [
+        "regex.date_of_birth",
+        "regex.medicare_like",
+        "regex.phone",
+        "regex.email",
+        "dictionary.local_names"
+      ]
+    },
+    {
+      "type": "review_candidates"
+    },
+    {
+      "type": "apply_redactions",
+      "write_mode": "FullSanitizingRewrite"
+    },
+    {
+      "type": "verify_redaction",
+      "checks": [
+        "extract_text_absence",
+        "object_stream_scan",
+        "metadata_scan"
+      ]
+    },
+    {
+      "type": "emit_receipt"
+    }
+  ]
+}

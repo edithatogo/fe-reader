@@ -1,0 +1,40 @@
+version: 0.9
+product: fe-reader
+strict_contracts:
+  invariant: OperationIntent -> PatchPlan -> TransactionJournal -> Apply -> Verify -> Receipt
+  hard_gates:
+    - architecture_boundary
+    - schema_validation
+    - operation_transaction
+    - cli_json_contract
+    - security_policy_default_deny
+    - sidecar_migration_no_data_loss
+    - public_api_no_break_without_version
+    - automation_mutation_requires_approval
+  advisory_until_baseline:
+    - performance_budget
+    - visual_regression
+    - differential_oracles
+    - fuzz_smoke
+    - packaging_registry_manifests
+surfaces:
+  rust_core:
+    stability: preview
+    test: cargo nextest run -p fe_reader_core
+  cli:
+    stability: preview
+    schema: schemas/pdf-document-summary.schema.json
+  mcp:
+    stability: planned
+    schema_dir: contracts/mcp
+  plugin_abi:
+    stability: planned
+    schema: schemas/plugin-manifest.schema.json
+  platform_automation:
+    stability: planned
+    paths:
+      - contracts/platform/windows-com/FeReaderAutomation.idl
+      - contracts/platform/macos-applescript/FeReader.sdef
+      - contracts/platform/linux-dbus/org.fereader.FeReader1.xml
+      - contracts/platform/android-intents/AndroidManifest.contract.xml
+      - contracts/platform/ios-appintents/FeReaderAppIntents.swift

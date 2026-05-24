@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>FeReader.Native</id>
+    <version>0.1.0</version>
+    <authors>Fe Reader Project</authors>
+    <license type="expression">Apache-2.0 OR MIT</license>
+    <description>.NET wrapper for Fe Reader native Rust core.</description>
+    <dependencies>
+      <group targetFramework="net8.0" />
+    </dependencies>
+  </metadata>
+</package>

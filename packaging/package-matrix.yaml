@@ -1,0 +1,19 @@
+targets:
+  windows:
+    local_user: [nsis_per_user, scoop, portable_zip]
+    global_admin: [msi, msix, winget, chocolatey]
+    stores: [microsoft_store]
+    bindings: [nuget]
+  macos:
+    local_user: [homebrew_cask, user_applications_dmg]
+    global_admin: [applications_dmg]
+    stores: [mac_app_store]
+  linux:
+    local_user: [appimage, flatpak_user, tarball]
+    global_admin: [deb, rpm, snap, flatpak_system]
+    registries: [flathub, snap_store, aur, distro_repos]
+  android:
+    stores: [google_play]
+    evaluate: [fdroid]
+  ios:
+    stores: [app_store, testflight]

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fe Reader Workspace Record",
+  "type": "object",
+  "required": [
+    "workspace_id",
+    "display_name",
+    "indexing_enabled"
+  ],
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "local_path_hint": {
+      "type": "string"
+    },
+    "indexing_enabled": {
+      "type": "boolean"
+    },
+    "policy_id": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

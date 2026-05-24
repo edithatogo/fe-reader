@@ -1,0 +1,9 @@
+{
+  "adr_id": "0009-automation-read-only-default",
+  "title": "Automation read-only by default",
+  "status": "accepted",
+  "decision": "MCP, COM, AppleScript, D-Bus, plugins, intents and browser bridges are read-only unless policy grants write authority.",
+  "consequences": [
+    "Implementation agents must respect this decision unless an RFC supersedes it."
+  ]
+}

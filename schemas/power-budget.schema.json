@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/power-budget.schema.json",
+  "title": "Fe Reader Power Budget",
+  "type": "object",
+  "required": [
+    "scenario_id",
+    "platform",
+    "mode"
+  ],
+  "properties": {
+    "scenario_id": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "InteractiveFast",
+        "Balanced",
+        "BatterySaver",
+        "BackgroundBatch",
+        "Benchmark"
+      ]
+    },
+    "max_peak_memory_mb": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "max_cpu_percent_avg": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "max_wall_time_ms": {
+      "type": [
+        "number",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
