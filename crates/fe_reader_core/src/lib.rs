@@ -9,6 +9,7 @@
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::fmt;
+use time::{OffsetDateTime, format_description::well_known::Rfc3339};
 use uuid::Uuid;
 
 /// Crate name exposed for smoke tests and workspace health checks.
@@ -84,6 +85,24 @@ impl TransactionId {
 }
 
 impl Default for TransactionId {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// Stable audit receipt id emitted after plan, verify, or failure checkpoints.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct ReceiptId(pub String);
+
+impl ReceiptId {
+    /// Creates a fresh receipt id.
+    #[must_use]
+    pub fn new() -> Self {
+        Self(Uuid::new_v4().to_string())
+    }
+}
+
+impl Default for ReceiptId {
     fn default() -> Self {
         Self::new()
     }
@@ -554,20 +573,84 @@ pub enum VerificationStatus {
     Failed,
 }
 
-/// Receipt generated after an operation completes or fails.
+/// Receipt generated after an operation plan, verification step, or failure.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct OperationReceipt {
+    /// Unique audit receipt id.
+    pub receipt_id: ReceiptId,
     /// Operation id.
     pub intent_id: OperationId,
     /// Optional patch plan id.
     pub plan_id: Option<PatchPlanId>,
     /// Optional transaction id.
     pub transaction_id: Option<TransactionId>,
+    /// Target document.
+    pub document_id: DocumentId,
+    /// Write mode captured from the plan, if a plan exists.
+    pub write_mode: WriteMode,
+    /// Risk classification captured from the intent or plan.
+    pub risk_level: RiskLevel,
+    /// Document fingerprint captured before planning or apply.
+    pub document_fingerprint_before: Option<DocumentFingerprint>,
+    /// Document fingerprint captured after apply or verification.
+    pub document_fingerprint_after: Option<DocumentFingerprint>,
     /// Verification status.
     pub verification_status: VerificationStatus,
+    /// UTC timestamp when the receipt was created.
+    pub created_at_utc: String,
     /// Human-readable summary.
     pub summary: String,
 }
+
+impl OperationReceipt {
+    /// Creates a plan-stage audit receipt without implying approval or application.
+    #[must_use]
+    pub fn planned(intent: &OperationIntent, plan: &PatchPlan, summary: impl Into<String>) -> Self {
+        Self {
+            receipt_id: ReceiptId::new(),
+            intent_id: intent.intent_id.clone(),
+            plan_id: Some(plan.plan_id.clone()),
+            transaction_id: None,
+            document_id: plan.document_id.clone(),
+            write_mode: plan.write_mode,
+            risk_level: plan.risk_level,
+            document_fingerprint_before: intent.document_fingerprint.clone(),
+            document_fingerprint_after: None,
+            verification_status: VerificationStatus::NotRequired,
+            created_at_utc: utc_now_rfc3339(),
+            summary: summary.into(),
+        }
+    }
+
+    /// Creates a post-apply audit receipt linked to a transaction journal.
+    #[must_use]
+    pub fn verified(
+        intent: &OperationIntent,
+        plan: &PatchPlan,
+        journal: &TransactionJournal,
+        verification_status: VerificationStatus,
+        document_fingerprint_after: DocumentFingerprint,
+        summary: impl Into<String>,
+    ) -> Self {
+        Self {
+            receipt_id: ReceiptId::new(),
+            intent_id: intent.intent_id.clone(),
+            plan_id: Some(plan.plan_id.clone()),
+            transaction_id: Some(journal.transaction_id.clone()),
+            document_id: plan.document_id.clone(),
+            write_mode: plan.write_mode,
+            risk_level: plan.risk_level,
+            document_fingerprint_before: intent.document_fingerprint.clone(),
+            document_fingerprint_after: Some(document_fingerprint_after),
+            verification_status,
+            created_at_utc: utc_now_rfc3339(),
+            summary: summary.into(),
+        }
+    }
+}
+
+/// Audit receipt alias used by the mutation pipeline contract.
+pub type AuditReceipt = OperationReceipt;
 
 /// Resource limits applied to parsing, rendering, conversion, plugin, or automation tasks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -655,6 +738,12 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
 #[must_use]
 pub fn crate_identity() -> String {
     format!("{}@{}", CRATE_NAME, CRATE_VERSION)
+}
+
+fn utc_now_rfc3339() -> String {
+    OffsetDateTime::now_utc()
+        .format(&Rfc3339)
+        .unwrap_or_else(|_| "1970-01-01T00:00:00Z".to_string())
 }
 
 #[cfg(test)]
@@ -915,5 +1004,115 @@ mod tests {
         let journal =
             TransactionJournal::planned(&plan).transition(TransactionState::Journaled, "persisted");
         assert_eq!(journal.state, TransactionState::Journaled);
+    }
+
+    #[test]
+    fn planned_receipt_links_intent_plan_and_before_fingerprint_without_apply() {
+        let fingerprint_before = DocumentFingerprint::from_bytes(b"before");
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "set_metadata",
+        )
+        .with_document_fingerprint(fingerprint_before.clone());
+        let plan = PatchPlan::draft(
+            &intent,
+            "set metadata",
+            vec![PatchOperation::SetMetadata {
+                key: "title".into(),
+                value: "Fe Reader".into(),
+            }],
+        );
+        let receipt = OperationReceipt::planned(&intent, &plan, "plan generated");
+
+        assert_eq!(receipt.intent_id, intent.intent_id);
+        assert_eq!(receipt.plan_id, Some(plan.plan_id.clone()));
+        assert_eq!(receipt.transaction_id, None);
+        assert_eq!(receipt.document_id, intent.document_id);
+        assert_eq!(receipt.write_mode, WriteMode::IncrementalAppend);
+        assert_eq!(receipt.risk_level, RiskLevel::DocumentMutation);
+        assert_eq!(
+            receipt.document_fingerprint_before,
+            Some(fingerprint_before)
+        );
+        assert_eq!(receipt.document_fingerprint_after, None);
+        assert_eq!(receipt.verification_status, VerificationStatus::NotRequired);
+        assert!(!plan.approved_for_apply);
+    }
+
+    #[test]
+    fn verified_receipt_links_transaction_and_after_fingerprint() {
+        let fingerprint_before = DocumentFingerprint::from_bytes(b"before");
+        let fingerprint_after = DocumentFingerprint::from_bytes(b"after");
+        let intent = OperationIntent::high_risk(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "plan_redaction",
+        )
+        .with_document_fingerprint(fingerprint_before.clone());
+        let plan = PatchPlan::draft(
+            &intent,
+            "redact region",
+            vec![PatchOperation::RedactRegion {
+                page_index: 0,
+                region: "10,10,20,20".into(),
+            }],
+        );
+        let journal =
+            TransactionJournal::planned(&plan).transition(TransactionState::Verified, "verified");
+        let receipt = OperationReceipt::verified(
+            &intent,
+            &plan,
+            &journal,
+            VerificationStatus::Passed,
+            fingerprint_after.clone(),
+            "verification passed",
+        );
+
+        assert_eq!(receipt.intent_id, intent.intent_id);
+        assert_eq!(receipt.plan_id, Some(plan.plan_id.clone()));
+        assert_eq!(receipt.transaction_id, Some(journal.transaction_id));
+        assert_eq!(receipt.write_mode, WriteMode::SanitizingRewrite);
+        assert_eq!(receipt.risk_level, RiskLevel::HighRisk);
+        assert_eq!(
+            receipt.document_fingerprint_before,
+            Some(fingerprint_before)
+        );
+        assert_eq!(receipt.document_fingerprint_after, Some(fingerprint_after));
+        assert_eq!(receipt.verification_status, VerificationStatus::Passed);
+    }
+
+    #[test]
+    fn failed_receipt_preserves_verification_failure() {
+        let fingerprint_after = DocumentFingerprint::from_bytes(b"failed-output");
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_patch",
+        )
+        .with_document_fingerprint(DocumentFingerprint::from_bytes(b"before"));
+        let plan = PatchPlan::draft(
+            &intent,
+            "rotate page",
+            vec![PatchOperation::rotate_pages(vec![0], 90).unwrap()],
+        );
+        let journal = TransactionJournal::planned(&plan)
+            .transition(TransactionState::Failed, "verify failed");
+        let receipt = OperationReceipt::verified(
+            &intent,
+            &plan,
+            &journal,
+            VerificationStatus::Failed,
+            fingerprint_after,
+            "verification failed",
+        );
+
+        assert_eq!(receipt.transaction_id, Some(journal.transaction_id));
+        assert_eq!(receipt.write_mode, WriteMode::FullRewrite);
+        assert_eq!(receipt.risk_level, RiskLevel::DocumentMutation);
+        assert_eq!(receipt.verification_status, VerificationStatus::Failed);
     }
 }

@@ -66,10 +66,16 @@ Phase A5 implementation note:
 - Added a write-mode public API snapshot and `scripts/write_modes_contract_check.py` as a hard phase-gate check.
 ### Phase A6 — Audit receipts
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase A6 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase A6 --auto-fix`.
+
+Phase A6 implementation note:
+
+- Added receipt IDs and an `AuditReceipt` alias over the core `OperationReceipt` contract.
+- Added plan-stage and verification-stage receipt constructors that bind intent, plan, transaction, hashes, risk and write mode without adding an apply path.
+- Added an audit receipt JSON schema, public API snapshot and `scripts/audit_receipt_contract_check.py` as a hard phase-gate check.
 
 ## Exit criteria
 

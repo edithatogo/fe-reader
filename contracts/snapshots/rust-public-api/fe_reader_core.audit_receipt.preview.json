@@ -1,0 +1,46 @@
+{
+  "surface": "rust_crate",
+  "crate": "fe_reader_core",
+  "version": "0.1.0",
+  "stability": "preview",
+  "phase": "A6",
+  "contract": "audit_receipt",
+  "mutation_policy": "receipts_bind_intent_plan_transaction_verification_and_document_hashes",
+  "public_types": [
+    "AuditReceipt",
+    "OperationReceipt",
+    "ReceiptId",
+    "VerificationStatus",
+    "TransactionJournal",
+    "PatchPlan",
+    "OperationIntent",
+    "DocumentFingerprint",
+    "WriteMode",
+    "RiskLevel"
+  ],
+  "public_methods": [
+    "OperationReceipt::planned",
+    "OperationReceipt::verified"
+  ],
+  "schema": "schemas/audit-receipt.schema.json",
+  "required_fields": [
+    "receipt_id",
+    "intent_id",
+    "plan_id",
+    "transaction_id",
+    "document_id",
+    "write_mode",
+    "risk_level",
+    "document_fingerprint_before",
+    "document_fingerprint_after",
+    "verification_status",
+    "created_at_utc",
+    "summary"
+  ],
+  "notes": [
+    "Audit receipts are evidence artifacts and do not add an apply path in Wave 0.",
+    "Plan-stage receipts can have no transaction id and no after fingerprint.",
+    "Passed or failed verification receipts require a transaction id and after fingerprint.",
+    "Mutating receipts preserve the before fingerprint captured by the operation intent."
+  ]
+}

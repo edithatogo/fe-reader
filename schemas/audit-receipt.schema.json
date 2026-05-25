@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fereader.org/schemas/audit-receipt.schema.json",
+  "title": "AuditReceipt",
+  "type": "object",
+  "required": [
+    "receipt_id",
+    "intent_id",
+    "plan_id",
+    "transaction_id",
+    "document_id",
+    "write_mode",
+    "risk_level",
+    "document_fingerprint_before",
+    "document_fingerprint_after",
+    "verification_status",
+    "created_at_utc",
+    "summary"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "intent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plan_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "transaction_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "document_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "write_mode": {
+      "enum": [
+        "no_write",
+        "incremental_append",
+        "full_rewrite",
+        "sanitizing_rewrite"
+      ]
+    },
+    "risk_level": {
+      "enum": [
+        "read_only",
+        "local_state",
+        "document_mutation",
+        "high_risk"
+      ]
+    },
+    "document_fingerprint_before": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/document_fingerprint"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "document_fingerprint_after": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/document_fingerprint"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "verification_status": {
+      "enum": [
+        "not_required",
+        "passed",
+        "failed"
+      ]
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "document_fingerprint": {
+      "type": "object",
+      "required": [
+        "sha256_hex",
+        "byte_len"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sha256_hex": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_len": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "risk_level": {
+            "enum": [
+              "document_mutation",
+              "high_risk"
+            ]
+          }
+        },
+        "required": [
+          "risk_level"
+        ]
+      },
+      "then": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "document_fingerprint_before": {
+            "$ref": "#/$defs/document_fingerprint"
+          }
+        },
+        "required": [
+          "plan_id",
+          "document_fingerprint_before"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verification_status": {
+            "enum": [
+              "passed",
+              "failed"
+            ]
+          }
+        },
+        "required": [
+          "verification_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "document_fingerprint_after": {
+            "$ref": "#/$defs/document_fingerprint"
+          }
+        },
+        "required": [
+          "transaction_id",
+          "document_fingerprint_after"
+        ]
+      }
+    }
+  ]
+}

@@ -30,6 +30,9 @@ matrix:
   write_modes_contract:
     command: python3 scripts/write_modes_contract_check.py
     gate: P0
+  audit_receipt_contract:
+    command: python3 scripts/audit_receipt_contract_check.py
+    gate: P0
   wave0_acceptance:
     command: python3 scripts/wave0_acceptance_check.py
     gate: P0

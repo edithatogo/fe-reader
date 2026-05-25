@@ -26,6 +26,7 @@ surfaces:
       - contracts/snapshots/rust-public-api/fe_reader_core.patch_plan.preview.json
       - contracts/snapshots/rust-public-api/fe_reader_core.page_ops.preview.json
       - contracts/snapshots/rust-public-api/fe_reader_core.write_modes.preview.json
+      - contracts/snapshots/rust-public-api/fe_reader_core.audit_receipt.preview.json
   cli:
     stability: preview
     schema: schemas/pdf-document-summary.schema.json
