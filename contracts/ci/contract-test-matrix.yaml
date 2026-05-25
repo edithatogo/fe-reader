@@ -42,6 +42,18 @@ matrix:
   release_readiness:
     command: bash scripts/release_readiness_check.sh
     gate: P0_for_release
+  sbom_audit:
+    command: bash scripts/sbom_audit.sh
+    gate: P0_for_public_release
+  release_provenance:
+    command: bash scripts/generate_provenance_attestation.sh
+    gate: P0_for_public_release
+  signing_readiness:
+    command: bash scripts/signing_readiness_check.sh
+    gate: P0_for_public_release
+  release_provenance_policy:
+    command: python3 scripts/release_provenance_check.py
+    gate: P0_for_release
   supply_chain:
     command: scripts/supply_chain_gate.sh
     gate: P0_for_release_P1_for_pr

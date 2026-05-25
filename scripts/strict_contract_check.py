@@ -30,6 +30,7 @@ required = [
     'renovate.json',
     'scripts/repository_ci_cd_check.py',
     'scripts/frontier_ci_check.py',
+    'scripts/release_provenance_check.py',
 ]
 for rel in required:
     if not (ROOT / rel).exists():
@@ -118,6 +119,7 @@ if matrix.exists():
     for token in [
         'python3 scripts/strict_mutation_contract_check.py',
         'python3 scripts/frontier_ci_check.py',
+        'python3 scripts/release_provenance_check.py',
         'bash scripts/release_evidence_check.sh',
         'python3 scripts/release_matrix_check.py',
     ]:
@@ -132,5 +134,6 @@ if failures:
 subprocess.run([sys.executable, 'scripts/strict_mutation_contract_check.py'], cwd=ROOT, check=True)
 subprocess.run([sys.executable, 'scripts/repository_ci_cd_check.py'], cwd=ROOT, check=True)
 subprocess.run([sys.executable, 'scripts/frontier_ci_check.py'], cwd=ROOT, check=True)
+subprocess.run([sys.executable, 'scripts/release_provenance_check.py'], cwd=ROOT, check=True)
 subprocess.run([sys.executable, 'scripts/ci_policy_check.py'], cwd=ROOT, check=True)
 print('strict contract check passed')

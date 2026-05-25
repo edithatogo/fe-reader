@@ -8,6 +8,7 @@ Start by making the repository enforcement real before implementing feature brea
 python3 scripts/strict_contract_check.py
 python3 scripts/repository_ci_cd_check.py
 python3 scripts/frontier_ci_check.py
+python3 scripts/release_provenance_check.py
 python3 scripts/ci_policy_check.py
 python3 scripts/validate_schemas.py
 bash scripts/v8_cli_smoke.sh

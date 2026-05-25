@@ -136,6 +136,10 @@ release_workflow = read(".github/workflows/07-release.yml")
 if release_workflow:
     for token in [
         "bash scripts/release_evidence_check.sh",
+        "bash scripts/sbom_audit.sh",
+        "bash scripts/generate_provenance_attestation.sh",
+        "bash scripts/signing_readiness_check.sh",
+        "python3 scripts/release_provenance_check.py",
         "python3 scripts/release_matrix_check.py",
         "bash scripts/release_readiness_check.sh",
         "actions/upload-artifact",
@@ -159,6 +163,9 @@ if evidence_schema:
         for field in {"release_id", "channel", "source_commit", "toolchain", "artifacts"}:
             if field not in required:
                 failures.append(f"release evidence schema missing required field: {field}")
+        for field in ["sbom_path", "provenance_path", "signing_readiness_path", "workflow_run", "builder", "materials"]:
+            if field not in data.get("properties", {}):
+                failures.append(f"release evidence schema missing provenance field: {field}")
         source_commit = data.get("properties", {}).get("source_commit", {})
         if source_commit.get("pattern") != "^[0-9a-f]{40}$":
             failures.append("release evidence schema must require a 40-character lowercase git commit")

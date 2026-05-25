@@ -82,6 +82,14 @@ for wf in workflow_dir.glob('*.yml'):
             failures.append('07-release.yml must validate release package matrix')
         if 'bash scripts/release_readiness_check.sh' not in txt:
             failures.append('07-release.yml must run release readiness')
+        for command in [
+            'bash scripts/sbom_audit.sh',
+            'bash scripts/generate_provenance_attestation.sh',
+            'bash scripts/signing_readiness_check.sh',
+            'python3 scripts/release_provenance_check.py',
+        ]:
+            if command not in txt:
+                failures.append(f'07-release.yml missing release provenance command: {command}')
         if 'actions/upload-artifact' not in txt or 'target/release-evidence/**' not in txt:
             failures.append('07-release.yml must upload release evidence artifacts')
         if 'if-no-files-found: error' not in txt:

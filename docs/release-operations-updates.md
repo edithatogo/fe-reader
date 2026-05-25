@@ -57,3 +57,12 @@ A release is not ready unless:
 - critical supply-chain checks pass
 - P0/P1 performance budgets pass or have accepted waivers
 - accepted corpus compatibility has no untriaged regression
+
+## Wave 0 evidence definition
+
+During bootstrap, "generated" SBOM/provenance means the release workflow emits
+machine-readable evidence under `target/release-evidence/`. Dev and nightly
+channels may use advisory SBOM status plus placeholder provenance and signing
+readiness records. Preview, beta, stable, LTS and store-submission channels
+must have real SBOM output and provenance/signing-readiness evidence before the
+release readiness check passes.

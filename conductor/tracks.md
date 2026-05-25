@@ -112,7 +112,7 @@ Additional v6 parallelisation rules:
 | AL | Strict Contracts | 0-7 | complete | Contract manifest, CI policy, release evidence, and CLI/MCP/plugin/platform mutation contract enforcement are hard-gated. |
 | AM | Repo CI/CD | 0-7 | complete | Repository CI/CD policy, CODEOWNERS, dependency automation, branch ruleset, workflow hard gates, and release evidence smoke are enforced. |
 | AN | Frontier CI | 0-7 | complete | Advisory beta/nightly, Miri, sanitizer, fuzz, GPU, performance, and PGO/BOLT experiment lanes are isolated and policy-checked. |
-| AO | Release Provenance | 4-7 | planned | SBOM, artifact attestations, auditable binaries, package-manager release evidence. |
+| AO | Release Provenance | 4-7 | complete | SBOM status, provenance, signing readiness, release evidence bundle, and public-channel provenance policy are scaffolded and policy-checked. |
 
 v9 parallelisation rules:
 

@@ -118,3 +118,8 @@ v9_repository_hardening:
     require_sbom: true
     require_attestation: true
     require_release_evidence: true
+    evidence_commands:
+      - bash scripts/sbom_audit.sh
+      - bash scripts/generate_provenance_attestation.sh
+      - bash scripts/signing_readiness_check.sh
+      - python3 scripts/release_provenance_check.py

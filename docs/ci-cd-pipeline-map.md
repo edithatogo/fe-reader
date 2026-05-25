@@ -31,6 +31,7 @@
 - `release-evidence.json`.
 - SBOM in CycloneDX and/or SPDX format.
 - Build provenance attestation.
+- Signing readiness or signing receipt evidence.
 - API compatibility report.
 - Dependency audit/vet report.
 - Performance report.

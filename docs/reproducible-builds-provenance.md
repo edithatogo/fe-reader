@@ -41,12 +41,31 @@ visual-regression summary
 ```bash
 scripts/release_readiness_check.sh
 scripts/release_evidence_check.sh
+scripts/sbom_audit.sh
+scripts/generate_provenance_attestation.sh
+scripts/signing_readiness_check.sh
+python3 scripts/release_provenance_check.py
 cargo cyclonedx --format json --all --output-file target/release-evidence/sbom.cdx.json
 cargo vet
 cargo deny check
 cargo audit
 cosign attest --predicate target/release-evidence/provenance.json <artifact-ref>
 ```
+
+## Wave 0 provenance scaffold
+
+Track AO records auditable placeholder evidence before real signing keys,
+Cosign, SLSA or store credentials are available:
+
+- `target/release-evidence/sbom-status.json` records whether CycloneDX SBOM generation ran or was skipped.
+- `target/release-evidence/cargo-metadata.json` records dependency graph evidence when Cargo is available.
+- `target/release-evidence/provenance.json` records source commit, workflow/run identity and hashed build materials. It is an in-toto-shaped placeholder, not a cryptographic attestation.
+- `target/release-evidence/signing-readiness.json` records signing and notarization readiness without storing secrets.
+- `target/release-evidence/provenance-readiness.json` records whether public-channel provenance requirements are satisfied.
+- `target/release-evidence/release-evidence.json` links the SBOM/status, provenance and signing-readiness evidence into the release bundle.
+
+Real public releases must replace advisory placeholders with CycloneDX SBOM,
+artifact hashes, real signing/notarization receipts and provenance attestations.
 
 ## Policy
 

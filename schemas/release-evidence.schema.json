@@ -33,6 +33,48 @@
       "type": "string",
       "minLength": 1
     },
+    "source_tag": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "workflow_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "workflow_ref": { "type": "string" },
+        "run_id": { "type": "string" },
+        "run_attempt": { "type": "string" },
+        "ref": { "type": "string" },
+        "sha": { "type": "string" },
+        "actor": { "type": "string" },
+        "repository": { "type": "string" }
+      }
+    },
+    "builder": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "type": "string" },
+        "workflow": { "type": "string" }
+      }
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
     "artifacts": {
       "type": "array",
       "items": {
@@ -94,6 +136,9 @@
       "type": "string"
     },
     "provenance_path": {
+      "type": "string"
+    },
+    "signing_readiness_path": {
       "type": "string"
     }
   }

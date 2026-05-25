@@ -18,7 +18,7 @@ pub struct ReleaseEvidenceBundle {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum ReleaseChannel { Dev, Nightly, Beta, Stable, Lts, StoreSubmission }
+pub enum ReleaseChannel { Dev, Nightly, Preview, Beta, Stable, Lts, StoreSubmission }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ReleaseArtifactEvidence {
