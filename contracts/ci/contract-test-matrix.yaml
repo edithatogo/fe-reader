@@ -6,6 +6,9 @@ matrix:
   strict_mutation_contract:
     command: python3 scripts/strict_mutation_contract_check.py
     gate: P0
+  repository_ci_cd:
+    command: python3 scripts/repository_ci_cd_check.py
+    gate: P0
   schemas:
     command: python3 scripts/validate_schemas.py
     gate: P0
@@ -32,6 +35,9 @@ matrix:
     gate: P0_for_release
   release_matrix:
     command: python3 scripts/release_matrix_check.py
+    gate: P0_for_release
+  release_readiness:
+    command: bash scripts/release_readiness_check.sh
     gate: P0_for_release
   supply_chain:
     command: scripts/supply_chain_gate.sh

@@ -1,1 +1,8 @@
 * @doughnut
+/.github/ @doughnut
+/contracts/ @doughnut
+/schemas/ @doughnut
+/scripts/ @doughnut
+/crates/fe_reader_core/ @doughnut
+/contracts/platform/ @doughnut
+/packaging/ @doughnut

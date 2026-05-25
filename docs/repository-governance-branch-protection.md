@@ -17,13 +17,14 @@ The `main` branch should require:
 
 ## Required status checks
 
-Initial required checks:
+Initial required checks use the emitted job contexts from the bootstrap workflows:
 
 ```text
-strict-contracts / policy
-rust-stable / fmt-clippy-test
-security-supply-chain / dependency-policy
-cross-platform-smoke / linux
+strict-contracts
+repository-ci-cd
+rust
+policy
+smoke
 ```
 
 After baselines exist, add:
@@ -38,7 +39,13 @@ release-candidate / evidence
 
 ## Ruleset template
 
-`.github/rulesets/main-branch-ruleset.template.json` is intentionally a template. It must be imported or converted using GitHub repository settings/REST API once the exact required check names exist.
+`.github/rulesets/main-branch-ruleset.template.json` is intentionally a template. It encodes pull-request review, CODEOWNERS review, required status checks, linear history, signed commits, no force pushes and no branch deletion. It must be imported or converted using GitHub repository settings/REST API once the exact emitted required check names exist.
+
+If GitHub does not expose a setting through repository rulesets for the active plan, configure it manually in repository settings and document the manual setting in the first governance PR.
+
+## Dependency automation ownership
+
+Renovate owns scheduled Cargo dependency refresh PRs so high-risk PDF, frontier and Rust patch/minor routing can be expressed in one policy file. Dependabot owns GitHub Actions version refreshes. Dependabot security alerts remain enabled at the repository level.
 
 ## Action pinning
 

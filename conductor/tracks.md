@@ -110,7 +110,7 @@ Additional v6 parallelisation rules:
 | Track | Theme | Main wave(s) | Status | Summary |
 |---|---|---:|---|---|
 | AL | Strict Contracts | 0-7 | complete | Contract manifest, CI policy, release evidence, and CLI/MCP/plugin/platform mutation contract enforcement are hard-gated. |
-| AM | Repo CI/CD | 0-7 | planned | GitHub workflows, branch ruleset, CODEOWNERS, dependency automation, release evidence. |
+| AM | Repo CI/CD | 0-7 | complete | Repository CI/CD policy, CODEOWNERS, dependency automation, branch ruleset, workflow hard gates, and release evidence smoke are enforced. |
 | AN | Frontier CI | 0-7 | advisory | Beta/nightly, Miri, sanitizers, fuzz campaigns, GPU/PGO/BOLT experiment gates. |
 | AO | Release Provenance | 4-7 | planned | SBOM, artifact attestations, auditable binaries, package-manager release evidence. |
 

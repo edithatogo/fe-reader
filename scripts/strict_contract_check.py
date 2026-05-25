@@ -28,6 +28,7 @@ required = [
     '.github/dependabot.yml',
     '.github/rulesets/main-branch-ruleset.template.json',
     'renovate.json',
+    'scripts/repository_ci_cd_check.py',
 ]
 for rel in required:
     if not (ROOT / rel).exists():
@@ -127,4 +128,5 @@ if failures:
         print(f' - {f}')
     sys.exit(1)
 subprocess.run([sys.executable, 'scripts/strict_mutation_contract_check.py'], cwd=ROOT, check=True)
+subprocess.run([sys.executable, 'scripts/repository_ci_cd_check.py'], cwd=ROOT, check=True)
 print('strict contract check passed')

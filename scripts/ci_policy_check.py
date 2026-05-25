@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import re
 import sys
 ROOT = Path(__file__).resolve().parents[1]
 failures = []
@@ -20,12 +21,26 @@ for m in sorted(missing):
     failures.append(f'missing workflow {m}')
 for wf in workflow_dir.glob('*.yml'):
     txt = wf.read_text(encoding='utf-8')
-    if 'actions/checkout@v' in txt and 'ALLOW_VERSION_TAGS_DURING_BOOTSTRAP' not in txt:
-        failures.append(f'{wf.name} uses checkout version tag without bootstrap marker')
+    if 'concurrency:' not in txt:
+        failures.append(f'{wf.name} missing top-level concurrency')
+    if 'timeout-minutes:' not in txt:
+        failures.append(f'{wf.name} missing job timeout-minutes')
+    if 'permissions:\n  contents: read' not in txt:
+        failures.append(f'{wf.name} must use read-only contents permission by default')
+    for line in txt.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith('- uses:'):
+            continue
+        uses_ref = stripped.removeprefix('- uses:').split('#', 1)[0].strip()
+        if not re.search(r'@[0-9a-f]{40}$', uses_ref) and 'ALLOW_VERSION_TAGS_DURING_BOOTSTRAP' not in stripped:
+            failures.append(f'{wf.name} action use must be SHA pinned or carry bootstrap marker: {uses_ref}')
     if 'id-token: write' in txt and 'attest' not in txt and 'release' in wf.name:
         failures.append(f'{wf.name} grants id-token without attestation step')
     if 'contents: write' in txt and 'release' not in wf.name:
         failures.append(f'{wf.name} has contents: write outside release workflow')
+    for forbidden_permission in ['actions: write', 'checks: write', 'packages: write']:
+        if forbidden_permission in txt:
+            failures.append(f'{wf.name} grants forbidden permission: {forbidden_permission}')
 
     if wf.name in {
         '00-pr-contracts.yml',
@@ -33,8 +48,11 @@ for wf in workflow_dir.glob('*.yml'):
         '02-security-supply-chain.yml',
         '03-cross-platform-smoke.yml',
         '04-api-compatibility.yml',
-    } and 'continue-on-error: true' in txt:
-        failures.append(f'{wf.name} is a stable lane and must not continue-on-error')
+    }:
+        if 'continue-on-error: true' in txt:
+            failures.append(f'{wf.name} is a stable lane and must not continue-on-error')
+        if 'pull_request:' not in txt or 'push:' not in txt or 'branches: [main]' not in txt:
+            failures.append(f'{wf.name} stable lane must run on pull_request and push to main')
 
     if wf.name in {'05-frontier-nightly.yml', '06-performance-nightly.yml'}:
         if 'pull_request:' in txt or 'push:' in txt:
@@ -62,17 +80,15 @@ for wf in workflow_dir.glob('*.yml'):
             failures.append('07-release.yml must run release readiness')
         if 'actions/upload-artifact' not in txt or 'target/release-evidence/**' not in txt:
             failures.append('07-release.yml must upload release evidence artifacts')
+        if 'if-no-files-found: error' not in txt:
+            failures.append('07-release.yml must fail when release evidence artifact files are missing')
+        if 'retention-days:' not in txt:
+            failures.append('07-release.yml must set release evidence retention-days')
 
-    for line in txt.splitlines():
-        stripped = line.strip()
-        if not stripped.startswith('- run:'):
-            continue
-        command = stripped.removeprefix('- run:').strip()
-        parts = command.split()
-        if len(parts) >= 2 and parts[0] in {'bash', 'python3'} and parts[1].startswith('scripts/'):
-            script = ROOT / parts[1]
-            if not script.exists():
-                failures.append(f'{wf.name} references missing script {parts[1]}')
+    for match in re.finditer(r'\bscripts/[A-Za-z0-9_.\-/]+', txt):
+        script_rel = match.group(0).rstrip('",\'')
+        if not (ROOT / script_rel).exists():
+            failures.append(f'{wf.name} references missing script {script_rel}')
 
 pr_contracts = workflow_dir / '00-pr-contracts.yml'
 if pr_contracts.exists():
@@ -82,11 +98,43 @@ if pr_contracts.exists():
         'python3 scripts/v8_static_contract_check.py',
         'python3 scripts/strict_contract_check.py',
         'python3 scripts/strict_mutation_contract_check.py',
+        'python3 scripts/repository_ci_cd_check.py',
         'python3 scripts/ci_policy_check.py',
         'python3 scripts/wave0_acceptance_check.py',
     ]:
         if command not in txt:
             failures.append(f'00-pr-contracts.yml missing hard gate: {command}')
+
+stable_commands = {
+    '01-rust-stable.yml': [
+        'cargo metadata --format-version=1',
+        'cargo fmt --all -- --check',
+        'cargo test --workspace --all-targets',
+        'cargo clippy --workspace --all-targets --all-features -- -D warnings',
+    ],
+    '02-security-supply-chain.yml': [
+        'bash scripts/security_policy_check.sh',
+        'bash scripts/actions_security_gate.sh',
+        'bash scripts/supply_chain_gate.sh',
+    ],
+    '03-cross-platform-smoke.yml': [
+        'cargo metadata --format-version=1',
+        'cargo test -p fe_reader_core -p fe_reader_pdf_model -p fe_reader_security -p fe_reader_cli',
+        'cargo run -p fe_reader_cli -- doctor',
+    ],
+    '04-api-compatibility.yml': [
+        'bash scripts/api_compat_check.sh',
+        'bash scripts/public_api_snapshot_check.sh',
+    ],
+}
+for wf_name, commands in stable_commands.items():
+    path = workflow_dir / wf_name
+    if not path.exists():
+        continue
+    txt = path.read_text(encoding='utf-8')
+    for command in commands:
+        if command not in txt:
+            failures.append(f'{wf_name} missing stable command: {command}')
 if failures:
     print('CI POLICY CHECK FAILED')
     for f in failures:

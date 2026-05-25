@@ -2,6 +2,15 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      release_id:
+        description: Release evidence identifier.
+        required: true
+        default: dev-smoke
+      channel:
+        description: Release channel.
+        required: true
+        default: dev
 
 permissions:
   contents: read
@@ -14,6 +23,9 @@ jobs:
   release-readiness:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      FE_RELEASE_ID: ${{ inputs.release_id }}
+      FE_RELEASE_CHANNEL: ${{ inputs.channel }}
     steps:
       - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - uses: actions/setup-python@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
@@ -26,3 +38,5 @@ jobs:
         with:
           name: release-evidence
           path: target/release-evidence/**
+          if-no-files-found: error
+          retention-days: 30
