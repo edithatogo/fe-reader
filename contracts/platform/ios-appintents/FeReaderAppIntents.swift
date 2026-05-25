@@ -23,14 +23,15 @@ struct FeExtractPageTextIntent: AppIntent {
     }
 }
 
-struct FeApplyWorkflowIntent: AppIntent {
+struct FePlanWorkflowIntent: AppIntent {
     static var title: LocalizedStringResource = "Plan Fe Reader Workflow"
     @Parameter(title: "Document ID") var documentId: String
     @Parameter(title: "Workflow ID") var workflowId: String
     @Parameter(title: "Parameters JSON") var parametersJson: String
 
     func perform() async throws -> some IntentResult & ReturnsValue<String> {
-        // Return PatchPlan JSON. Do not mutate without approval.
+        // Return PatchPlan JSON. Do not mutate without patch_plan_id, document_hash_match,
+        // policy_allow_rule and approval_token in a native approved flow.
         return .result(value: "{}")
     }
 }

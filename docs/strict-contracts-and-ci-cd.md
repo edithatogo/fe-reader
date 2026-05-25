@@ -31,7 +31,7 @@ This applies to UI, CLI, MCP, COM, AppleScript, D-Bus, Android intents, iOS App 
 ## Hard PR checks
 
 - `strict-contracts`: architecture firewall, schemas, workflow policy, v8 static checks.
-- `rust-stable`: fmt, clippy, nextest, docs check.
+- `rust-stable`: fmt, clippy, workspace tests, docs check.
 - `security-supply-chain`: cargo-deny, cargo-audit, cargo-vet advisory mode during bootstrap, zizmor/actionlint, CodeQL, Scorecard.
 - `api-compatibility`: public API snapshots and semver checks once stable surfaces exist.
 - `cross-platform-smoke`: Linux, macOS, Windows compile/test smoke.

@@ -9,6 +9,8 @@ python3 scripts/strict_contract_check.py
 python3 scripts/ci_policy_check.py
 python3 scripts/validate_schemas.py
 bash scripts/v8_cli_smoke.sh
+python3 scripts/wave0_acceptance_check.py
+bash scripts/security_policy_check.sh
 ```
 
 In an environment with Rust installed:
@@ -17,7 +19,7 @@ In an environment with Rust installed:
 cargo metadata --format-version=1
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
-cargo nextest run --workspace --all-targets --all-features
+cargo test --workspace --all-targets
 cargo run -p fe_reader_cli -- doctor
 cargo run -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json
 ```

@@ -26,10 +26,11 @@ python3 scripts/validate_schemas.py
 python3 scripts/v8_static_contract_check.py
 bash scripts/v8_cli_smoke.sh
 python3 scripts/wave0_acceptance_check.py
+python3 scripts/strict_mutation_contract_check.py
 python3 scripts/architecture_compliance_check.py --workspace-root .
 python3 scripts/corpus_manifest_validate.py
+bash scripts/security_policy_check.sh
 
-if [[ -x scripts/security_policy_check.sh ]]; then scripts/security_policy_check.sh || echo "security policy advisory skip/failure before policy hardening"; fi
 if [[ -x scripts/sbom_audit.sh ]]; then scripts/sbom_audit.sh || echo "SBOM audit advisory skip/failure before tooling hardening"; fi
 if [[ -x scripts/perf_smoke.sh ]]; then scripts/perf_smoke.sh || echo "perf smoke advisory skip"; fi
 if [[ -x scripts/search_index_smoke.sh ]]; then scripts/search_index_smoke.sh || echo "search smoke advisory skip"; fi

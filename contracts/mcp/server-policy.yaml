@@ -18,7 +18,7 @@ mutation_policy:
     - policy_allow_rule
   disabled_by_default:
     - fe.apply_approved_patch
-    - fe.convert_document_with_external_provider
+    - fe.apply_approved_conversion
     - fe.export_document
     - fe.delete_pages
 logging:

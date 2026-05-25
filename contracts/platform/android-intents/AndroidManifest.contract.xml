@@ -1,4 +1,6 @@
-<!-- Contract excerpt for Android integration. Actual package names and authorities must be finalised in the app. -->
+<!-- Contract excerpt for Android integration. Actual package names and authorities must be finalised in the app.
+     Exported Android entrypoints are read-only or plan-only by default. Applying any patch requires
+     patch_plan_id, document_hash_match, policy_allow_rule and approval_token in a native approved flow. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 

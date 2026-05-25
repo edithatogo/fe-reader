@@ -45,5 +45,33 @@
       "type": "string"
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "phase": {
+            "enum": [
+              "plan_generated",
+              "approved",
+              "applying",
+              "verifying",
+              "committed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "plan_id"
+        ]
+      }
+    }
+  ],
   "additionalProperties": false
 }

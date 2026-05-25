@@ -98,6 +98,15 @@ def check_policy_matrix() -> None:
             ),
         )
 
+    unknown = subprocess.run(
+        ["cargo", "run", "-q", "-p", "fe_reader_cli", "--", "policy", "unknown-action"],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    expect(unknown.returncode != 0, "unknown policy actions must fail closed")
+
 
 def main() -> None:
     check_cli_inspect_contract()

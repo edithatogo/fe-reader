@@ -96,6 +96,8 @@ pub struct FeRect {
 pub struct FeApprovalToken {
     pub token_id: String,
     pub patch_plan_id: String,
+    pub document_sha256_before: String,
+    pub policy_allow_rule: String,
     pub approved_by: String,
     pub approved_at_utc: String,
     pub approval_context: serde_json::Value,

@@ -19,5 +19,10 @@ jobs:
       - uses: actions/setup-python@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
         with:
           python-version: "3.x"
-      - run: python3 scripts/release_evidence_check.py
-      - run: python3 scripts/release_readiness_check.py
+      - run: bash scripts/release_evidence_check.sh
+      - run: python3 scripts/release_matrix_check.py
+      - run: bash scripts/release_readiness_check.sh
+      - uses: actions/upload-artifact@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          name: release-evidence
+          path: target/release-evidence/**

@@ -18,7 +18,8 @@ interface IFeReaderApplication : IDispatch {
   [id(4)] HRESULT PlanWorkflow([in] BSTR documentId, [in] BSTR workflowId, [in] BSTR jsonParameters, [out, retval] BSTR jsonPatchPlan);
   [id(5)] HRESULT PlanRedaction([in] BSTR documentId, [in] BSTR jsonRecipe, [out, retval] BSTR jsonPatchPlan);
   [id(6)] HRESULT ApplyApprovedPatch([in] BSTR patchPlanId, [in] BSTR approvalToken, [out, retval] BSTR jsonAuditReceipt);
-  [id(7)] HRESULT ConvertDocument([in] BSTR documentId, [in] BSTR jsonConversionJob, [out, retval] BSTR jsonConversionResult);
+  [id(7)] HRESULT PlanConversion([in] BSTR documentId, [in] BSTR jsonConversionJob, [out, retval] BSTR jsonPatchPlan);
+  [id(8)] HRESULT ApplyApprovedConversion([in] BSTR patchPlanId, [in] BSTR documentSha256Before, [in] BSTR policyAllowRule, [in] BSTR approvalToken, [out, retval] BSTR jsonAuditReceipt);
 };
 
 [

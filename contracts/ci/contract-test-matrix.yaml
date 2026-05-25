@@ -3,6 +3,9 @@ matrix:
   architecture:
     command: python3 scripts/strict_contract_check.py
     gate: P0
+  strict_mutation_contract:
+    command: python3 scripts/strict_mutation_contract_check.py
+    gate: P0
   schemas:
     command: python3 scripts/validate_schemas.py
     gate: P0
@@ -13,7 +16,7 @@ matrix:
     command: bash scripts/security_policy_check.sh
     gate: P0
   rust_stable:
-    command: cargo nextest run --workspace --all-targets --all-features
+    command: cargo test --workspace --all-targets
     gate: P0
   clippy:
     command: cargo clippy --workspace --all-targets --all-features -- -D warnings
@@ -24,6 +27,12 @@ matrix:
   semver:
     command: scripts/semver_check.sh
     gate: release
+  release_evidence:
+    command: bash scripts/release_evidence_check.sh
+    gate: P0_for_release
+  release_matrix:
+    command: python3 scripts/release_matrix_check.py
+    gate: P0_for_release
   supply_chain:
     command: scripts/supply_chain_gate.sh
     gate: P0_for_release_P1_for_pr

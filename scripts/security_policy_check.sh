@@ -35,7 +35,7 @@ for token in [
     "user_approval_token",
     "policy_allow_rule",
     "fe.apply_approved_patch",
-    "fe.convert_document_with_external_provider",
+    "fe.apply_approved_conversion",
     "fe.export_document",
     "fe.delete_pages",
 ]:

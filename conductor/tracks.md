@@ -107,12 +107,12 @@ Additional v6 parallelisation rules:
 
 ## v9 repository and CI/CD hardening tracks
 
-| Track | Theme | Main wave(s) | Summary |
-|---|---|---:|---|
-| AL | Strict Contracts | 0-7 | Contract manifest, public API gates, CLI/MCP/plugin/platform contract enforcement. |
-| AM | Repo CI/CD | 0-7 | GitHub workflows, branch ruleset, CODEOWNERS, dependency automation, release evidence. |
-| AN | Frontier CI | 0-7 | Beta/nightly, Miri, sanitizers, fuzz campaigns, GPU/PGO/BOLT experiment gates. |
-| AO | Release Provenance | 4-7 | SBOM, artifact attestations, auditable binaries, package-manager release evidence. |
+| Track | Theme | Main wave(s) | Status | Summary |
+|---|---|---:|---|---|
+| AL | Strict Contracts | 0-7 | complete | Contract manifest, CI policy, release evidence, and CLI/MCP/plugin/platform mutation contract enforcement are hard-gated. |
+| AM | Repo CI/CD | 0-7 | planned | GitHub workflows, branch ruleset, CODEOWNERS, dependency automation, release evidence. |
+| AN | Frontier CI | 0-7 | advisory | Beta/nightly, Miri, sanitizers, fuzz campaigns, GPU/PGO/BOLT experiment gates. |
+| AO | Release Provenance | 4-7 | planned | SBOM, artifact attestations, auditable binaries, package-manager release evidence. |
 
 v9 parallelisation rules:
 

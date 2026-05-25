@@ -35,13 +35,13 @@
     },
     {
       "name": "fe.apply_approved_patch",
-      "risk": "destructive",
+      "risk": "approved_mutation_disabled_by_default",
       "description": "Apply a patch plan only with approval token."
     },
     {
-      "name": "fe.convert_document",
-      "risk": "external_disclosure_possible",
-      "description": "Plan or run conversion depending on policy."
+      "name": "fe.plan_conversion",
+      "risk": "external_disclosure_plan_only",
+      "description": "Return a reviewable conversion patch plan. Applying or exporting conversion output requires approval."
     }
   ]
 }

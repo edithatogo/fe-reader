@@ -1,6 +1,6 @@
 //! Fe Reader CLI Wave 0 harness.
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
 use fe_reader_core::{OperationIntent, OperationSource};
 use fe_reader_security::{PolicyAction, SecurityPolicy, evaluate_policy};
@@ -81,7 +81,7 @@ fn main() -> Result<()> {
             println!("schema validation is delegated to scripts/validate_schemas.py in Wave 0");
         }
         Command::Policy { action } => {
-            let action = parse_policy_action(&action);
+            let action = parse_policy_action(&action)?;
             let decision = evaluate_policy(
                 &SecurityPolicy::default(),
                 OperationSource::Cli,
@@ -100,16 +100,16 @@ fn format_page_count(page_count: Option<u32>) -> String {
         .unwrap_or_else(|| "unknown".to_string())
 }
 
-fn parse_policy_action(action: &str) -> PolicyAction {
+fn parse_policy_action(action: &str) -> Result<PolicyAction> {
     match action {
-        "read" => PolicyAction::Read,
-        "plan" => PolicyAction::PlanMutation,
-        "apply" => PolicyAction::ApplyMutation,
-        "export" => PolicyAction::Export,
-        "external-tool" => PolicyAction::RunExternalTool,
-        "automation" => PolicyAction::UseAutomation,
-        "plugin" => PolicyAction::LoadPlugin,
-        "network" => PolicyAction::NetworkAccess,
-        _ => PolicyAction::Read,
+        "read" => Ok(PolicyAction::Read),
+        "plan" => Ok(PolicyAction::PlanMutation),
+        "apply" => Ok(PolicyAction::ApplyMutation),
+        "export" => Ok(PolicyAction::Export),
+        "external-tool" => Ok(PolicyAction::RunExternalTool),
+        "automation" => Ok(PolicyAction::UseAutomation),
+        "plugin" => Ok(PolicyAction::LoadPlugin),
+        "network" => Ok(PolicyAction::NetworkAccess),
+        _ => bail!("unknown policy action: {action}"),
     }
 }

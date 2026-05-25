@@ -1,7 +1,7 @@
 //! WASM plugin host contract. Plugins propose actions; they do not mutate documents directly.
 
 use serde::{Deserialize, Serialize};
-use crate::core_types::FePatchPlan;
+use crate::core_types::{FeApprovalToken, FePatchPlan};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FePluginManifest {
@@ -21,6 +21,7 @@ pub struct FePluginManifest {
 pub struct PluginProposalRequest {
     pub plugin_id: String,
     pub document_id: String,
+    pub document_sha256: String,
     pub operation: String,
     pub input_json: serde_json::Value,
 }
@@ -34,6 +35,11 @@ pub struct PluginProposal {
 }
 
 pub trait PluginHost: Send + Sync {
-    fn load_plugin(&self, manifest: FePluginManifest, wasm_bytes: &[u8]) -> anyhow::Result<()>;
+    fn load_plugin(
+        &self,
+        manifest: FePluginManifest,
+        wasm_bytes: &[u8],
+        policy_approval: FeApprovalToken,
+    ) -> anyhow::Result<()>;
     fn propose(&self, request: PluginProposalRequest) -> anyhow::Result<PluginProposal>;
 }
