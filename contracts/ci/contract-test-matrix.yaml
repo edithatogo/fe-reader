@@ -33,6 +33,13 @@ matrix:
   c_abi:
     command: scripts/c_abi_snapshot_check.sh
     gate: P1_after_api_baseline
+  nuget_wrapper_advisory:
+    command: scripts/nuget_wrapper_check.sh
+    gate: advisory_until_package_baseline
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: contracts/snapshots/dotnet/FeReader.Native.facade.json
   semver:
     command: scripts/semver_check.sh
     gate: release

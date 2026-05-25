@@ -1,0 +1,59 @@
+{
+  "surface": "dotnet_wrapper",
+  "package_id": "FeReader.Native",
+  "version": "0.1.0-preview.1",
+  "stability": "preview",
+  "target_frameworks": ["net8.0"],
+  "interop_strategy": "p_invoke_fallback",
+  "native_abi_snapshot": "contracts/snapshots/c-abi/fe_reader_c_abi.facade.json",
+  "mutation_policy": "read_only_or_plan_only",
+  "supports_apply": false,
+  "supports_plan_only": true,
+  "managed_api": {
+    "namespace": "FeReader.Native",
+    "types": [
+      {
+        "name": "FeReaderNative",
+        "kind": "static_class",
+        "members": [
+          "ManagedContract",
+          "GetNativeVersion",
+          "SupportsApply",
+          "SupportsPlanOnly",
+          "GetNoopPlanContract"
+        ]
+      },
+      {
+        "name": "FeReaderManagedContract",
+        "kind": "record"
+      },
+      {
+        "name": "FeReaderNativeVersion",
+        "kind": "record_struct"
+      },
+      {
+        "name": "FeReaderPlanContract",
+        "kind": "sequential_struct",
+        "byte_size": 24
+      }
+    ],
+    "pinvoke_entry_points": [
+      "fe_reader_c_abi_version_major",
+      "fe_reader_c_abi_version_minor",
+      "fe_reader_c_abi_version_patch",
+      "fe_reader_c_abi_supports_apply",
+      "fe_reader_c_abi_supports_plan_only",
+      "fe_reader_c_abi_plan_noop_contract"
+    ]
+  },
+  "package_contents": [
+    "README.md",
+    "contracts/fe_reader_c_abi.facade.json",
+    "build/native/include/fe_reader_c_abi.h"
+  ],
+  "notes": [
+    "No native runtime assets are shipped in C3.",
+    "No apply path is exposed in Wave 0.",
+    "Breaking preview changes require a compatibility note before package publication."
+  ]
+}

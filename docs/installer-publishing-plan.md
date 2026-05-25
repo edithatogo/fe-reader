@@ -21,7 +21,7 @@ Artifacts:
 - Scoop manifest
 - winget manifest
 - Chocolatey package
-- NuGet package for native/.NET wrapper
+- NuGet package for native/.NET wrapper. Wave 0 keeps `FeReader.Native` at `0.1.0-preview.1` without native runtime assets until platform packaging, signing and smoke tests are complete.
 
 Per-user install should avoid admin rights and write to user locations. COM registration should support per-user registration where possible. Global install uses machine-wide registration and requires admin privileges.
 

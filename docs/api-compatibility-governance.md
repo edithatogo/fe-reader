@@ -39,6 +39,7 @@ Web postMessage and browser-extension contracts
 - C# interop must remain isolated from UniFFI first-party binding assumptions.
 - The Wave 0 UniFFI facade is `preview`, read-only or plan-only, and must not expose an apply path until mutation approval, transaction journaling, verification and audit receipt contracts are available at the binding boundary.
 - The Wave 0 C ABI fallback is `preview`, `extern "C"`, P/Invoke-oriented, and limited to static identity/capability and no-write plan probes until a reviewed mutation boundary exists.
+- The Wave 0 .NET/NuGet wrapper is `preview`, P/Invoke-oriented, and may package managed contract metadata before native runtime assets are ready.
 
 ## Tools
 
@@ -61,6 +62,7 @@ contracts/snapshots/
   rust-public-api/
   uniffi/
   c-abi/
+  dotnet/
   cli/
   mcp/
   plugin-abi/

@@ -8,6 +8,10 @@
 /docs-site/dist/
 /docs-site/node_modules/
 
+# .NET build output
+**/bin/
+**/obj/
+
 # Editor and local IDE state
 .idea/
 .vscode/

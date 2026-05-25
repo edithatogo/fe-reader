@@ -32,6 +32,11 @@ surfaces:
     stability: preview
     snapshot: contracts/snapshots/c-abi/fe_reader_c_abi.facade.json
     mutation_policy: read_only_or_plan_only
+  dotnet_wrapper:
+    stability: preview
+    snapshot: contracts/snapshots/dotnet/FeReader.Native.facade.json
+    mutation_policy: read_only_or_plan_only
+    package: packaging/nuget/FeReader.Native/FeReader.Native.csproj
   mcp:
     stability: planned
     schema_dir: contracts/mcp

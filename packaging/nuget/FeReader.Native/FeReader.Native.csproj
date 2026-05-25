@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PackageId>FeReader.Native</PackageId>
+    <Version>0.1.0-preview.1</Version>
+    <Authors>Fe Reader Project</Authors>
+    <Company>Fe Reader Project</Company>
+    <Description>Preview .NET P/Invoke wrapper for Fe Reader's plan-only native C ABI.</Description>
+    <PackageLicenseExpression>Apache-2.0 OR MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/edithatogo/fe-reader</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>pdf;native;pinvoke;local-first;preview</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="..\..\..\contracts\snapshots\c-abi\fe_reader_c_abi.facade.json" Pack="true" PackagePath="contracts/" />
+    <None Include="..\..\..\crates\fe_reader_c_abi\include\fe_reader_c_abi.h" Pack="true" PackagePath="build/native/include/" />
+  </ItemGroup>
+</Project>

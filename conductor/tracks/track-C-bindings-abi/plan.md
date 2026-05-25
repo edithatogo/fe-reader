@@ -32,10 +32,17 @@ Phase C2 implementation note:
 - Adds `scripts/c_abi_snapshot_check.sh` to verify exported C symbols against the snapshot.
 ### Phase C3 — NuGet wrapper
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase C3 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase C3 --auto-fix`.
+
+Phase C3 implementation note:
+
+- Added `FeReader.Native` as an SDK-style preview NuGet wrapper over the C ABI fallback.
+- Added a managed smoke app that verifies wrapper metadata, P/Invoke entry points and the C-compatible plan contract layout without requiring native runtime assets.
+- Records the preview .NET wrapper compatibility decision in `contracts/snapshots/dotnet/FeReader.Native.facade.json`.
+- Adds `scripts/nuget_wrapper_check.sh` as an advisory local build, smoke and pack check.
 ### Phase C4 — mobile smoke bindings
 
 - Implement contract skeleton.
