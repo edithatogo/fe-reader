@@ -47,7 +47,7 @@ Every fork must have:
 UniFFI is first-party for Swift/Kotlin/Python/Ruby. C# must be treated separately:
 
 1. evaluate `uniffi-bindgen-cs` or equivalent third-party generator;
-2. maintain a stable `extern "C"` ABI fallback;
+2. maintain a preview `extern "C"` ABI fallback in `fe_reader_c_abi`, with C# wrappers using P/Invoke rather than UniFFI assumptions;
 3. publish a `.NET` wrapper through NuGet in Wave 4-5.
 
 ## Fork manifest

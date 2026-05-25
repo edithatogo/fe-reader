@@ -30,6 +30,9 @@ matrix:
   public_api:
     command: scripts/public_api_snapshot_check.sh
     gate: P1_after_api_baseline
+  c_abi:
+    command: scripts/c_abi_snapshot_check.sh
+    gate: P1_after_api_baseline
   semver:
     command: scripts/semver_check.sh
     gate: release

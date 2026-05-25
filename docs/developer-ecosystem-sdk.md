@@ -22,6 +22,7 @@ plugin ABI version
 MCP tool manifest version
 CLI contract version
 platform automation version
+C ABI fallback version
 ```
 
 ## Stability tiers

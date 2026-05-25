@@ -24,6 +24,7 @@ members = [
   "crates/fe_reader_quality_dashboard",
   "crates/fe_reader_cli",
   "crates/fe_reader_uniffi",
+  "crates/fe_reader_c_abi",
   "crates/fe_reader_mcp",
   "crates/fe_reader_plugin_host",
   "crates/xtask"

@@ -19,10 +19,17 @@ Phase C1 implementation note:
 - Verified Swift, Kotlin, Python and Ruby binding generation into `target/uniffi-smoke/`.
 ### Phase C2 — C# ABI fallback
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase C2 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase C2 --auto-fix`.
+
+Phase C2 implementation note:
+
+- Added `fe_reader_c_abi` as a separate preview C ABI fallback for C# P/Invoke wrappers.
+- Exposes static identity/capability exports and a no-write plan contract probe only; no apply path is exposed.
+- Records the preview ABI compatibility decision in `contracts/snapshots/c-abi/fe_reader_c_abi.facade.json`.
+- Adds `scripts/c_abi_snapshot_check.sh` to verify exported C symbols against the snapshot.
 ### Phase C3 — NuGet wrapper
 
 - Implement contract skeleton.

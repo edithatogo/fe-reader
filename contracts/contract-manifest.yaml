@@ -28,6 +28,10 @@ surfaces:
     stability: preview
     snapshot: contracts/snapshots/uniffi/fe_reader_uniffi.facade.json
     mutation_policy: read_only_or_plan_only
+  c_abi:
+    stability: preview
+    snapshot: contracts/snapshots/c-abi/fe_reader_c_abi.facade.json
+    mutation_policy: read_only_or_plan_only
   mcp:
     stability: planned
     schema_dir: contracts/mcp

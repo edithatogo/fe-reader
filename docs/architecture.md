@@ -31,7 +31,8 @@ Core
 | `fe_reader_conversion` | Markdown, HTML, DOCX, Typst/Quarto/Pandoc pipelines | Provider-based |
 | `fe_reader_forms` | AcroForm inspection/filling/authoring | Later Stage 3 |
 | `fe_reader_cli` | Contract-first CLI | Test harness and automation |
-| `fe_reader_uniffi` | Swift/Kotlin/Python/Ruby bindings, C# strategy wrapper | UniFFI boundary |
+| `fe_reader_uniffi` | Swift/Kotlin/Python/Ruby bindings | UniFFI boundary |
+| `fe_reader_c_abi` | C ABI fallback for C# P/Invoke wrappers | Separate from UniFFI assumptions |
 | `fe_reader_mcp` | Read-only-first MCP server | Late Wave 5 |
 | `fe_reader_plugin_host` | WASM plugin host | Late Wave 5 |
 | `fe_reader_platform_*` | Per-platform integrations | Native shell concerns only |

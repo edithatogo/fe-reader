@@ -138,6 +138,7 @@ stable_commands = {
     '04-api-compatibility.yml': [
         'bash scripts/api_compat_check.sh',
         'bash scripts/public_api_snapshot_check.sh',
+        'bash scripts/c_abi_snapshot_check.sh',
     ],
 }
 for wf_name, commands in stable_commands.items():

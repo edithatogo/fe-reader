@@ -1,0 +1,57 @@
+{
+  "surface": "c_abi",
+  "crate": "fe_reader_c_abi",
+  "version": "0.1.0",
+  "stability": "preview",
+  "abi_version": {
+    "major": 0,
+    "minor": 1,
+    "patch": 0
+  },
+  "csharp_strategy": "p_invoke_fallback",
+  "mutation_policy": "read_only_or_plan_only",
+  "headers": ["crates/fe_reader_c_abi/include/fe_reader_c_abi.h"],
+  "exports": [
+    {
+      "name": "fe_reader_c_abi_version_major",
+      "returns": "uint32_t",
+      "policy": "read_only"
+    },
+    {
+      "name": "fe_reader_c_abi_version_minor",
+      "returns": "uint32_t",
+      "policy": "read_only"
+    },
+    {
+      "name": "fe_reader_c_abi_version_patch",
+      "returns": "uint32_t",
+      "policy": "read_only"
+    },
+    {
+      "name": "fe_reader_c_abi_contract_json",
+      "returns": "const char *",
+      "policy": "read_only_static_lifetime"
+    },
+    {
+      "name": "fe_reader_c_abi_supports_apply",
+      "returns": "uint32_t",
+      "policy": "read_only"
+    },
+    {
+      "name": "fe_reader_c_abi_supports_plan_only",
+      "returns": "uint32_t",
+      "policy": "read_only"
+    },
+    {
+      "name": "fe_reader_c_abi_plan_noop_contract",
+      "returns": "FeReaderCAbiPlanContract",
+      "policy": "plan_only_no_write"
+    }
+  ],
+  "dto_types": ["FeReaderCAbiPlanContract"],
+  "notes": [
+    "No apply path is exposed in Wave 0.",
+    "C# wrapper work remains separate from first-party UniFFI bindings.",
+    "Future mutating exports must require document hash match, patch plan ID, policy evaluation, approval token and audit receipt emission."
+  ]
+}

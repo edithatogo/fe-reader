@@ -38,6 +38,7 @@ Web postMessage and browser-extension contracts
 - UniFFI DTOs should avoid exposing internal enums that may expand rapidly.
 - C# interop must remain isolated from UniFFI first-party binding assumptions.
 - The Wave 0 UniFFI facade is `preview`, read-only or plan-only, and must not expose an apply path until mutation approval, transaction journaling, verification and audit receipt contracts are available at the binding boundary.
+- The Wave 0 C ABI fallback is `preview`, `extern "C"`, P/Invoke-oriented, and limited to static identity/capability and no-write plan probes until a reviewed mutation boundary exists.
 
 ## Tools
 
@@ -59,6 +60,7 @@ fe-reader contract diff previous-contracts/ current-contracts/
 contracts/snapshots/
   rust-public-api/
   uniffi/
+  c-abi/
   cli/
   mcp/
   plugin-abi/

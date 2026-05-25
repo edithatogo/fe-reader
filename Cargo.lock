@@ -1131,6 +1131,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "fe_reader_c_abi"
+version = "0.1.0"
+dependencies = [
+ "fe_reader_core",
+]
+
+[[package]]
 name = "fe_reader_cli"
 version = "0.1.0"
 dependencies = [
