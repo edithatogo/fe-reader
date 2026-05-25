@@ -3,6 +3,11 @@
 # Rust build output
 /target/
 
+# Starlight/Astro docs output
+/docs-site/.astro/
+/docs-site/dist/
+/docs-site/node_modules/
+
 # Editor and local IDE state
 .idea/
 .vscode/
