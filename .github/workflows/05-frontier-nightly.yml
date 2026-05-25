@@ -23,7 +23,7 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
-      - uses: dtolnay/rust-toolchain@${{ matrix.toolchain }} # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - run: rustup toolchain install ${{ matrix.toolchain }} --profile minimal
       - run: cargo +${{ matrix.toolchain }} check --workspace --all-targets
       - run: bash scripts/miri_smoke.sh
       - run: bash scripts/sanitizer_smoke.sh
