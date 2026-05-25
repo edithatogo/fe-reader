@@ -317,7 +317,7 @@ mod tests {
         let plan = FePatchPlan::from(core_plan);
 
         assert_eq!(plan.document_id, "doc-1");
-        assert_eq!(plan.write_mode, "full_rewrite");
+        assert_eq!(plan.write_mode, "sanitizing_rewrite");
         assert_eq!(plan.risk_level, FeRiskLevel::HighRisk);
         assert!(!plan.approved_for_apply);
         assert_eq!(plan.operation_count, 1);

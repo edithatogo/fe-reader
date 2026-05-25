@@ -92,7 +92,7 @@ pub fn crate_identity() -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use fe_reader_core::{DocumentId, OperationKind, OperationSource};
+    use fe_reader_core::{DocumentId, OperationKind, OperationSource, WriteMode};
 
     #[test]
     fn metadata_plan_is_not_auto_approved() {
@@ -111,5 +111,33 @@ mod tests {
         );
         assert!(!plan.approved_for_apply);
         assert_eq!(plan.operations.len(), 1);
+    }
+
+    #[test]
+    fn metadata_write_mode_distinguishes_update_from_scrub() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "metadata",
+        );
+        let update_plan = plan_metadata_operations(
+            &intent,
+            &[MetadataOperation::SetInfoField {
+                field: "title".into(),
+                value: "Fe".into(),
+            }],
+        );
+        let scrub_plan = plan_metadata_operations(
+            &intent,
+            &[MetadataOperation::Scrub {
+                mode: MetadataScrubMode::Aggressive,
+            }],
+        );
+
+        assert_eq!(update_plan.write_mode, WriteMode::IncrementalAppend);
+        assert_eq!(scrub_plan.write_mode, WriteMode::SanitizingRewrite);
+        assert!(!update_plan.approved_for_apply);
+        assert!(!scrub_plan.approved_for_apply);
     }
 }

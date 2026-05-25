@@ -1,0 +1,36 @@
+{
+  "surface": "rust_crate",
+  "crate": "fe_reader_core",
+  "version": "0.1.0",
+  "stability": "preview",
+  "phase": "A5",
+  "contract": "write_modes",
+  "mutation_policy": "write_mode_is_derived_from_planned_operations",
+  "public_types": [
+    "WriteMode",
+    "PatchOperation",
+    "PatchPlan",
+    "OperationIntent",
+    "RiskLevel"
+  ],
+  "public_methods": [
+    "PatchOperation::required_write_mode",
+    "PatchPlan::draft"
+  ],
+  "policy": {
+    "noop": "no_write",
+    "place_stamp": "incremental_append",
+    "set_metadata": "incremental_append",
+    "metadata_scrub_mode": "sanitizing_rewrite",
+    "redact_region": "sanitizing_rewrite",
+    "delete_pages": "full_rewrite",
+    "rotate_pages": "full_rewrite",
+    "reorder_pages": "full_rewrite"
+  },
+  "notes": [
+    "Patch plans derive write mode from operations rather than caller-selected shortcuts.",
+    "Ordinary metadata updates and stamps are append-friendly plan shapes in Wave 0.",
+    "Mixed-operation plans use the strongest required write mode.",
+    "Secure redaction and metadata scrubbing require sanitizing rewrites."
+  ]
+}

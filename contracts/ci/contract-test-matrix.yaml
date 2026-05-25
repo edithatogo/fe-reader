@@ -27,6 +27,9 @@ matrix:
   page_ops_contract:
     command: python3 scripts/page_ops_contract_check.py
     gate: P0
+  write_modes_contract:
+    command: python3 scripts/write_modes_contract_check.py
+    gate: P0
   wave0_acceptance:
     command: python3 scripts/wave0_acceptance_check.py
     gate: P0

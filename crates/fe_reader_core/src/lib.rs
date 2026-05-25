@@ -187,6 +187,25 @@ pub enum WriteMode {
     SanitizingRewrite,
 }
 
+impl WriteMode {
+    fn precedence(self) -> u8 {
+        match self {
+            Self::NoWrite => 0,
+            Self::IncrementalAppend => 1,
+            Self::FullRewrite => 2,
+            Self::SanitizingRewrite => 3,
+        }
+    }
+
+    fn strongest(left: Self, right: Self) -> Self {
+        if left.precedence() >= right.precedence() {
+            left
+        } else {
+            right
+        }
+    }
+}
+
 /// One planned operation inside a patch plan.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case")]
@@ -238,6 +257,23 @@ impl PatchOperation {
     #[must_use]
     pub fn mutates_document(&self) -> bool {
         !matches!(self, Self::Noop)
+    }
+
+    /// Returns the minimum write mode required by this operation.
+    #[must_use]
+    pub fn required_write_mode(&self) -> WriteMode {
+        match self {
+            Self::Noop => WriteMode::NoWrite,
+            Self::SetMetadata { key, .. } if key == "metadata_scrub_mode" => {
+                WriteMode::SanitizingRewrite
+            }
+            Self::SetMetadata { .. } => WriteMode::IncrementalAppend,
+            Self::DeletePages { .. } | Self::RotatePages { .. } | Self::ReorderPages { .. } => {
+                WriteMode::FullRewrite
+            }
+            Self::RedactRegion { .. } => WriteMode::SanitizingRewrite,
+            Self::PlaceStamp { .. } => WriteMode::IncrementalAppend,
+        }
     }
 
     /// Creates a page deletion operation.
@@ -425,11 +461,10 @@ impl PatchPlan {
         {
             risk_level = RiskLevel::DocumentMutation;
         }
-        let write_mode = if operations.iter().any(PatchOperation::mutates_document) {
-            WriteMode::FullRewrite
-        } else {
-            WriteMode::NoWrite
-        };
+        let write_mode = operations
+            .iter()
+            .map(PatchOperation::required_write_mode)
+            .fold(WriteMode::NoWrite, WriteMode::strongest);
         Self {
             plan_id: PatchPlanId::new(),
             intent_id: intent.intent_id.clone(),
@@ -687,7 +722,7 @@ mod tests {
         );
         assert!(!plan.approved_for_apply);
         assert_eq!(plan.intent_id, intent.intent_id);
-        assert_eq!(plan.write_mode, WriteMode::FullRewrite);
+        assert_eq!(plan.write_mode, WriteMode::IncrementalAppend);
         assert_eq!(plan.risk_level, RiskLevel::DocumentMutation);
     }
 
@@ -718,7 +753,7 @@ mod tests {
             }],
         );
 
-        assert_eq!(plan.write_mode, WriteMode::FullRewrite);
+        assert_eq!(plan.write_mode, WriteMode::IncrementalAppend);
         assert_eq!(plan.risk_level, RiskLevel::DocumentMutation);
         assert!(!plan.approved_for_apply);
     }
@@ -740,8 +775,75 @@ mod tests {
             }],
         );
 
-        assert_eq!(plan.write_mode, WriteMode::FullRewrite);
+        assert_eq!(plan.write_mode, WriteMode::SanitizingRewrite);
         assert_eq!(plan.risk_level, RiskLevel::HighRisk);
+        assert!(!plan.approved_for_apply);
+    }
+
+    #[test]
+    fn write_mode_policy_maps_operations_to_minimum_safe_mode() {
+        assert_eq!(
+            PatchOperation::Noop.required_write_mode(),
+            WriteMode::NoWrite
+        );
+        assert_eq!(
+            PatchOperation::PlaceStamp {
+                page_index: 0,
+                stamp_ref: "sig".into()
+            }
+            .required_write_mode(),
+            WriteMode::IncrementalAppend
+        );
+        assert_eq!(
+            PatchOperation::SetMetadata {
+                key: "title".into(),
+                value: "Fe".into()
+            }
+            .required_write_mode(),
+            WriteMode::IncrementalAppend
+        );
+        assert_eq!(
+            PatchOperation::SetMetadata {
+                key: "metadata_scrub_mode".into(),
+                value: "Aggressive".into()
+            }
+            .required_write_mode(),
+            WriteMode::SanitizingRewrite
+        );
+        assert_eq!(
+            PatchOperation::RedactRegion {
+                page_index: 0,
+                region: "10,10,20,20".into()
+            }
+            .required_write_mode(),
+            WriteMode::SanitizingRewrite
+        );
+    }
+
+    #[test]
+    fn mixed_operations_use_strongest_write_mode() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "stamp_and_redact",
+        );
+        let plan = PatchPlan::draft(
+            &intent,
+            "stamp and redact",
+            vec![
+                PatchOperation::PlaceStamp {
+                    page_index: 0,
+                    stamp_ref: "approved".into(),
+                },
+                PatchOperation::RedactRegion {
+                    page_index: 0,
+                    region: "10,10,20,20".into(),
+                },
+            ],
+        );
+
+        assert_eq!(plan.write_mode, WriteMode::SanitizingRewrite);
         assert!(!plan.approved_for_apply);
     }
 

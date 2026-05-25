@@ -54,10 +54,16 @@ Phase A4 implementation note:
 - Added `scripts/page_ops_contract_check.py` and wired it into the hard phase gate.
 ### Phase A5 — Write modes
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase A5 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase A5 --auto-fix`.
+
+Phase A5 implementation note:
+
+- Added operation-derived write-mode policy so patch plans cannot choose weaker write modes by default.
+- Escalated redaction and metadata scrubbing to `sanitizing_rewrite`, while stamps can use `incremental_append`.
+- Added a write-mode public API snapshot and `scripts/write_modes_contract_check.py` as a hard phase-gate check.
 ### Phase A6 — Audit receipts
 
 - Implement contract skeleton.

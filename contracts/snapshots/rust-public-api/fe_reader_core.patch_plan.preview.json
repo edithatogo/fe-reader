@@ -24,7 +24,7 @@
   },
   "notes": [
     "No-op plans use no_write and stay unapproved.",
-    "Plans containing document-mutating operations use full_rewrite by default.",
+    "Plans derive write mode from planned operation semantics.",
     "Mutating operations raise read-only intent risk to document_mutation.",
     "Approval is represented explicitly and must only be set after policy review."
   ]
