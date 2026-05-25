@@ -299,6 +299,31 @@ mod tests {
     }
 
     #[test]
+    fn mutating_core_patch_plan_conversion_preserves_policy_shape() {
+        let intent = OperationIntent::high_risk(
+            OperationSource::Automation,
+            DocumentId("doc-1".to_owned()),
+            OperationKind::PlanMutation,
+            "plan_redaction",
+        );
+        let core_plan = PatchPlan::draft(
+            &intent,
+            "redact region",
+            vec![PatchOperation::RedactRegion {
+                page_index: 0,
+                region: "10,10,20,20".to_owned(),
+            }],
+        );
+        let plan = FePatchPlan::from(core_plan);
+
+        assert_eq!(plan.document_id, "doc-1");
+        assert_eq!(plan.write_mode, "full_rewrite");
+        assert_eq!(plan.risk_level, FeRiskLevel::HighRisk);
+        assert!(!plan.approved_for_apply);
+        assert_eq!(plan.operation_count, 1);
+    }
+
+    #[test]
     fn android_intent_style_smoke_stays_read_only() {
         let intent = create_read_only_intent(
             FeOperationSource::Automation,

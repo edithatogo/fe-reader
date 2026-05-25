@@ -1,0 +1,31 @@
+{
+  "surface": "rust_crate",
+  "crate": "fe_reader_core",
+  "version": "0.1.0",
+  "stability": "preview",
+  "phase": "A2",
+  "contract": "patch_plan",
+  "mutation_policy": "draft_plans_are_unapproved_until_policy_review",
+  "public_types": [
+    "PatchPlan",
+    "PatchPlanId",
+    "PatchOperation",
+    "WriteMode",
+    "RiskLevel",
+    "OperationIntent"
+  ],
+  "constructors": [
+    "PatchPlan::draft",
+    "PatchPlan::approved"
+  ],
+  "cli_evidence": {
+    "command": "cargo run -q -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json",
+    "plan_schema": "schemas/patch-plan.schema.json"
+  },
+  "notes": [
+    "No-op plans use no_write and stay unapproved.",
+    "Plans containing document-mutating operations use full_rewrite by default.",
+    "Mutating operations raise read-only intent risk to document_mutation.",
+    "Approval is represented explicitly and must only be set after policy review."
+  ]
+}

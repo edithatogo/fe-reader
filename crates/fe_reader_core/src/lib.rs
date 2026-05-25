@@ -621,6 +621,60 @@ mod tests {
     }
 
     #[test]
+    fn noop_patch_plan_is_no_write_and_unapproved() {
+        let intent = OperationIntent::read_only(OperationSource::Cli, DocumentId::new(), "inspect");
+        let plan = PatchPlan::draft(&intent, "inspect", vec![PatchOperation::Noop]);
+
+        assert_eq!(plan.write_mode, WriteMode::NoWrite);
+        assert_eq!(plan.risk_level, RiskLevel::ReadOnly);
+        assert!(!plan.approved_for_apply);
+        assert_eq!(plan.operations, vec![PatchOperation::Noop]);
+    }
+
+    #[test]
+    fn mutating_operation_raises_read_only_plan_risk() {
+        let intent = OperationIntent::read_only(
+            OperationSource::Cli,
+            DocumentId::new(),
+            "bad_metadata_plan",
+        );
+        let plan = PatchPlan::draft(
+            &intent,
+            "set metadata",
+            vec![PatchOperation::SetMetadata {
+                key: "title".into(),
+                value: "x".into(),
+            }],
+        );
+
+        assert_eq!(plan.write_mode, WriteMode::FullRewrite);
+        assert_eq!(plan.risk_level, RiskLevel::DocumentMutation);
+        assert!(!plan.approved_for_apply);
+    }
+
+    #[test]
+    fn high_risk_redaction_plan_preserves_high_risk() {
+        let intent = OperationIntent::high_risk(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "plan_redaction",
+        );
+        let plan = PatchPlan::draft(
+            &intent,
+            "redact region",
+            vec![PatchOperation::RedactRegion {
+                page_index: 0,
+                region: "10,10,20,20".into(),
+            }],
+        );
+
+        assert_eq!(plan.write_mode, WriteMode::FullRewrite);
+        assert_eq!(plan.risk_level, RiskLevel::HighRisk);
+        assert!(!plan.approved_for_apply);
+    }
+
+    #[test]
     fn sha256_is_stable() {
         assert_eq!(
             sha256_hex(b"Fe Reader"),

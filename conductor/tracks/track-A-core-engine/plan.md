@@ -18,10 +18,16 @@ Phase A1 implementation note:
 - Added `scripts/operation_intent_contract_check.py` as a hard contract check for CLI intent JSON and schema alignment.
 ### Phase A2 — Patch plans
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase A2 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase A2 --auto-fix`.
+
+Phase A2 implementation note:
+
+- Added focused `PatchPlan` tests for no-write plans and risk raising from mutating operations.
+- Updated the patch plan JSON schema to match the serialized core contract used by CLI inspect.
+- Added a rust public API snapshot and `scripts/patch_plan_contract_check.py` as a hard contract check for CLI plan JSON.
 ### Phase A3 — PDF model
 
 - Implement contract skeleton.

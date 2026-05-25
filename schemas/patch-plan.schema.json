@@ -1,53 +1,134 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "FePatchPlan",
+  "title": "PatchPlan",
   "type": "object",
   "required": [
-    "patch_plan_id",
+    "plan_id",
     "intent_id",
-    "document_sha256_before",
-    "write_mode",
+    "document_id",
     "summary",
     "operations",
-    "requires_approval"
+    "write_mode",
+    "risk_level",
+    "approved_for_apply"
   ],
+  "additionalProperties": false,
   "properties": {
-    "patch_plan_id": {
+    "plan_id": {
       "type": "string"
     },
     "intent_id": {
       "type": "string"
     },
-    "document_sha256_before": {
-      "type": "string",
-      "pattern": "^[a-fA-F0-9]{64}$"
-    },
-    "write_mode": {
-      "enum": [
-        "IncrementalAppend",
-        "FullRewritePreserveMetadata",
-        "FullSanitizingRewrite"
-      ]
+    "document_id": {
+      "type": "string"
     },
     "summary": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "warnings": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "type": "string",
+      "minLength": 1
     },
     "operations": {
       "type": "array",
       "items": {
-        "type": "object"
-      }
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "op"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "const": "noop"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "op",
+              "key",
+              "value"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "const": "set_metadata"
+              },
+              "key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "op",
+              "page_index",
+              "region"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "const": "redact_region"
+              },
+              "page_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "region": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "op",
+              "page_index",
+              "stamp_ref"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "const": "place_stamp"
+              },
+              "page_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "stamp_ref": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        ]
+      },
+      "minItems": 1
     },
-    "requires_approval": {
+    "write_mode": {
+      "enum": [
+        "no_write",
+        "incremental_append",
+        "full_rewrite",
+        "sanitizing_rewrite"
+      ]
+    },
+    "risk_level": {
+      "enum": [
+        "read_only",
+        "local_state",
+        "document_mutation",
+        "high_risk"
+      ]
+    },
+    "approved_for_apply": {
       "type": "boolean"
     }
   }
