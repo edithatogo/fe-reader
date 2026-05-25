@@ -37,6 +37,7 @@ Web postMessage and browser-extension contracts
 - Plugin ABI changes require a new `fe_plugin_api` version.
 - UniFFI DTOs should avoid exposing internal enums that may expand rapidly.
 - C# interop must remain isolated from UniFFI first-party binding assumptions.
+- The Wave 0 UniFFI facade is `preview`, read-only or plan-only, and must not expose an apply path until mutation approval, transaction journaling, verification and audit receipt contracts are available at the binding boundary.
 
 ## Tools
 

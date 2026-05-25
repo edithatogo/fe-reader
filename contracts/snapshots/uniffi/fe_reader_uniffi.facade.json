@@ -1,0 +1,44 @@
+{
+  "surface": "uniffi",
+  "crate": "fe_reader_uniffi",
+  "version": "0.1.0",
+  "stability": "preview",
+  "uniffi_version": "0.31.1",
+  "languages": ["swift", "kotlin", "python", "ruby"],
+  "mutation_policy": "read_only_or_plan_only",
+  "facades": [
+    {
+      "name": "Wave0CoreFacade",
+      "functions": [
+        {
+          "name": "binding_info",
+          "returns": "FeBindingInfo",
+          "policy": "read_only"
+        },
+        {
+          "name": "create_read_only_intent",
+          "returns": "FeOperationIntent",
+          "policy": "read_only"
+        },
+        {
+          "name": "draft_noop_plan",
+          "returns": "FePatchPlan",
+          "policy": "plan_only_no_write"
+        }
+      ],
+      "dto_types": [
+        "FeBindingInfo",
+        "FeOperationSource",
+        "FeRiskLevel",
+        "FeOperationIntent",
+        "FePatchPlan"
+      ],
+      "error_types": [],
+      "notes": [
+        "No apply path is exposed in Wave 0.",
+        "C# ABI fallback is separate from first-party UniFFI bindings.",
+        "DTOs intentionally avoid binding internal Rust enums that may expand rapidly."
+      ]
+    }
+  ]
+}

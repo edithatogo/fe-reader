@@ -6,10 +6,17 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 
 ### Phase C1 — UniFFI Swift/Kotlin/Python/Ruby
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase C1 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase C1 --auto-fix`.
+
+Phase C1 implementation note:
+
+- Added a narrow `fe_reader_uniffi` proc-macro facade over core `OperationIntent` and `PatchPlan` contracts.
+- Exposes owned binding DTOs for Swift/Kotlin/Python/Ruby smoke generation without exposing PDF parsing, rendering, apply, platform, plugin, or ML surfaces.
+- Records the preview API compatibility decision in `contracts/snapshots/uniffi/fe_reader_uniffi.facade.json`.
+- Verified Swift, Kotlin, Python and Ruby binding generation into `target/uniffi-smoke/`.
 ### Phase C2 — C# ABI fallback
 
 - Implement contract skeleton.
