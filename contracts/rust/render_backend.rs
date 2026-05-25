@@ -12,12 +12,12 @@ pub enum AccelerationPreference {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RenderTileRequest {
-    pub document_id: String,
+    pub document_ref: String,
     pub page_index: u32,
-    pub tile_x: u32,
-    pub tile_y: u32,
-    pub tile_width: u32,
-    pub tile_height: u32,
+    pub tile_x: f32,
+    pub tile_y: f32,
+    pub tile_width: f32,
+    pub tile_height: f32,
     pub scale: f32,
     pub rotation_degrees: i32,
     pub color_mode: String,
@@ -36,5 +36,10 @@ pub struct RenderedTile {
 pub trait RenderBackend: Send + Sync {
     fn backend_name(&self) -> &'static str;
     fn render_tile(&self, request: RenderTileRequest) -> anyhow::Result<RenderedTile>;
-    fn render_page_thumbnail(&self, document_id: &str, page_index: u32, max_px: u32) -> anyhow::Result<RenderedTile>;
+    fn render_page_thumbnail(
+        &self,
+        document_ref: &str,
+        page_index: u32,
+        max_px: u32,
+    ) -> anyhow::Result<RenderedTile>;
 }

@@ -14,7 +14,7 @@ Read document info and XMP metadata. Do not mutate bytes yet.
 
 ## Slice 4: Render adapter contract test
 
-Keep `NullRenderBackend`; add a PDFium adapter behind `fe_reader_render_pdfium`. Ensure rendering tests can be skipped when PDFium is unavailable.
+Implemented in Track B Wave 0 scaffolding. `NullRenderBackend` remains deterministic, `fe_reader_render_pdfium` exposes an unavailable-runtime adapter boundary, and GPU/hardware acceleration remain policy-only until runtime discovery is governed.
 
 ## Slice 5: Policy matrix tests
 
