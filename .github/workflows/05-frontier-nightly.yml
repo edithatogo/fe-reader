@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 60
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - run: rustup toolchain install ${{ matrix.toolchain }} --profile minimal
       - run: cargo +${{ matrix.toolchain }} check --workspace --all-targets
       - run: bash scripts/miri_smoke.sh

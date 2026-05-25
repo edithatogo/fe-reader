@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
-      - uses: actions/setup-python@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/setup-python@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
         with:
           python-version: "3.x"
       - run: python3 scripts/validate_schemas.py
