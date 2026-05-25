@@ -8,6 +8,7 @@ failures: list[str] = []
 
 required = [
     'contracts/contract-manifest.yaml',
+    'contracts/cli/cli-contract.md',
     'contracts/ci/contract-test-matrix.yaml',
     'contracts/ci/api-boundary-policy.yaml',
     'schemas/pdf-document-summary.schema.json',
@@ -29,6 +30,20 @@ required = [
 for rel in required:
     if not (ROOT / rel).exists():
         failures.append(f'missing required file: {rel}')
+
+cli_contract = ROOT / 'contracts/cli/cli-contract.md'
+if cli_contract.exists():
+    txt = cli_contract.read_text(encoding='utf-8')
+    for token in ['summary.parser', 'page count', 'trailer keys', 'non-fatal parser error']:
+        if token not in txt:
+            failures.append(f'CLI contract missing parser contract token: {token}')
+
+summary_schema = ROOT / 'schemas/pdf-document-summary.schema.json'
+if summary_schema.exists():
+    txt = summary_schema.read_text(encoding='utf-8')
+    for token in ['"parser"', '"adapter"', '"page_count"', '"encrypted"', '"trailer_keys"', '"error"']:
+        if token not in txt:
+            failures.append(f'PDF document summary schema missing parser token: {token}')
 
 core_toml = ROOT / 'crates/fe_reader_core/Cargo.toml'
 if core_toml.exists():

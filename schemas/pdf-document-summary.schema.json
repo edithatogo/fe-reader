@@ -8,7 +8,8 @@
     "header",
     "encrypted_hint",
     "linearized_hint",
-    "eof_marker_hint"
+    "eof_marker_hint",
+    "parser"
   ],
   "properties": {
     "document_id": {
@@ -54,6 +55,55 @@
     },
     "eof_marker_hint": {
       "type": "boolean"
+    },
+    "parser": {
+      "type": "object",
+      "required": [
+        "adapter",
+        "version",
+        "page_count",
+        "encrypted",
+        "trailer_keys",
+        "error"
+      ],
+      "properties": {
+        "adapter": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "encrypted": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "trailer_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

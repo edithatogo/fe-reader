@@ -6,6 +6,12 @@ matrix:
   schemas:
     command: python3 scripts/validate_schemas.py
     gate: P0
+  wave0_acceptance:
+    command: python3 scripts/wave0_acceptance_check.py
+    gate: P0
+  security_policy:
+    command: bash scripts/security_policy_check.sh
+    gate: P0
   rust_stable:
     command: cargo nextest run --workspace --all-targets --all-features
     gate: P0

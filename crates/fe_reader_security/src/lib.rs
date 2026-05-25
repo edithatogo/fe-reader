@@ -182,4 +182,76 @@ mod tests {
         assert!(decision.allowed);
         assert!(decision.requires_review);
     }
+
+    #[test]
+    fn default_policy_matrix_keeps_risky_surfaces_conservative() {
+        let policy = SecurityPolicy::default();
+        let cases = [
+            (
+                OperationSource::Cli,
+                PolicyAction::Read,
+                RiskLevel::ReadOnly,
+                true,
+                false,
+            ),
+            (
+                OperationSource::Cli,
+                PolicyAction::PlanMutation,
+                RiskLevel::DocumentMutation,
+                true,
+                true,
+            ),
+            (
+                OperationSource::Cli,
+                PolicyAction::ApplyMutation,
+                RiskLevel::HighRisk,
+                true,
+                true,
+            ),
+            (
+                OperationSource::Cli,
+                PolicyAction::Export,
+                RiskLevel::HighRisk,
+                true,
+                true,
+            ),
+            (
+                OperationSource::Automation,
+                PolicyAction::UseAutomation,
+                RiskLevel::HighRisk,
+                true,
+                true,
+            ),
+            (
+                OperationSource::Cli,
+                PolicyAction::RunExternalTool,
+                RiskLevel::HighRisk,
+                false,
+                true,
+            ),
+            (
+                OperationSource::Plugin,
+                PolicyAction::LoadPlugin,
+                RiskLevel::HighRisk,
+                false,
+                true,
+            ),
+            (
+                OperationSource::Web,
+                PolicyAction::NetworkAccess,
+                RiskLevel::HighRisk,
+                false,
+                true,
+            ),
+        ];
+
+        for (source, action, risk, allowed, requires_review) in cases {
+            let decision = evaluate_policy(&policy, source, action, risk);
+            assert_eq!(decision.allowed, allowed, "allowed mismatch for {action:?}");
+            assert_eq!(
+                decision.requires_review, requires_review,
+                "requires_review mismatch for {action:?}"
+            );
+        }
+    }
 }

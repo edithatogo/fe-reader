@@ -15,6 +15,9 @@ Wave 0 is accepted when the following are true.
 - `fe-reader inspect fixtures/minimal/minimal.pdf --json` emits `intent`, `plan` and `summary`.
 - `fe-reader policy plugin` denies plugin loading by default.
 - `fe-reader policy external-tool` denies external tools by default.
+- `fe-reader policy network` denies network access by default.
+- `fe-reader policy apply`, `export`, `automation`, and `plan` require review by default.
+- `python3 scripts/wave0_acceptance_check.py` validates the emitted `inspect --json` summary against `schemas/pdf-document-summary.schema.json` and checks the Wave 0 policy decision matrix.
 
 ## Safety
 

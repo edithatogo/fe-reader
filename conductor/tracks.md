@@ -103,7 +103,7 @@ Additional v6 parallelisation rules:
 |---|---|---:|---|---|
 | AI | Executable Wave 0 Contracts | 0 | complete | Workspace compiles, Wave 0 contract tests pass, CLI smoke and conservative policy checks succeed. |
 | AJ | CLI First Integration | 0 | complete | CLI inspect now reports parser-backed page count and diagnostics while preserving read-only planning. |
-| AK | Contract Acceptance Tests | 0 | planned | Contract acceptance test hardening. |
+| AK | Contract Acceptance Tests | 0 | complete | Wave 0 acceptance checks now validate CLI JSON, parser schema, policy matrix, and security-policy defaults as hard gates. |
 
 ## v9 repository and CI/CD hardening tracks
 

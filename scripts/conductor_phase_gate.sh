@@ -20,7 +20,12 @@ fi
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-features
+python3 scripts/strict_contract_check.py
+python3 scripts/ci_policy_check.py
 python3 scripts/validate_schemas.py
+python3 scripts/v8_static_contract_check.py
+bash scripts/v8_cli_smoke.sh
+python3 scripts/wave0_acceptance_check.py
 python3 scripts/architecture_compliance_check.py --workspace-root .
 python3 scripts/corpus_manifest_validate.py
 
