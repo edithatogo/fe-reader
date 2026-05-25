@@ -214,6 +214,23 @@ pub enum PatchOperation {
         /// Stamp template id or opaque asset reference.
         stamp_ref: String,
     },
+    /// Plan-only page deletion.
+    DeletePages {
+        /// Zero-based page indexes to delete.
+        page_indexes: Vec<u32>,
+    },
+    /// Plan-only page rotation.
+    RotatePages {
+        /// Zero-based page indexes to rotate.
+        page_indexes: Vec<u32>,
+        /// Clockwise rotation in degrees. Must be 0, 90, 180, or 270.
+        rotation_degrees: u16,
+    },
+    /// Plan-only page reordering.
+    ReorderPages {
+        /// Complete new zero-based page ordering.
+        new_order: Vec<u32>,
+    },
 }
 
 impl PatchOperation {
@@ -221,6 +238,60 @@ impl PatchOperation {
     #[must_use]
     pub fn mutates_document(&self) -> bool {
         !matches!(self, Self::Noop)
+    }
+
+    /// Creates a page deletion operation.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no page indexes are supplied.
+    pub fn delete_pages(page_indexes: Vec<u32>) -> Result<Self, FeError> {
+        if page_indexes.is_empty() {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "delete_pages requires at least one page index",
+            ));
+        }
+        Ok(Self::DeletePages { page_indexes })
+    }
+
+    /// Creates a page rotation operation.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no page indexes are supplied or the rotation is not a right angle.
+    pub fn rotate_pages(page_indexes: Vec<u32>, rotation_degrees: u16) -> Result<Self, FeError> {
+        if page_indexes.is_empty() {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "rotate_pages requires at least one page index",
+            ));
+        }
+        if !matches!(rotation_degrees, 0 | 90 | 180 | 270) {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "page rotation must be 0, 90, 180, or 270 degrees",
+            ));
+        }
+        Ok(Self::RotatePages {
+            page_indexes,
+            rotation_degrees,
+        })
+    }
+
+    /// Creates a page reorder operation.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the new order is empty.
+    pub fn reorder_pages(new_order: Vec<u32>) -> Result<Self, FeError> {
+        if new_order.is_empty() {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "reorder_pages requires at least one page index",
+            ));
+        }
+        Ok(Self::ReorderPages { new_order })
     }
 }
 
@@ -671,6 +742,59 @@ mod tests {
 
         assert_eq!(plan.write_mode, WriteMode::FullRewrite);
         assert_eq!(plan.risk_level, RiskLevel::HighRisk);
+        assert!(!plan.approved_for_apply);
+    }
+
+    #[test]
+    fn page_operations_validate_before_planning() {
+        assert_eq!(
+            PatchOperation::rotate_pages(vec![2], 90).unwrap(),
+            PatchOperation::RotatePages {
+                page_indexes: vec![2],
+                rotation_degrees: 90
+            }
+        );
+        assert_eq!(
+            PatchOperation::delete_pages(vec![1]).unwrap(),
+            PatchOperation::DeletePages {
+                page_indexes: vec![1]
+            }
+        );
+        assert!(PatchOperation::rotate_pages(vec![0], 45).is_err());
+        assert!(PatchOperation::delete_pages(Vec::new()).is_err());
+        assert!(PatchOperation::reorder_pages(Vec::new()).is_err());
+    }
+
+    #[test]
+    fn page_operation_patch_plan_is_mutating_and_unapproved() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "rotate_page",
+        );
+        let plan = PatchPlan::draft(
+            &intent,
+            "rotate page 1",
+            vec![PatchOperation::rotate_pages(vec![1], 90).unwrap()],
+        );
+
+        assert_eq!(plan.write_mode, WriteMode::FullRewrite);
+        assert_eq!(plan.risk_level, RiskLevel::DocumentMutation);
+        assert!(!plan.approved_for_apply);
+    }
+
+    #[test]
+    fn page_operation_raises_read_only_intent_risk() {
+        let intent = OperationIntent::read_only(OperationSource::Cli, DocumentId::new(), "bad");
+        let plan = PatchPlan::draft(
+            &intent,
+            "delete pages",
+            vec![PatchOperation::delete_pages(vec![0]).unwrap()],
+        );
+
+        assert_eq!(plan.write_mode, WriteMode::FullRewrite);
+        assert_eq!(plan.risk_level, RiskLevel::DocumentMutation);
         assert!(!plan.approved_for_apply);
     }
 

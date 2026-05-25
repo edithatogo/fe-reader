@@ -1,0 +1,30 @@
+{
+  "surface": "rust_crate",
+  "crate": "fe_reader_core",
+  "version": "0.1.0",
+  "stability": "preview",
+  "phase": "A4",
+  "contract": "page_ops",
+  "mutation_policy": "page_operations_are_patch_plan_operations_only",
+  "public_types": [
+    "PatchOperation",
+    "PatchPlan",
+    "OperationIntent",
+    "WriteMode",
+    "RiskLevel"
+  ],
+  "constructors": [
+    "PatchOperation::delete_pages",
+    "PatchOperation::rotate_pages",
+    "PatchOperation::reorder_pages"
+  ],
+  "schema_evidence": {
+    "patch_plan_schema": "schemas/patch-plan.schema.json"
+  },
+  "notes": [
+    "Page operations are patch operation variants only and do not apply document mutations directly.",
+    "Delete and rotate operations require non-empty page_indexes.",
+    "Rotate operations reject non-right-angle degrees before planning.",
+    "Page operations inside a patch plan are mutating, full-rewrite, and unapproved by default."
+  ]
+}

@@ -42,10 +42,16 @@ Phase A3 implementation note:
 - Added a PDF model public API snapshot and wired `scripts/pdf_model_contract_check.py` into the phase gate.
 ### Phase A4 — Page ops
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase A4 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase A4 --auto-fix`.
+
+Phase A4 implementation note:
+
+- Added typed page operation descriptors for delete, rotate and move inside the patch-plan contract.
+- Updated the patch plan JSON schema and public API snapshot for page-operation plan shapes.
+- Added `scripts/page_ops_contract_check.py` and wired it into the hard phase gate.
 ### Phase A5 — Write modes
 
 - Implement contract skeleton.
