@@ -36,6 +36,7 @@ bash scripts/security_policy_check.sh
 if [[ -x scripts/sbom_audit.sh ]]; then scripts/sbom_audit.sh || echo "SBOM audit advisory skip/failure before tooling hardening"; fi
 if [[ -x scripts/perf_smoke.sh ]]; then scripts/perf_smoke.sh || echo "perf smoke advisory skip"; fi
 if [[ -x scripts/search_index_smoke.sh ]]; then scripts/search_index_smoke.sh || echo "search smoke advisory skip"; fi
+if [[ -f scripts/mobile_smoke_bindings_check.py ]]; then python3 scripts/mobile_smoke_bindings_check.py || echo "mobile smoke bindings advisory skip"; fi
 if [[ -f scripts/visual_regression_compare.py ]]; then python3 scripts/visual_regression_compare.py --smoke || echo "visual regression advisory skip"; fi
 if [[ -x scripts/release_readiness_check.sh ]]; then scripts/release_readiness_check.sh || echo "release readiness advisory before Wave 4"; fi
 

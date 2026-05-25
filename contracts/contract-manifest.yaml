@@ -37,6 +37,19 @@ surfaces:
     snapshot: contracts/snapshots/dotnet/FeReader.Native.facade.json
     mutation_policy: read_only_or_plan_only
     package: packaging/nuget/FeReader.Native/FeReader.Native.csproj
+  mobile_smoke_bindings:
+    stability: preview
+    snapshot: contracts/snapshots/mobile/FeReader.MobileSmoke.facade.json
+    source_snapshot: contracts/snapshots/uniffi/fe_reader_uniffi.facade.json
+    mutation_policy: read_only_or_plan_only
+    platforms:
+      - android
+      - ios
+    languages:
+      - kotlin
+      - swift
+    supports_apply: false
+    supports_plan_only: true
   mcp:
     stability: planned
     schema_dir: contracts/mcp

@@ -40,6 +40,7 @@ Web postMessage and browser-extension contracts
 - The Wave 0 UniFFI facade is `preview`, read-only or plan-only, and must not expose an apply path until mutation approval, transaction journaling, verification and audit receipt contracts are available at the binding boundary.
 - The Wave 0 C ABI fallback is `preview`, `extern "C"`, P/Invoke-oriented, and limited to static identity/capability and no-write plan probes until a reviewed mutation boundary exists.
 - The Wave 0 .NET/NuGet wrapper is `preview`, P/Invoke-oriented, and may package managed contract metadata before native runtime assets are ready.
+- The Wave 0 mobile smoke binding contracts are `preview`, inherit the UniFFI read-only/plan-only boundary, and do not create a stable mobile SDK, store-publishing target or mutation-capable mobile API.
 
 ## Tools
 
@@ -63,6 +64,7 @@ contracts/snapshots/
   uniffi/
   c-abi/
   dotnet/
+  mobile/
   cli/
   mcp/
   plugin-abi/

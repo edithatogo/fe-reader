@@ -45,10 +45,16 @@ Phase C3 implementation note:
 - Adds `scripts/nuget_wrapper_check.sh` as an advisory local build, smoke and pack check.
 ### Phase C4 — mobile smoke bindings
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase C4 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase C4 --auto-fix`.
+
+Phase C4 implementation note:
+
+- Added a preview mobile smoke binding snapshot for Android intents/DocumentsProvider and iOS App Intents.
+- Added `scripts/mobile_smoke_bindings_check.py` to validate platform contract files, guard language and no-apply policy.
+- Records mobile smoke bindings as advisory until native app baselines exist.
 
 ## Exit criteria
 

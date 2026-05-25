@@ -297,4 +297,34 @@ mod tests {
         assert!(!plan.approved_for_apply);
         assert_eq!(plan.operation_count, 1);
     }
+
+    #[test]
+    fn android_intent_style_smoke_stays_read_only() {
+        let intent = create_read_only_intent(
+            FeOperationSource::Automation,
+            "android-doc-1".to_owned(),
+            "android.intent.action.VIEW".to_owned(),
+        );
+
+        assert_eq!(intent.source, FeOperationSource::Automation);
+        assert_eq!(intent.label, "android.intent.action.VIEW");
+        assert_eq!(intent.risk_level, FeRiskLevel::ReadOnly);
+        assert!(!intent.requires_review);
+    }
+
+    #[test]
+    fn ios_app_intent_style_smoke_stays_plan_only() {
+        let intent = create_read_only_intent(
+            FeOperationSource::Automation,
+            "ios-doc-1".to_owned(),
+            "FeOpenDocumentIntent".to_owned(),
+        );
+        let plan = draft_noop_plan(intent, "iOS App Intent smoke plan".to_owned());
+
+        assert_eq!(plan.document_id, "ios-doc-1");
+        assert_eq!(plan.write_mode, "no_write");
+        assert_eq!(plan.risk_level, FeRiskLevel::ReadOnly);
+        assert!(!plan.approved_for_apply);
+        assert_eq!(plan.operation_count, 1);
+    }
 }

@@ -1,0 +1,54 @@
+{
+  "surface": "mobile_smoke_bindings",
+  "version": "0.1.0-preview.1",
+  "stability": "preview",
+  "source_snapshot": "contracts/snapshots/uniffi/fe_reader_uniffi.facade.json",
+  "mutation_policy": "read_only_or_plan_only",
+  "languages": [
+    "kotlin",
+    "swift"
+  ],
+  "supports_apply": false,
+  "supports_plan_only": true,
+  "platforms": {
+    "android": {
+      "contract": "contracts/platform/android-intents/AndroidManifest.contract.xml",
+      "entrypoints": [
+        "android.intent.action.VIEW",
+        "android.intent.action.SEND",
+        "android.content.action.DOCUMENTS_PROVIDER"
+      ],
+      "document_mime_type": "application/pdf",
+      "provider": "org.fereader.documents"
+    },
+    "ios": {
+      "contract": "contracts/platform/ios-appintents/FeReaderAppIntents.swift",
+      "entrypoints": [
+        "FeOpenDocumentIntent",
+        "FeExtractPageTextIntent",
+        "FePlanWorkflowIntent"
+      ],
+      "document_file_type": "IntentFile"
+    }
+  },
+  "allowed_operations": [
+    "open_document_intent",
+    "extract_page_text_read_only",
+    "plan_workflow_no_apply"
+  ],
+  "forbidden_wave0_operations": [
+    "apply_patch",
+    "write_document_without_review",
+    "native_automation_mutation_without_approval"
+  ],
+  "required_mutation_guards": [
+    "patch_plan_id",
+    "document_hash_match",
+    "policy_allow_rule",
+    "approval_token"
+  ],
+  "notes": [
+    "C4 verifies mobile binding contracts only; it does not ship Android or iOS app code.",
+    "Mobile mutation surfaces remain disabled until native approval, journal, verify and audit receipt contracts are implemented at the boundary."
+  ]
+}

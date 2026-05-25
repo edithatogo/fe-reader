@@ -40,6 +40,13 @@ matrix:
     promotion_requires_adr: true
     baseline_required: true
     baseline_artifact: contracts/snapshots/dotnet/FeReader.Native.facade.json
+  mobile_smoke_bindings_advisory:
+    command: python3 scripts/mobile_smoke_bindings_check.py
+    gate: advisory_until_mobile_baseline
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: contracts/snapshots/mobile/FeReader.MobileSmoke.facade.json
   semver:
     command: scripts/semver_check.sh
     gate: release
