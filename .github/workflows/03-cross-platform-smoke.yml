@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - run: cargo metadata --format-version=1
       - run: cargo test -p fe_reader_core -p fe_reader_pdf_model -p fe_reader_security -p fe_reader_cli

@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - run: bash scripts/api_compat_check.sh
       - run: bash scripts/public_api_snapshot_check.sh

@@ -27,8 +27,8 @@ jobs:
       FE_RELEASE_ID: ${{ inputs.release_id }}
       FE_RELEASE_CHANNEL: ${{ inputs.channel }}
     steps:
-      - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
-      - uses: actions/setup-python@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/setup-python@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
         with:
           python-version: "3.x"
       - run: bash scripts/sbom_audit.sh
@@ -38,7 +38,7 @@ jobs:
       - run: python3 scripts/release_provenance_check.py
       - run: python3 scripts/release_matrix_check.py
       - run: bash scripts/release_readiness_check.sh
-      - uses: actions/upload-artifact@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/upload-artifact@v7 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
         with:
           name: release-evidence
           path: target/release-evidence/**
