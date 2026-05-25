@@ -66,8 +66,12 @@ for wf in workflow_dir.glob('*.yml'):
         for forbidden_permission in ['contents: write', 'id-token: write', 'packages: write']:
             if forbidden_permission in txt:
                 failures.append(f'{wf.name} frontier lane grants forbidden permission: {forbidden_permission}')
-        if 'actions/upload-artifact' in txt:
+        if wf.name == '05-frontier-nightly.yml' and 'actions/upload-artifact' in txt:
             failures.append(f'{wf.name} frontier lane must not upload artifacts during bootstrap')
+        if wf.name == '06-performance-nightly.yml':
+            for token in ['actions/upload-artifact', 'artifacts/perf/**', 'if-no-files-found: warn', 'retention-days:']:
+                if token not in txt:
+                    failures.append(f'{wf.name} performance evidence upload missing token: {token}')
 
     if wf.name == '07-release.yml':
         if 'workflow_dispatch:' not in txt:
@@ -99,6 +103,7 @@ if pr_contracts.exists():
         'python3 scripts/strict_contract_check.py',
         'python3 scripts/strict_mutation_contract_check.py',
         'python3 scripts/repository_ci_cd_check.py',
+        'python3 scripts/frontier_ci_check.py',
         'python3 scripts/ci_policy_check.py',
         'python3 scripts/wave0_acceptance_check.py',
     ]:
@@ -135,6 +140,30 @@ for wf_name, commands in stable_commands.items():
     for command in commands:
         if command not in txt:
             failures.append(f'{wf_name} missing stable command: {command}')
+
+frontier_commands = {
+    '05-frontier-nightly.yml': [
+        'toolchain: [beta, nightly]',
+        'cargo +${{ matrix.toolchain }} check --workspace --all-targets',
+        'bash scripts/miri_smoke.sh',
+        'bash scripts/sanitizer_smoke.sh',
+        'bash scripts/fuzz_smoke.sh',
+        'bash scripts/gpu_frontier_smoke.sh',
+        'bash scripts/differential_oracle_smoke.sh',
+    ],
+    '06-performance-nightly.yml': [
+        'bash scripts/perf_smoke.sh',
+        'bash scripts/toolchain_experiment_smoke.sh',
+    ],
+}
+for wf_name, commands in frontier_commands.items():
+    path = workflow_dir / wf_name
+    if not path.exists():
+        continue
+    txt = path.read_text(encoding='utf-8')
+    for command in commands:
+        if command not in txt:
+            failures.append(f'{wf_name} missing frontier command: {command}')
 if failures:
     print('CI POLICY CHECK FAILED')
     for f in failures:

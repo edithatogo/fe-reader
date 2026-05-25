@@ -100,6 +100,25 @@ if ruleset:
         ]:
             if token not in rules:
                 failures.append(f"main branch ruleset missing token: {token}")
+        advisory_contexts = [
+            "frontier",
+            "nightly",
+            "performance",
+            "visual",
+            "corpus",
+            "api-compatibility",
+        ]
+        required_checks = json.dumps(
+            [
+                check.get("context", "")
+                for rule in data.get("rules", [])
+                if rule.get("type") == "required_status_checks"
+                for check in rule.get("parameters", {}).get("required_status_checks", [])
+            ]
+        )
+        for context in advisory_contexts:
+            if context in required_checks:
+                failures.append(f"branch ruleset must not require advisory/frontier context without ADR: {context}")
 
 for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
     text = path.read_text(encoding="utf-8")

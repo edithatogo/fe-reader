@@ -22,6 +22,7 @@ cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-features
 python3 scripts/strict_contract_check.py
 python3 scripts/repository_ci_cd_check.py
+python3 scripts/frontier_ci_check.py
 python3 scripts/ci_policy_check.py
 python3 scripts/validate_schemas.py
 python3 scripts/v8_static_contract_check.py

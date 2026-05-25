@@ -21,3 +21,10 @@ jobs:
       - uses: actions/checkout@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - run: bash scripts/perf_smoke.sh
+      - run: bash scripts/toolchain_experiment_smoke.sh
+      - uses: actions/upload-artifact@v4 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          name: performance-frontier-reports
+          path: artifacts/perf/**
+          if-no-files-found: warn
+          retention-days: 14

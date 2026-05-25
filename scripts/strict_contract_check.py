@@ -29,6 +29,7 @@ required = [
     '.github/rulesets/main-branch-ruleset.template.json',
     'renovate.json',
     'scripts/repository_ci_cd_check.py',
+    'scripts/frontier_ci_check.py',
 ]
 for rel in required:
     if not (ROOT / rel).exists():
@@ -116,6 +117,7 @@ if matrix.exists():
     txt = matrix.read_text(encoding='utf-8')
     for token in [
         'python3 scripts/strict_mutation_contract_check.py',
+        'python3 scripts/frontier_ci_check.py',
         'bash scripts/release_evidence_check.sh',
         'python3 scripts/release_matrix_check.py',
     ]:
@@ -129,4 +131,6 @@ if failures:
     sys.exit(1)
 subprocess.run([sys.executable, 'scripts/strict_mutation_contract_check.py'], cwd=ROOT, check=True)
 subprocess.run([sys.executable, 'scripts/repository_ci_cd_check.py'], cwd=ROOT, check=True)
+subprocess.run([sys.executable, 'scripts/frontier_ci_check.py'], cwd=ROOT, check=True)
+subprocess.run([sys.executable, 'scripts/ci_policy_check.py'], cwd=ROOT, check=True)
 print('strict contract check passed')

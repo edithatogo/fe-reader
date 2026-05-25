@@ -9,6 +9,9 @@ matrix:
   repository_ci_cd:
     command: python3 scripts/repository_ci_cd_check.py
     gate: P0
+  frontier_ci_policy:
+    command: python3 scripts/frontier_ci_check.py
+    gate: P0
   schemas:
     command: python3 scripts/validate_schemas.py
     gate: P0
@@ -45,6 +48,45 @@ matrix:
   actions_security:
     command: scripts/actions_security_gate.sh
     gate: P0
-  performance:
-    command: scripts/perf_smoke.sh
-    gate: P1_after_budget_baseline
+  performance_smoke_advisory:
+    command: bash scripts/perf_smoke.sh
+    gate: advisory_until_budget_baseline
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: benchmarks/budgets/performance-budgets.yaml
+  frontier_miri:
+    command: bash scripts/miri_smoke.sh
+    gate: advisory_frontier
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: target/frontier-reports/miri-smoke.json
+  frontier_sanitizers:
+    command: bash scripts/sanitizer_smoke.sh
+    gate: advisory_frontier
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: target/frontier-reports/sanitizer-smoke.json
+  frontier_fuzz:
+    command: bash scripts/fuzz_smoke.sh
+    gate: advisory_frontier
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: target/frontier-reports/fuzz-smoke.json
+  frontier_gpu:
+    command: bash scripts/gpu_frontier_smoke.sh
+    gate: advisory_frontier
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: target/frontier-reports/gpu-frontier-smoke.json
+  frontier_toolchain_experiments:
+    command: bash scripts/toolchain_experiment_smoke.sh
+    gate: advisory_frontier
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: target/frontier-reports/toolchain-experiment-smoke.json

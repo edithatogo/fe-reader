@@ -7,6 +7,7 @@ Start by making the repository enforcement real before implementing feature brea
 ```bash
 python3 scripts/strict_contract_check.py
 python3 scripts/repository_ci_cd_check.py
+python3 scripts/frontier_ci_check.py
 python3 scripts/ci_policy_check.py
 python3 scripts/validate_schemas.py
 bash scripts/v8_cli_smoke.sh
@@ -32,7 +33,7 @@ cargo run -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json
 3. Configure branch protection / rulesets using `.github/rulesets/main-branch-ruleset.template.json`.
 4. Make `strict_contract_check.py` and `repository_ci_cd_check.py` required PR statuses.
 5. Materialise public API snapshots for stable crates once they stop being scaffolds.
-6. Convert advisory checks to hard gates only after baselines exist.
+6. Convert advisory checks to hard gates only after baselines exist and an ADR/promotion note is accepted.
 
 ## Stop rule
 

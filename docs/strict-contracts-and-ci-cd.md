@@ -47,3 +47,7 @@ This applies to UI, CLI, MCP, COM, AppleScript, D-Bus, Android intents, iOS App 
 - WASM/WASI/web adapter experiments.
 
 Frontier lanes are not release blockers until promoted by ADR.
+`scripts/frontier_ci_check.py` keeps those lanes scheduled/manual, read-only,
+continue-on-error, and advisory-only while still requiring smoke scripts for
+Miri, sanitizers, fuzz, GPU experiments, differential oracles, performance
+smoke, and PGO/BOLT/build-speed tooling discovery.
