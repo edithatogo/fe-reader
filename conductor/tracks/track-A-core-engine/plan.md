@@ -6,10 +6,16 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 
 ### Phase A1 — Operation intent contracts
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase A1 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase A1 --auto-fix`.
+
+Phase A1 implementation note:
+
+- Tightened `OperationIntent` construction with an explicit risk-classified constructor and a high-risk helper.
+- Updated the operation intent JSON schema to match the serialized core contract used by CLI inspect.
+- Added `scripts/operation_intent_contract_check.py` as a hard contract check for CLI intent JSON and schema alignment.
 ### Phase A2 — Patch plans
 
 - Implement contract skeleton.

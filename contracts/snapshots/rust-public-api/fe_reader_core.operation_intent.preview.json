@@ -1,0 +1,34 @@
+{
+  "surface": "rust_crate",
+  "crate": "fe_reader_core",
+  "version": "0.1.0",
+  "stability": "preview",
+  "phase": "A1",
+  "contract": "operation_intent",
+  "mutation_policy": "intent_to_plan_only_until_review_apply_verify_receipt",
+  "public_types": [
+    "OperationIntent",
+    "OperationSource",
+    "OperationKind",
+    "RiskLevel",
+    "DocumentFingerprint",
+    "DocumentId",
+    "OperationId"
+  ],
+  "constructors": [
+    "OperationIntent::new",
+    "OperationIntent::read_only",
+    "OperationIntent::mutation",
+    "OperationIntent::high_risk"
+  ],
+  "cli_evidence": {
+    "command": "cargo run -q -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json",
+    "intent_schema": "schemas/operation-intent.schema.json"
+  },
+  "notes": [
+    "Read-only intents do not require review.",
+    "Local-state intents do not require review by default.",
+    "Document-mutation and high-risk intents require review by default.",
+    "Operation intents are request contracts only and do not expose apply shortcuts."
+  ]
+}

@@ -21,6 +21,8 @@ surfaces:
   rust_core:
     stability: preview
     test: cargo nextest run -p fe_reader_core
+    snapshots:
+      - contracts/snapshots/rust-public-api/fe_reader_core.operation_intent.preview.json
   cli:
     stability: preview
     schema: schemas/pdf-document-summary.schema.json

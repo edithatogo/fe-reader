@@ -25,6 +25,7 @@ python3 scripts/repository_ci_cd_check.py
 python3 scripts/frontier_ci_check.py
 python3 scripts/ci_policy_check.py
 python3 scripts/validate_schemas.py
+python3 scripts/operation_intent_contract_check.py
 python3 scripts/v8_static_contract_check.py
 bash scripts/v8_cli_smoke.sh
 python3 scripts/wave0_acceptance_check.py

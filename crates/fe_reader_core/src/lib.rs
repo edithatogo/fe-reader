@@ -246,6 +246,27 @@ pub struct OperationIntent {
 }
 
 impl OperationIntent {
+    /// Creates an operation intent with an explicit risk classification.
+    #[must_use]
+    pub fn new(
+        source: OperationSource,
+        document_id: DocumentId,
+        kind: OperationKind,
+        label: impl Into<String>,
+        risk_level: RiskLevel,
+    ) -> Self {
+        Self {
+            intent_id: OperationId::new(),
+            source,
+            document_id,
+            document_fingerprint: None,
+            kind,
+            label: label.into(),
+            risk_level,
+            requires_review: risk_level.normally_requires_review(),
+        }
+    }
+
     /// Creates a read-only operation intent.
     #[must_use]
     pub fn read_only(
@@ -253,16 +274,13 @@ impl OperationIntent {
         document_id: DocumentId,
         label: impl Into<String>,
     ) -> Self {
-        Self {
-            intent_id: OperationId::new(),
+        Self::new(
             source,
             document_id,
-            document_fingerprint: None,
-            kind: OperationKind::Inspect,
-            label: label.into(),
-            risk_level: RiskLevel::ReadOnly,
-            requires_review: false,
-        }
+            OperationKind::Inspect,
+            label,
+            RiskLevel::ReadOnly,
+        )
     }
 
     /// Creates a mutating intent that must be reviewed unless policy explicitly says otherwise.
@@ -273,16 +291,24 @@ impl OperationIntent {
         kind: OperationKind,
         label: impl Into<String>,
     ) -> Self {
-        Self {
-            intent_id: OperationId::new(),
+        Self::new(
             source,
             document_id,
-            document_fingerprint: None,
             kind,
-            label: label.into(),
-            risk_level: RiskLevel::DocumentMutation,
-            requires_review: true,
-        }
+            label,
+            RiskLevel::DocumentMutation,
+        )
+    }
+
+    /// Creates a high-risk intent, such as redaction, signing, destructive rewrite, or export.
+    #[must_use]
+    pub fn high_risk(
+        source: OperationSource,
+        document_id: DocumentId,
+        kind: OperationKind,
+        label: impl Into<String>,
+    ) -> Self {
+        Self::new(source, document_id, kind, label, RiskLevel::HighRisk)
     }
 
     /// Attaches the document fingerprint captured at intent creation time.
@@ -534,6 +560,42 @@ mod tests {
         let intent = OperationIntent::read_only(OperationSource::Cli, DocumentId::new(), "inspect");
         assert_eq!(intent.risk_level, RiskLevel::ReadOnly);
         assert!(!intent.requires_review);
+    }
+
+    #[test]
+    fn explicit_risk_constructor_uses_review_defaults() {
+        let local_state = OperationIntent::new(
+            OperationSource::Ui,
+            DocumentId::new(),
+            OperationKind::Custom("select_sidebar_item".to_string()),
+            "select_sidebar_item",
+            RiskLevel::LocalState,
+        );
+        let high_risk = OperationIntent::new(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::Export,
+            "export_document",
+            RiskLevel::HighRisk,
+        );
+
+        assert_eq!(local_state.risk_level, RiskLevel::LocalState);
+        assert!(!local_state.requires_review);
+        assert_eq!(high_risk.risk_level, RiskLevel::HighRisk);
+        assert!(high_risk.requires_review);
+    }
+
+    #[test]
+    fn high_risk_intent_requires_review() {
+        let intent = OperationIntent::high_risk(
+            OperationSource::Automation,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_redaction",
+        );
+
+        assert_eq!(intent.risk_level, RiskLevel::HighRisk);
+        assert!(intent.requires_review);
     }
 
     #[test]
