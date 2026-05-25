@@ -11,9 +11,11 @@
     "eof_marker_hint",
     "parser"
   ],
+  "additionalProperties": false,
   "properties": {
     "document_id": {
-      "type": "object"
+      "type": "string",
+      "minLength": 1
     },
     "fingerprint": {
       "type": "object",
@@ -30,7 +32,8 @@
           "type": "integer",
           "minimum": 0
         }
-      }
+      },
+      "additionalProperties": false
     },
     "header": {
       "type": "object",
@@ -45,7 +48,8 @@
         "raw": {
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "encrypted_hint": {
       "type": "boolean"

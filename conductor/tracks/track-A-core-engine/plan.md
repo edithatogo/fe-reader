@@ -30,10 +30,16 @@ Phase A2 implementation note:
 - Added a rust public API snapshot and `scripts/patch_plan_contract_check.py` as a hard contract check for CLI plan JSON.
 ### Phase A3 — PDF model
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase A3 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase A3 --auto-fix`.
+
+Phase A3 implementation note:
+
+- Tightened the PDF summary schema to match CLI serialization, including string document IDs.
+- Added a malformed PDF fixture and contract check proving parser failures are reported as non-fatal diagnostics.
+- Added a PDF model public API snapshot and wired `scripts/pdf_model_contract_check.py` into the phase gate.
 ### Phase A4 — Page ops
 
 - Implement contract skeleton.

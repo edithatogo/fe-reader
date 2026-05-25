@@ -1,0 +1,32 @@
+{
+  "surface": "rust_crate",
+  "crate": "fe_reader_pdf_model",
+  "version": "0.1.0",
+  "stability": "preview",
+  "phase": "A3",
+  "contract": "pdf_model",
+  "public_types": [
+    "PageBoxKind",
+    "PageIndex",
+    "PageRotation",
+    "PdfDocumentSummary",
+    "PdfHeader",
+    "PdfParserSummary",
+    "PdfRect",
+    "TextSpan"
+  ],
+  "public_functions": [
+    "crate_identity",
+    "sniff_pdf_bytes",
+    "sniff_pdf_path"
+  ],
+  "cli_evidence": {
+    "command": "cargo run -q -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json",
+    "summary_schema": "schemas/pdf-document-summary.schema.json"
+  },
+  "notes": [
+    "PDF model inspection is read-only.",
+    "Malformed PDFs with a valid header produce a summary with parser.error rather than a mutation or repair attempt.",
+    "Parser diagnostics stay outside fe_reader_core."
+  ]
+}

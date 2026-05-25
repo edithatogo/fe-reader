@@ -246,6 +246,20 @@ mod tests {
     }
 
     #[test]
+    fn malformed_pdf_header_returns_non_fatal_parser_error() {
+        let summary =
+            sniff_pdf_bytes(b"%PDF-1.7\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R\n").unwrap();
+
+        assert_eq!(summary.header.version, "1.7");
+        assert!(!summary.eof_marker_hint);
+        assert_eq!(summary.parser.adapter, "lopdf");
+        assert_eq!(summary.parser.page_count, None);
+        assert_eq!(summary.parser.version, None);
+        assert_eq!(summary.parser.encrypted, None);
+        assert!(summary.parser.error.is_some());
+    }
+
+    #[test]
     fn rejects_non_pdf_header() {
         let error = sniff_pdf_bytes(b"hello").unwrap_err();
         assert_eq!(error.kind, FeErrorKind::Parse);

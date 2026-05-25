@@ -1,4 +1,19 @@
 {
   "manifest_version": "0.1.0",
-  "fixtures": []
+  "fixtures": [
+    {
+      "id": "truncated-catalog",
+      "path": "fixtures/corpus/malformed-adversarial/truncated-catalog.pdf",
+      "category": "malformed-adversarial",
+      "risk_tags": [
+        "malformed-adversarial",
+        "truncated"
+      ],
+      "expected_behavior": {
+        "inspect_succeeds": true,
+        "parser_error": true,
+        "page_count": null
+      }
+    }
+  ]
 }

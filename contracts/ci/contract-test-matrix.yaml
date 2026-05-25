@@ -21,6 +21,9 @@ matrix:
   patch_plan_contract:
     command: python3 scripts/patch_plan_contract_check.py
     gate: P0
+  pdf_model_contract:
+    command: python3 scripts/pdf_model_contract_check.py
+    gate: P0
   wave0_acceptance:
     command: python3 scripts/wave0_acceptance_check.py
     gate: P0

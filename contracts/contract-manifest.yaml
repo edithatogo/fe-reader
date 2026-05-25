@@ -27,6 +27,11 @@ surfaces:
   cli:
     stability: preview
     schema: schemas/pdf-document-summary.schema.json
+  pdf_model:
+    stability: preview
+    test: cargo test -p fe_reader_pdf_model
+    snapshot: contracts/snapshots/rust-public-api/fe_reader_pdf_model.preview.json
+    schema: schemas/pdf-document-summary.schema.json
   uniffi:
     stability: preview
     snapshot: contracts/snapshots/uniffi/fe_reader_uniffi.facade.json
