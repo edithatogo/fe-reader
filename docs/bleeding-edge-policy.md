@@ -91,3 +91,9 @@ Conductor review must fail if:
 - `fe_reader_core` imports Tauri/PDFium/MCP/WASM/AI/UI/platform crates;
 - a frontier feature becomes a default feature;
 - a dependency update removes support for one of the five native platforms without explicit approval.
+
+Every Wave 6 frontier capability remains feature-gated until accepted benchmark,
+visual, compatibility or policy evidence supports promotion. Promotion requires
+an ADR, explicit owner, rollback plan and exit criteria; local-intelligence,
+GPU and PGO/BOLT experiments must stay disabled by default until that evidence
+exists.

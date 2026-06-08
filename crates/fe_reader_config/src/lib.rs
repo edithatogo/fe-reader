@@ -72,6 +72,131 @@ pub struct EnterprisePolicy {
     pub allowed_update_channels: Vec<String>,
 }
 
+/// Optional frontier feature category.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FrontierFeatureCategory {
+    /// Optional local intelligence such as NLP or RAG suggestions.
+    LocalIntelligence,
+    /// Optional GPU/vector acceleration.
+    GpuAcceleration,
+    /// Optional PGO/BOLT/toolchain optimization.
+    ToolchainOptimization,
+    /// Optional transformation pass beyond accepted baseline behavior.
+    TransformationPass,
+}
+
+/// Evidence required before a frontier feature can be promoted.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct FrontierEvidenceRequirement {
+    /// Required evidence source.
+    pub source: String,
+    /// Human-readable acceptance criterion.
+    pub acceptance_criterion: String,
+}
+
+/// Feature-gated frontier policy entry.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct FrontierFeaturePolicy {
+    /// Feature flag id.
+    pub flag_id: String,
+    /// Feature category.
+    pub category: FrontierFeatureCategory,
+    /// Whether the feature is enabled by default.
+    pub default_enabled: bool,
+    /// Whether a policy check is required before enablement.
+    pub requires_policy_check: bool,
+    /// Whether suggestions from this feature must cite evidence.
+    pub requires_evidence_citations: bool,
+    /// Whether high-risk mutation is forbidden without the normal mutation pipeline.
+    pub forbids_high_risk_auto_mutation: bool,
+    /// Evidence required before promotion.
+    pub evidence_requirements: Vec<FrontierEvidenceRequirement>,
+}
+
+impl FrontierFeaturePolicy {
+    /// Returns true when the frontier feature is advisory and safe by default.
+    #[must_use]
+    pub fn is_safe_default(&self) -> bool {
+        !self.default_enabled
+            && self.requires_policy_check
+            && self.requires_evidence_citations
+            && self.forbids_high_risk_auto_mutation
+            && !self.evidence_requirements.is_empty()
+    }
+}
+
+/// Wave 6 optional frontier policy.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct FrontierPolicy {
+    /// Policy version.
+    pub policy_version: String,
+    /// Frontier features.
+    pub features: Vec<FrontierFeaturePolicy>,
+}
+
+impl FrontierPolicy {
+    /// Returns the conservative Wave 6 frontier policy.
+    #[must_use]
+    pub fn wave6_default() -> Self {
+        Self {
+            policy_version: "0.1".to_string(),
+            features: vec![
+                FrontierFeaturePolicy {
+                    flag_id: "frontier.local_intelligence.suggestions".to_string(),
+                    category: FrontierFeatureCategory::LocalIntelligence,
+                    default_enabled: false,
+                    requires_policy_check: true,
+                    requires_evidence_citations: true,
+                    forbids_high_risk_auto_mutation: true,
+                    evidence_requirements: vec![FrontierEvidenceRequirement {
+                        source: "accepted compatibility corpus or user-selected local evidence"
+                            .to_string(),
+                        acceptance_criterion:
+                            "suggestions cite extracted local evidence and never mutate automatically"
+                                .to_string(),
+                    }],
+                },
+                FrontierFeaturePolicy {
+                    flag_id: "frontier.render.gpu_compositor".to_string(),
+                    category: FrontierFeatureCategory::GpuAcceleration,
+                    default_enabled: false,
+                    requires_policy_check: true,
+                    requires_evidence_citations: true,
+                    forbids_high_risk_auto_mutation: true,
+                    evidence_requirements: vec![FrontierEvidenceRequirement {
+                        source: "visual regression and performance reports".to_string(),
+                        acceptance_criterion:
+                            "no accepted visual regressions and measured P0/P1 performance win"
+                                .to_string(),
+                    }],
+                },
+                FrontierFeaturePolicy {
+                    flag_id: "frontier.toolchain.pgo_bolt".to_string(),
+                    category: FrontierFeatureCategory::ToolchainOptimization,
+                    default_enabled: false,
+                    requires_policy_check: true,
+                    requires_evidence_citations: true,
+                    forbids_high_risk_auto_mutation: true,
+                    evidence_requirements: vec![FrontierEvidenceRequirement {
+                        source: "benchmark budget report".to_string(),
+                        acceptance_criterion:
+                            "startup, memory and binary-size budgets do not regress".to_string(),
+                    }],
+                },
+            ],
+        }
+    }
+
+    /// Returns true when every Wave 6 frontier feature is disabled and evidence-gated.
+    #[must_use]
+    pub fn all_features_are_safe_defaults(&self) -> bool {
+        self.features
+            .iter()
+            .all(FrontierFeaturePolicy::is_safe_default)
+    }
+}
+
 impl EnterprisePolicy {
     /// Returns a conservative managed policy that disables risky integrations.
     #[must_use]
@@ -154,5 +279,23 @@ mod tests {
         assert!(policy.disables_risky_integrations());
         assert!(policy.require_redaction_verification);
         assert_eq!(policy.telemetry_mode, TelemetryMode::LocalOnly);
+    }
+
+    #[test]
+    fn wave6_frontier_features_are_optional_and_evidence_gated() {
+        let policy = FrontierPolicy::wave6_default();
+        assert!(policy.all_features_are_safe_defaults());
+        assert!(
+            policy.features.iter().any(|feature| matches!(
+                feature.category,
+                FrontierFeatureCategory::LocalIntelligence
+            ))
+        );
+        assert!(
+            policy
+                .features
+                .iter()
+                .all(|feature| feature.forbids_high_risk_auto_mutation)
+        );
     }
 }

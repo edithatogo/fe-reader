@@ -1,0 +1,37 @@
+{
+  "contract": "wave6_frontier_policy",
+  "version": "0.1.0",
+  "stability": "preview",
+  "default_state": "disabled",
+  "mutation_policy": "no_high_risk_auto_mutation",
+  "evidence_policy": "suggestions_must_cite_local_or_corpus_evidence",
+  "features": [
+    {
+      "flag_id": "frontier.local_intelligence.suggestions",
+      "category": "local_intelligence",
+      "default_enabled": false,
+      "requires_policy_check": true,
+      "requires_evidence_citations": true
+    },
+    {
+      "flag_id": "frontier.render.gpu_compositor",
+      "category": "gpu_acceleration",
+      "default_enabled": false,
+      "requires_policy_check": true,
+      "requires_evidence_citations": true
+    },
+    {
+      "flag_id": "frontier.toolchain.pgo_bolt",
+      "category": "toolchain_optimization",
+      "default_enabled": false,
+      "requires_policy_check": true,
+      "requires_evidence_citations": true
+    }
+  ],
+  "promotion_requires": [
+    "accepted_benchmark_evidence",
+    "visual_or_contract_regression_evidence",
+    "adr_approval",
+    "rollback_plan"
+  ]
+}
