@@ -1276,6 +1276,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "fe_reader_platform"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "fe_reader_plugin_host"
 version = "0.1.0"
 dependencies = [
