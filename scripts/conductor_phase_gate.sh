@@ -55,6 +55,7 @@ if [[ -x scripts/wave4_distribution_smoke.sh ]]; then scripts/wave4_distribution
 if [[ -x scripts/wave5_integration_smoke.sh ]]; then scripts/wave5_integration_smoke.sh || echo "Wave 5 integration advisory skip"; fi
 if [[ -x scripts/wave6_frontier_optional_smoke.sh ]]; then scripts/wave6_frontier_optional_smoke.sh || echo "Wave 6 frontier advisory skip"; fi
 if [[ -x scripts/wave7_release_hardening_smoke.sh ]]; then scripts/wave7_release_hardening_smoke.sh || echo "Wave 7 release hardening advisory skip"; fi
+if [[ -x scripts/wave8_adoption_ecosystem_smoke.sh ]]; then scripts/wave8_adoption_ecosystem_smoke.sh || echo "Wave 8 adoption advisory skip"; fi
 if [[ -f scripts/mobile_smoke_bindings_check.py ]]; then python3 scripts/mobile_smoke_bindings_check.py || echo "mobile smoke bindings advisory skip"; fi
 if [[ -x scripts/uniffi_smoke_check.sh ]]; then scripts/uniffi_smoke_check.sh || echo "UniFFI smoke advisory skip"; fi
 if [[ -f scripts/visual_regression_compare.py ]]; then python3 scripts/visual_regression_compare.py --smoke || echo "visual regression advisory skip"; fi

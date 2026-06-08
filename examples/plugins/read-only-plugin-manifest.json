@@ -1,0 +1,9 @@
+{
+  "example": "read-only-plugin-stub",
+  "plugin_id": "example.read-only-inspector",
+  "plugin_abi_version": "preview",
+  "capabilities": ["inspect_metadata", "propose_workflow"],
+  "default_mode": "read_only",
+  "may_apply_patch_plan": false,
+  "network_access": false
+}

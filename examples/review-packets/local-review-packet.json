@@ -1,0 +1,8 @@
+{
+  "example": "local-review-packet",
+  "storage": "local_first",
+  "privacy_sensitive": true,
+  "document_hash_required": true,
+  "packet_contents": ["patch_plan_id", "summary", "policy_decision", "redacted_notes"],
+  "mutation_allowed": false
+}
