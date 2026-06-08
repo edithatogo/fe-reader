@@ -3,6 +3,7 @@
 ## Principle
 
 Diagnostics are local-first. Fe Reader must be useful to debug without silently exporting private document content.
+The default privacy posture is local inspection first, with explicit user or managed-policy action before any export.
 
 ## Allowed local diagnostics
 
