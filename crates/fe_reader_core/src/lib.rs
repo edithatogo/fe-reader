@@ -9,6 +9,9 @@
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::fmt;
+use std::fs;
+use std::io::ErrorKind;
+use std::path::Path;
 use time::{OffsetDateTime, format_description::well_known::Rfc3339};
 use uuid::Uuid;
 
@@ -524,6 +527,287 @@ pub enum TransactionState {
     Failed,
 }
 
+/// Schema-compatible operation transaction phase.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TransactionPhase {
+    /// Intent received and policy classified.
+    IntentReceived,
+    /// Patch plan generated but not applied.
+    PlanGenerated,
+    /// User or managed policy approved apply.
+    Approved,
+    /// Mutation is being written to a temporary output.
+    Applying,
+    /// Output verification is running.
+    Verifying,
+    /// Transaction completed successfully.
+    Committed,
+    /// Transaction aborted before commit.
+    Aborted,
+    /// Crash recovery must inspect and repair state.
+    RecoveryRequired,
+}
+
+impl TransactionPhase {
+    /// Returns true when this phase requires a patch plan id.
+    #[must_use]
+    pub fn requires_plan_id(self) -> bool {
+        matches!(
+            self,
+            Self::PlanGenerated
+                | Self::Approved
+                | Self::Applying
+                | Self::Verifying
+                | Self::Committed
+        )
+    }
+
+    /// Returns true when crash recovery should inspect the transaction.
+    #[must_use]
+    pub fn requires_recovery(self) -> bool {
+        matches!(
+            self,
+            Self::Applying | Self::Verifying | Self::RecoveryRequired
+        )
+    }
+}
+
+/// Schema-compatible journal entry for one transaction checkpoint.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransactionJournalEntry {
+    /// Transaction id.
+    pub transaction_id: String,
+    /// Operation intent id.
+    pub intent_id: String,
+    /// Patch plan id when a plan exists.
+    pub plan_id: Option<String>,
+    /// Current phase.
+    pub phase: TransactionPhase,
+    /// Monotonic sequence number within the sidecar.
+    pub sequence: u64,
+    /// Human-readable note for recovery diagnostics.
+    pub note: String,
+}
+
+impl TransactionJournalEntry {
+    /// Creates an intent-received entry.
+    #[must_use]
+    pub fn intent_received(
+        transaction_id: &TransactionId,
+        intent: &OperationIntent,
+        note: impl Into<String>,
+    ) -> Self {
+        Self {
+            transaction_id: transaction_id.0.clone(),
+            intent_id: intent.intent_id.0.clone(),
+            plan_id: None,
+            phase: TransactionPhase::IntentReceived,
+            sequence: 0,
+            note: note.into(),
+        }
+    }
+
+    /// Creates a plan-linked entry.
+    #[must_use]
+    pub fn for_plan(
+        transaction_id: &TransactionId,
+        intent: &OperationIntent,
+        plan: &PatchPlan,
+        phase: TransactionPhase,
+        sequence: u64,
+        note: impl Into<String>,
+    ) -> Self {
+        Self {
+            transaction_id: transaction_id.0.clone(),
+            intent_id: intent.intent_id.0.clone(),
+            plan_id: Some(plan.plan_id.0.clone()),
+            phase,
+            sequence,
+            note: note.into(),
+        }
+    }
+
+    /// Validates schema-level invariants that Rust's type system cannot express.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when plan id presence or sequencing is invalid.
+    pub fn validate(&self) -> Result<(), FeError> {
+        if self.transaction_id.is_empty() {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "transaction_id must not be empty",
+            ));
+        }
+        if self.intent_id.is_empty() {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "intent_id must not be empty",
+            ));
+        }
+        if self.phase.requires_plan_id()
+            && self
+                .plan_id
+                .as_ref()
+                .is_none_or(|plan_id| plan_id.is_empty())
+        {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "phase requires non-empty plan_id",
+            ));
+        }
+        Ok(())
+    }
+}
+
+/// Durable transaction sidecar containing ordered journal entries.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransactionJournalSidecar {
+    /// Ordered journal entries.
+    pub entries: Vec<TransactionJournalEntry>,
+}
+
+impl TransactionJournalSidecar {
+    /// Creates an empty sidecar.
+    #[must_use]
+    pub fn new() -> Self {
+        Self {
+            entries: Vec::new(),
+        }
+    }
+
+    /// Appends a journal entry after validating sequence order.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the entry is invalid or not the next sequence.
+    pub fn append(&mut self, entry: TransactionJournalEntry) -> Result<(), FeError> {
+        entry.validate()?;
+        let expected = self.entries.len() as u64;
+        if entry.sequence != expected {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                format!(
+                    "transaction journal sequence must be {expected}, got {}",
+                    entry.sequence
+                ),
+            ));
+        }
+        if let Some(first) = self.entries.first()
+            && (entry.transaction_id != first.transaction_id || entry.intent_id != first.intent_id)
+        {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "transaction journal entry does not match sidecar identity",
+            ));
+        }
+        self.entries.push(entry);
+        Ok(())
+    }
+
+    /// Returns the latest entry, if any.
+    #[must_use]
+    pub fn latest(&self) -> Option<&TransactionJournalEntry> {
+        self.entries.last()
+    }
+
+    /// Returns true when the latest phase requires recovery inspection.
+    #[must_use]
+    pub fn recovery_required(&self) -> bool {
+        self.latest()
+            .is_some_and(|entry| entry.phase.requires_recovery())
+    }
+
+    /// Validates all entries in order.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when any entry is invalid or sequence order is broken.
+    pub fn validate(&self) -> Result<(), FeError> {
+        let mut rebuilt = Self::new();
+        for entry in &self.entries {
+            rebuilt.append(entry.clone())?;
+        }
+        Ok(())
+    }
+}
+
+/// Writes a transaction sidecar as pretty JSON using temp-file then rename.
+///
+/// # Errors
+///
+/// Returns an error when validation, serialization, or filesystem persistence fails.
+pub fn write_transaction_sidecar(
+    path: impl AsRef<Path>,
+    sidecar: &TransactionJournalSidecar,
+) -> Result<(), FeError> {
+    sidecar.validate()?;
+    let path = path.as_ref();
+    let tmp_path = path.with_extension("tmp");
+    let json = serde_json::to_vec_pretty(sidecar)
+        .map_err(|error| FeError::new(FeErrorKind::Internal, error.to_string()))?;
+    fs::write(&tmp_path, json).map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    fs::rename(&tmp_path, path).map_err(|error| {
+        let _ = fs::remove_file(&tmp_path);
+        FeError::new(FeErrorKind::Io, error.to_string())
+    })?;
+    Ok(())
+}
+
+/// Reads and validates a transaction sidecar from JSON.
+///
+/// # Errors
+///
+/// Returns an error when the sidecar cannot be read, parsed, or validated.
+pub fn read_transaction_sidecar(
+    path: impl AsRef<Path>,
+) -> Result<TransactionJournalSidecar, FeError> {
+    let bytes = fs::read(path).map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    let sidecar: TransactionJournalSidecar = serde_json::from_slice(&bytes)
+        .map_err(|error| FeError::new(FeErrorKind::InvalidInput, error.to_string()))?;
+    sidecar.validate()?;
+    Ok(sidecar)
+}
+
+/// Lists readable transaction sidecars in a directory.
+///
+/// # Errors
+///
+/// Returns an error when the directory cannot be read.
+pub fn list_transaction_sidecars(
+    dir: impl AsRef<Path>,
+) -> Result<Vec<TransactionJournalSidecar>, FeError> {
+    let mut sidecars = Vec::new();
+    let entries =
+        fs::read_dir(dir).map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    for entry in entries {
+        let entry = entry.map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+        if entry
+            .file_type()
+            .map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?
+            .is_file()
+            && entry.path().extension().is_some_and(|ext| ext == "json")
+        {
+            sidecars.push(read_transaction_sidecar(entry.path())?);
+        }
+    }
+    Ok(sidecars)
+}
+
+/// Returns whether a transaction sidecar path exists.
+///
+/// # Errors
+///
+/// Returns an error for filesystem failures other than not-found.
+pub fn transaction_sidecar_exists(path: impl AsRef<Path>) -> Result<bool, FeError> {
+    match fs::metadata(path.as_ref()) {
+        Ok(metadata) => Ok(metadata.is_file()),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(false),
+        Err(error) => Err(FeError::new(FeErrorKind::Io, error.to_string())),
+    }
+}
+
 /// Journal entry for one patch plan application.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TransactionJournal {
@@ -1007,6 +1291,127 @@ mod tests {
     }
 
     #[test]
+    fn transaction_sidecar_persists_schema_compatible_entries() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_patch",
+        );
+        let plan = PatchPlan::draft(&intent, "noop", vec![PatchOperation::Noop]);
+        let transaction_id = TransactionId::new();
+        let mut sidecar = TransactionJournalSidecar::new();
+
+        sidecar
+            .append(TransactionJournalEntry::intent_received(
+                &transaction_id,
+                &intent,
+                "intent received",
+            ))
+            .unwrap();
+        sidecar
+            .append(TransactionJournalEntry::for_plan(
+                &transaction_id,
+                &intent,
+                &plan,
+                TransactionPhase::PlanGenerated,
+                1,
+                "plan generated",
+            ))
+            .unwrap();
+
+        let path = unique_temp_path("transaction-sidecar.json");
+        write_transaction_sidecar(&path, &sidecar).unwrap();
+        let loaded = read_transaction_sidecar(&path).unwrap();
+        let _ = fs::remove_file(&path);
+
+        assert_eq!(loaded, sidecar);
+        assert!(!loaded.recovery_required());
+    }
+
+    #[test]
+    fn transaction_sidecar_recovery_required_for_incomplete_apply() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_patch",
+        );
+        let plan = PatchPlan::draft(&intent, "noop", vec![PatchOperation::Noop]);
+        let transaction_id = TransactionId::new();
+        let mut sidecar = TransactionJournalSidecar::new();
+
+        sidecar
+            .append(TransactionJournalEntry::intent_received(
+                &transaction_id,
+                &intent,
+                "intent received",
+            ))
+            .unwrap();
+        sidecar
+            .append(TransactionJournalEntry::for_plan(
+                &transaction_id,
+                &intent,
+                &plan,
+                TransactionPhase::Applying,
+                1,
+                "writing output",
+            ))
+            .unwrap();
+
+        assert!(sidecar.recovery_required());
+    }
+
+    #[test]
+    fn transaction_sidecar_rejects_bad_sequence_and_missing_plan() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_patch",
+        );
+        let transaction_id = TransactionId::new();
+        let mut sidecar = TransactionJournalSidecar::new();
+        let bad_sequence = TransactionJournalEntry {
+            transaction_id: transaction_id.0.clone(),
+            intent_id: intent.intent_id.0.clone(),
+            plan_id: None,
+            phase: TransactionPhase::IntentReceived,
+            sequence: 2,
+            note: "bad sequence".to_string(),
+        };
+
+        assert_eq!(
+            sidecar.append(bad_sequence).unwrap_err().kind,
+            FeErrorKind::InvalidInput
+        );
+
+        let missing_plan = TransactionJournalEntry {
+            transaction_id: transaction_id.0,
+            intent_id: intent.intent_id.0,
+            plan_id: None,
+            phase: TransactionPhase::Applying,
+            sequence: 0,
+            note: "missing plan".to_string(),
+        };
+
+        assert_eq!(
+            missing_plan.validate().unwrap_err().kind,
+            FeErrorKind::InvalidInput
+        );
+    }
+
+    #[test]
+    fn malformed_transaction_sidecar_fails_closed() {
+        let path = unique_temp_path("malformed-transaction-sidecar.json");
+        fs::write(&path, b"{not json").unwrap();
+        let error = read_transaction_sidecar(&path).unwrap_err();
+        let _ = fs::remove_file(&path);
+
+        assert_eq!(error.kind, FeErrorKind::InvalidInput);
+    }
+
+    #[test]
     fn planned_receipt_links_intent_plan_and_before_fingerprint_without_apply() {
         let fingerprint_before = DocumentFingerprint::from_bytes(b"before");
         let intent = OperationIntent::mutation(
@@ -1114,5 +1519,9 @@ mod tests {
         assert_eq!(receipt.write_mode, WriteMode::FullRewrite);
         assert_eq!(receipt.risk_level, RiskLevel::DocumentMutation);
         assert_eq!(receipt.verification_status, VerificationStatus::Failed);
+    }
+
+    fn unique_temp_path(name: &str) -> std::path::PathBuf {
+        std::env::temp_dir().join(format!("fe-reader-{}-{name}", Uuid::new_v4()))
     }
 }

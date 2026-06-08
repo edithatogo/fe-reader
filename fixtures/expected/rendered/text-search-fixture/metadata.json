@@ -1,0 +1,12 @@
+{
+  "fixture_id": "text-search-fixture",
+  "page_index": 0,
+  "backend": "null",
+  "width": 16,
+  "height": 12,
+  "pixel_format": "rgba8",
+  "byte_len": 768,
+  "status": "pass",
+  "max_delta": 0,
+  "changed_pixels": 0
+}

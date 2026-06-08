@@ -186,72 +186,158 @@ mod tests {
     #[test]
     fn default_policy_matrix_keeps_risky_surfaces_conservative() {
         let policy = SecurityPolicy::default();
-        let cases = [
-            (
-                OperationSource::Cli,
-                PolicyAction::Read,
-                RiskLevel::ReadOnly,
-                true,
-                false,
-            ),
-            (
-                OperationSource::Cli,
-                PolicyAction::PlanMutation,
-                RiskLevel::DocumentMutation,
-                true,
-                true,
-            ),
-            (
-                OperationSource::Cli,
-                PolicyAction::ApplyMutation,
-                RiskLevel::HighRisk,
-                true,
-                true,
-            ),
-            (
-                OperationSource::Cli,
-                PolicyAction::Export,
-                RiskLevel::HighRisk,
-                true,
-                true,
-            ),
-            (
-                OperationSource::Automation,
-                PolicyAction::UseAutomation,
-                RiskLevel::HighRisk,
-                true,
-                true,
-            ),
-            (
-                OperationSource::Cli,
-                PolicyAction::RunExternalTool,
-                RiskLevel::HighRisk,
-                false,
-                true,
-            ),
-            (
-                OperationSource::Plugin,
-                PolicyAction::LoadPlugin,
-                RiskLevel::HighRisk,
-                false,
-                true,
-            ),
-            (
-                OperationSource::Web,
-                PolicyAction::NetworkAccess,
-                RiskLevel::HighRisk,
-                false,
-                true,
-            ),
-        ];
+        let cases = default_surface_policy_cases();
 
-        for (source, action, risk, allowed, requires_review) in cases {
-            let decision = evaluate_policy(&policy, source, action, risk);
-            assert_eq!(decision.allowed, allowed, "allowed mismatch for {action:?}");
+        for case in cases {
+            let decision = evaluate_policy(&policy, case.source.clone(), case.action, case.risk);
             assert_eq!(
-                decision.requires_review, requires_review,
-                "requires_review mismatch for {action:?}"
+                decision.allowed, case.allowed,
+                "allowed mismatch for {:?} {:?}",
+                case.source, case.action
+            );
+            assert_eq!(
+                decision.requires_review, case.requires_review,
+                "requires_review mismatch for {:?} {:?}",
+                case.source, case.action
             );
         }
+    }
+
+    #[test]
+    fn remote_and_extensible_surfaces_cannot_apply_without_review_by_default() {
+        let policy = SecurityPolicy::default();
+        for source in [
+            OperationSource::Mcp,
+            OperationSource::Automation,
+            OperationSource::Web,
+            OperationSource::Plugin,
+        ] {
+            let decision = evaluate_policy(
+                &policy,
+                source.clone(),
+                PolicyAction::ApplyMutation,
+                RiskLevel::HighRisk,
+            );
+            assert!(
+                decision.allowed,
+                "planning/apply request should be representable"
+            );
+            assert!(
+                decision.requires_review,
+                "{source:?} apply must require review"
+            );
+            assert!(
+                decision.reason.contains("requires review"),
+                "{source:?} apply reason must explain review gate"
+            );
+        }
+    }
+
+    #[test]
+    fn external_plugins_and_network_are_denied_for_every_surface_by_default() {
+        let policy = SecurityPolicy::default();
+        for source in [
+            OperationSource::Ui,
+            OperationSource::Cli,
+            OperationSource::Mcp,
+            OperationSource::Automation,
+            OperationSource::Web,
+            OperationSource::Plugin,
+        ] {
+            for action in [
+                PolicyAction::RunExternalTool,
+                PolicyAction::LoadPlugin,
+                PolicyAction::NetworkAccess,
+            ] {
+                let decision =
+                    evaluate_policy(&policy, source.clone(), action, RiskLevel::HighRisk);
+                assert!(!decision.allowed, "{source:?} {action:?} must be denied");
+                assert!(
+                    decision.requires_review,
+                    "{source:?} {action:?} denial must require review"
+                );
+            }
+        }
+    }
+
+    #[derive(Clone)]
+    struct PolicyCase {
+        source: OperationSource,
+        action: PolicyAction,
+        risk: RiskLevel,
+        allowed: bool,
+        requires_review: bool,
+    }
+
+    fn default_surface_policy_cases() -> Vec<PolicyCase> {
+        let mut cases = Vec::new();
+        for source in [
+            OperationSource::Ui,
+            OperationSource::Cli,
+            OperationSource::Mcp,
+            OperationSource::Automation,
+            OperationSource::Web,
+            OperationSource::Plugin,
+        ] {
+            cases.extend([
+                PolicyCase {
+                    source: source.clone(),
+                    action: PolicyAction::Read,
+                    risk: RiskLevel::ReadOnly,
+                    allowed: true,
+                    requires_review: false,
+                },
+                PolicyCase {
+                    source: source.clone(),
+                    action: PolicyAction::PlanMutation,
+                    risk: RiskLevel::DocumentMutation,
+                    allowed: true,
+                    requires_review: true,
+                },
+                PolicyCase {
+                    source: source.clone(),
+                    action: PolicyAction::ApplyMutation,
+                    risk: RiskLevel::HighRisk,
+                    allowed: true,
+                    requires_review: true,
+                },
+                PolicyCase {
+                    source: source.clone(),
+                    action: PolicyAction::Export,
+                    risk: RiskLevel::HighRisk,
+                    allowed: true,
+                    requires_review: true,
+                },
+                PolicyCase {
+                    source: source.clone(),
+                    action: PolicyAction::UseAutomation,
+                    risk: RiskLevel::HighRisk,
+                    allowed: true,
+                    requires_review: true,
+                },
+                PolicyCase {
+                    source: source.clone(),
+                    action: PolicyAction::RunExternalTool,
+                    risk: RiskLevel::HighRisk,
+                    allowed: false,
+                    requires_review: true,
+                },
+                PolicyCase {
+                    source: source.clone(),
+                    action: PolicyAction::LoadPlugin,
+                    risk: RiskLevel::HighRisk,
+                    allowed: false,
+                    requires_review: true,
+                },
+                PolicyCase {
+                    source,
+                    action: PolicyAction::NetworkAccess,
+                    risk: RiskLevel::HighRisk,
+                    allowed: false,
+                    requires_review: true,
+                },
+            ]);
+        }
+        cases
     }
 }

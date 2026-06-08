@@ -14,6 +14,31 @@
         "parser_error": true,
         "page_count": null
       }
+    },
+    {
+      "id": "text-search-fixture",
+      "fixture_id": "text-search-fixture",
+      "path": "fixtures/corpus/basic/text-search-fixture.pdf",
+      "category": "basic",
+      "license": "CC0-1.0",
+      "redistribution": "generated_only",
+      "pdf_version": "1.5",
+      "expected_features": [
+        "text_extraction",
+        "literal_search"
+      ],
+      "risk_tags": [
+        "generated",
+        "basic-text"
+      ],
+      "expected_behavior": {
+        "inspect_succeeds": true,
+        "parser_error": false,
+        "page_count": 1,
+        "search_query": "Reader",
+        "search_hits": 1
+      },
+      "expected_search_index": "fixtures/expected/search/text-search-fixture.search-index.json"
     }
   ]
 }

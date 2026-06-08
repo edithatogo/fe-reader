@@ -45,22 +45,26 @@ pub fn search_spans(spans: &[TextSpan], query: &SearchQuery) -> Vec<SearchHit> {
     } else {
         query.text.to_lowercase()
     };
-    spans
-        .iter()
-        .filter_map(|span| {
-            let haystack = if query.case_sensitive {
-                span.text.clone()
-            } else {
-                span.text.to_lowercase()
-            };
-            haystack.find(&needle).map(|char_offset| SearchHit {
+    let mut hits = Vec::new();
+    for span in spans {
+        let haystack = if query.case_sensitive {
+            span.text.clone()
+        } else {
+            span.text.to_lowercase()
+        };
+        let mut search_start = 0;
+        while let Some(relative_byte_offset) = haystack[search_start..].find(&needle) {
+            let byte_offset = search_start + relative_byte_offset;
+            hits.push(SearchHit {
                 page_index: span.page_index,
                 bbox: span.bbox,
                 text: span.text.clone(),
-                char_offset,
-            })
-        })
-        .collect()
+                char_offset: haystack[..byte_offset].chars().count(),
+            });
+            search_start = byte_offset + needle.len();
+        }
+    }
+    hits
 }
 
 /// Returns a stable identity string for diagnostics.
@@ -73,15 +77,24 @@ pub fn crate_identity() -> String {
 mod tests {
     use super::*;
 
+    fn span(page: u32, text: &str, bbox: PdfRect, reading_order: Option<u32>) -> TextSpan {
+        TextSpan {
+            page_index: PageIndex(page),
+            text: text.to_string(),
+            bbox,
+            reading_order,
+            font_name: None,
+        }
+    }
+
     #[test]
     fn finds_case_insensitive_hits() {
-        let spans = vec![TextSpan {
-            page_index: PageIndex(2),
-            text: "Fe Reader".to_string(),
-            bbox: PdfRect::new(1.0, 2.0, 3.0, 4.0),
-            reading_order: Some(0),
-            font_name: None,
-        }];
+        let spans = vec![span(
+            2,
+            "Fe Reader",
+            PdfRect::new(1.0, 2.0, 3.0, 4.0),
+            Some(0),
+        )];
         let hits = search_spans(
             &spans,
             &SearchQuery {
@@ -91,5 +104,110 @@ mod tests {
         );
         assert_eq!(hits.len(), 1);
         assert_eq!(hits[0].page_index, PageIndex(2));
+    }
+
+    #[test]
+    fn returns_multiple_hits_inside_a_span() {
+        let spans = vec![span(
+            0,
+            "Reader, reader, READER",
+            PdfRect::new(10.0, 20.0, 30.0, 40.0),
+            Some(0),
+        )];
+
+        let hits = search_spans(
+            &spans,
+            &SearchQuery {
+                text: "reader".to_string(),
+                case_sensitive: false,
+            },
+        );
+
+        assert_eq!(hits.len(), 3);
+        assert_eq!(
+            hits.iter().map(|hit| hit.char_offset).collect::<Vec<_>>(),
+            vec![0, 8, 16]
+        );
+    }
+
+    #[test]
+    fn respects_case_sensitive_queries() {
+        let spans = vec![span(
+            0,
+            "Reader reader",
+            PdfRect::new(0.0, 0.0, 5.0, 5.0),
+            Some(0),
+        )];
+
+        let hits = search_spans(
+            &spans,
+            &SearchQuery {
+                text: "reader".to_string(),
+                case_sensitive: true,
+            },
+        );
+
+        assert_eq!(hits.len(), 1);
+        assert_eq!(hits[0].char_offset, 7);
+        assert_eq!(hits[0].text, "Reader reader");
+    }
+
+    #[test]
+    fn returns_no_hits_for_empty_query() {
+        let spans = vec![span(0, "Reader", PdfRect::new(0.0, 0.0, 5.0, 5.0), Some(0))];
+
+        let hits = search_spans(
+            &spans,
+            &SearchQuery {
+                text: String::new(),
+                case_sensitive: false,
+            },
+        );
+
+        assert!(hits.is_empty());
+    }
+
+    #[test]
+    fn preserves_span_bounding_boxes() {
+        let bbox = PdfRect::new(12.0, 24.0, 36.0, 48.0);
+        let spans = vec![span(3, "Reader", bbox, Some(5))];
+
+        let hits = search_spans(
+            &spans,
+            &SearchQuery {
+                text: "reader".to_string(),
+                case_sensitive: false,
+            },
+        );
+
+        assert_eq!(hits[0].bbox, bbox);
+        assert_eq!(hits[0].page_index, PageIndex(3));
+    }
+
+    #[test]
+    fn keeps_input_span_and_match_order_stable() {
+        let spans = vec![
+            span(1, "b hit hit", PdfRect::new(1.0, 0.0, 1.0, 1.0), Some(1)),
+            span(0, "a hit", PdfRect::new(0.0, 0.0, 1.0, 1.0), Some(0)),
+        ];
+
+        let hits = search_spans(
+            &spans,
+            &SearchQuery {
+                text: "hit".to_string(),
+                case_sensitive: true,
+            },
+        );
+
+        assert_eq!(
+            hits.iter()
+                .map(|hit| (hit.page_index, hit.char_offset, hit.bbox.x))
+                .collect::<Vec<_>>(),
+            vec![
+                (PageIndex(1), 2, 1.0),
+                (PageIndex(1), 6, 1.0),
+                (PageIndex(0), 2, 0.0)
+            ]
+        );
     }
 }
