@@ -150,6 +150,17 @@ enum LabCommand {
         #[arg(long)]
         json: bool,
     },
+    /// Inspect content-stream and text-map diagnostics.
+    TextMap {
+        /// Path to a PDF file.
+        path: String,
+        /// Zero-based page index.
+        #[arg(long, default_value_t = 0)]
+        page: u32,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
 }
 
 fn main() -> Result<()> {
@@ -403,6 +414,43 @@ fn main() -> Result<()> {
                     println!("pages={}", lab.pages.len());
                     println!("findings={}", lab.findings.len());
                     println!("parser_error={}", lab.error.as_deref().unwrap_or(""));
+                    println!("plan_id={}", plan.plan_id.0);
+                }
+            }
+            LabCommand::TextMap { path, page, json } => {
+                let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
+                let text_map = fe_reader_pdf_model::inspect_text_map_path(
+                    &path,
+                    fe_reader_pdf_model::PageIndex(page),
+                )?;
+                let intent = OperationIntent::new(
+                    OperationSource::Cli,
+                    summary.document_id.clone(),
+                    OperationKind::Custom("lab_text_map".to_string()),
+                    "lab_text_map",
+                    RiskLevel::ReadOnly,
+                )
+                .with_document_fingerprint(summary.fingerprint.clone());
+                let plan = PatchPlan::draft(
+                    &intent,
+                    format!("lab text-map {path} page={page}"),
+                    vec![PatchOperation::Noop],
+                );
+                if json {
+                    let value = serde_json::json!({
+                        "intent": intent,
+                        "plan": plan,
+                        "summary": summary,
+                        "text_map": text_map,
+                    });
+                    println!("{}", serde_json::to_string_pretty(&value)?);
+                } else {
+                    println!("mode={}", text_map.mode);
+                    println!("page_index={}", text_map.page_index.0);
+                    println!("content_streams={}", text_map.content_streams.len());
+                    println!("text_map_entries={}", text_map.text_map.len());
+                    println!("findings={}", text_map.findings.len());
+                    println!("parser_error={}", text_map.error.as_deref().unwrap_or(""));
                     println!("plan_id={}", plan.plan_id.0);
                 }
             }

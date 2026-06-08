@@ -1,0 +1,72 @@
+{
+  "inspect_minimal": {
+    "intent": {
+      "kind": "inspect",
+      "risk_level": "read_only",
+      "source": "cli"
+    },
+    "plan": {
+      "approved_for_apply": false,
+      "operations": [
+        {
+          "op": "noop"
+        }
+      ],
+      "risk_level": "read_only",
+      "write_mode": "no_write"
+    },
+    "summary": {
+      "header": {
+        "version": "1.5"
+      },
+      "parser": {
+        "adapter": "lopdf",
+        "error": null,
+        "page_count": 1
+      }
+    }
+  },
+  "metadata_scrub_clean_share": {
+    "intent": {
+      "kind": "plan_mutation",
+      "risk_level": "document_mutation",
+      "source": "cli"
+    },
+    "plan": {
+      "approved_for_apply": false,
+      "operations": [
+        {
+          "key": "metadata_scrub_mode",
+          "op": "set_metadata",
+          "value": "clean_share"
+        }
+      ],
+      "risk_level": "document_mutation",
+      "write_mode": "sanitizing_rewrite"
+    },
+    "plan_only": true
+  },
+  "lab_text_map_basic": {
+    "intent": {
+      "kind": {
+        "custom": "lab_text_map"
+      },
+      "risk_level": "read_only",
+      "source": "cli"
+    },
+    "plan": {
+      "approved_for_apply": false,
+      "operations": [
+        {
+          "op": "noop"
+        }
+      ],
+      "risk_level": "read_only",
+      "write_mode": "no_write"
+    },
+    "text_map": {
+      "mode": "text_map",
+      "page_index": 0
+    }
+  }
+}

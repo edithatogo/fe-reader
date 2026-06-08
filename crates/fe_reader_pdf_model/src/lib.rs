@@ -8,6 +8,7 @@
 
 use fe_reader_core::{DocumentFingerprint, DocumentId, FeError, FeErrorKind};
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::fs;
 use std::path::Path;
 
@@ -194,6 +195,57 @@ pub struct PdfLabPageSummary {
     pub effective_box: PdfRect,
 }
 
+/// Read-only text-map diagnostics for one accepted fixture or page.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PdfTextMapSession {
+    /// Deterministic local session id.
+    pub session_id: String,
+    /// SHA-256 of inspected bytes.
+    pub document_sha256: String,
+    /// Lab inspection mode.
+    pub mode: String,
+    /// Requested zero-based page index.
+    pub page_index: PageIndex,
+    /// Content-stream diagnostics for the page.
+    pub content_streams: Vec<PdfContentStreamDiagnostic>,
+    /// Text-map entries derived from the extraction adapter.
+    pub text_map: Vec<PdfTextMapEntry>,
+    /// Deterministic findings about extraction confidence and limitations.
+    pub findings: Vec<PdfLabFinding>,
+    /// Non-fatal parser error.
+    pub error: Option<String>,
+}
+
+/// Read-only content stream diagnostic summary.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PdfContentStreamDiagnostic {
+    /// Page content stream object id.
+    pub object_id: String,
+    /// Decoded content-stream byte length reported by the parser.
+    pub byte_len: usize,
+    /// SHA-256 of the decoded content stream bytes.
+    pub sha256_hex: String,
+}
+
+/// Read-only text map entry.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PdfTextMapEntry {
+    /// Stable span id inside this diagnostic report.
+    pub span_id: String,
+    /// Page index.
+    pub page_index: PageIndex,
+    /// Extracted text.
+    pub text: String,
+    /// Bounding box used by the extraction adapter.
+    pub bbox: PdfRect,
+    /// Reading-order index.
+    pub reading_order: Option<u32>,
+    /// Optional font name.
+    pub font_name: Option<String>,
+    /// Confidence label for the reported geometry.
+    pub geometry_confidence: String,
+}
+
 /// Parser-backed inspection details for a PDF document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PdfParserSummary {
@@ -269,6 +321,20 @@ pub fn inspect_lab_path(path: impl AsRef<Path>) -> Result<PdfLabSession, FeError
     inspect_lab_bytes(&bytes)
 }
 
+/// Builds read-only PDF Engineering Lab text-map diagnostics from a path.
+///
+/// # Errors
+///
+/// Returns an error if the file cannot be read or does not begin with a PDF header.
+pub fn inspect_text_map_path(
+    path: impl AsRef<Path>,
+    page_index: PageIndex,
+) -> Result<PdfTextMapSession, FeError> {
+    let bytes = fs::read(path.as_ref())
+        .map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    inspect_text_map_bytes(&bytes, page_index)
+}
+
 /// Builds a read-only PDF Engineering Lab object/page graph summary from bytes.
 ///
 /// # Errors
@@ -277,6 +343,19 @@ pub fn inspect_lab_path(path: impl AsRef<Path>) -> Result<PdfLabSession, FeError
 pub fn inspect_lab_bytes(bytes: &[u8]) -> Result<PdfLabSession, FeError> {
     require_pdf_header(bytes)?;
     Ok(inspect_lab_with_lopdf(bytes))
+}
+
+/// Builds read-only PDF Engineering Lab text-map diagnostics from bytes.
+///
+/// # Errors
+///
+/// Returns an error if the byte stream does not begin with a `%PDF-` header.
+pub fn inspect_text_map_bytes(
+    bytes: &[u8],
+    page_index: PageIndex,
+) -> Result<PdfTextMapSession, FeError> {
+    require_pdf_header(bytes)?;
+    Ok(inspect_text_map_with_lopdf(bytes, page_index))
 }
 
 /// Sniffs PDF bytes without full parsing.
@@ -464,6 +543,116 @@ fn extract_text_with_lopdf(bytes: &[u8]) -> PdfTextExtractionSummary {
     }
 }
 
+fn inspect_text_map_with_lopdf(bytes: &[u8], page_index: PageIndex) -> PdfTextMapSession {
+    let fingerprint = DocumentFingerprint::from_bytes(bytes);
+    let session_id = format!(
+        "text-map-{}-{}",
+        &fingerprint.sha256_hex[..16],
+        page_index.0
+    );
+    match lopdf::Document::load_mem(bytes) {
+        Ok(document) => {
+            let page_number = page_index.0.saturating_add(1);
+            let Some(page_id) = document.get_pages().get(&page_number).copied() else {
+                return PdfTextMapSession {
+                    session_id,
+                    document_sha256: fingerprint.sha256_hex,
+                    mode: "text_map".to_string(),
+                    page_index,
+                    content_streams: Vec::new(),
+                    text_map: Vec::new(),
+                    findings: vec![PdfLabFinding {
+                        severity: "error".to_string(),
+                        code: "page_not_found".to_string(),
+                        message: format!("page index {} is outside the page tree", page_index.0),
+                        object_id: None,
+                        page_index: Some(page_index.0),
+                    }],
+                    error: Some("page not found".to_string()),
+                };
+            };
+            let content_streams = document
+                .get_page_contents(page_id)
+                .into_iter()
+                .map(|object_id| {
+                    let bytes = document.get_page_content(page_id).unwrap_or_default();
+                    PdfContentStreamDiagnostic {
+                        object_id: format_object_id(object_id),
+                        byte_len: bytes.len(),
+                        sha256_hex: sha256_hex(&bytes),
+                    }
+                })
+                .collect::<Vec<_>>();
+            let extraction = extract_text_with_lopdf(bytes);
+            let text_map = extraction
+                .spans
+                .iter()
+                .enumerate()
+                .filter(|(_, span)| span.page_index == page_index)
+                .map(|(index, span)| PdfTextMapEntry {
+                    span_id: format!("page-{}-span-{index}", page_index.0),
+                    page_index: span.page_index,
+                    text: span.text.clone(),
+                    bbox: span.bbox,
+                    reading_order: span.reading_order,
+                    font_name: span.font_name.clone(),
+                    geometry_confidence: if extraction.precise_geometry {
+                        "precise".to_string()
+                    } else {
+                        "page_fallback".to_string()
+                    },
+                })
+                .collect::<Vec<_>>();
+            let mut findings = extraction
+                .diagnostics
+                .iter()
+                .map(|diagnostic| PdfLabFinding {
+                    severity: "info".to_string(),
+                    code: "text_extraction_diagnostic".to_string(),
+                    message: diagnostic.clone(),
+                    object_id: Some(format_object_id(page_id)),
+                    page_index: Some(page_index.0),
+                })
+                .collect::<Vec<_>>();
+            findings.push(PdfLabFinding {
+                severity: "info".to_string(),
+                code: "content_stream_text_map_smoke".to_string(),
+                message:
+                    "read-only content stream and text-map diagnostics completed without mutation"
+                        .to_string(),
+                object_id: Some(format_object_id(page_id)),
+                page_index: Some(page_index.0),
+            });
+            PdfTextMapSession {
+                session_id,
+                document_sha256: fingerprint.sha256_hex,
+                mode: "text_map".to_string(),
+                page_index,
+                content_streams,
+                text_map,
+                findings,
+                error: extraction.error,
+            }
+        }
+        Err(error) => PdfTextMapSession {
+            session_id,
+            document_sha256: fingerprint.sha256_hex,
+            mode: "text_map".to_string(),
+            page_index,
+            content_streams: Vec::new(),
+            text_map: Vec::new(),
+            findings: vec![PdfLabFinding {
+                severity: "error".to_string(),
+                code: "parser_error".to_string(),
+                message: error.to_string(),
+                object_id: None,
+                page_index: Some(page_index.0),
+            }],
+            error: Some(error.to_string()),
+        },
+    }
+}
+
 fn page_fallback_rect(document: &lopdf::Document, page_id: lopdf::ObjectId) -> Option<PdfRect> {
     page_box_rect(document, page_id, b"CropBox")
         .or_else(|| page_box_rect(document, page_id, b"MediaBox"))
@@ -495,6 +684,11 @@ fn pdf_box_to_rect(object: &lopdf::Object) -> Option<PdfRect> {
 
 fn format_object_id(object_id: lopdf::ObjectId) -> String {
     format!("{} {}", object_id.0, object_id.1)
+}
+
+fn sha256_hex(bytes: &[u8]) -> String {
+    let digest = Sha256::digest(bytes);
+    digest.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 
 #[cfg(test)]
@@ -571,6 +765,26 @@ mod tests {
                 .findings
                 .iter()
                 .any(|finding| finding.code == "object_page_graph_smoke")
+        );
+    }
+
+    #[test]
+    fn text_map_reports_content_stream_and_fallback_geometry() {
+        let bytes = lopdf_text_fixture("Fe Reader Search");
+        let session = inspect_text_map_bytes(&bytes, PageIndex(0)).unwrap();
+
+        assert_eq!(session.mode, "text_map");
+        assert_eq!(session.error, None);
+        assert_eq!(session.content_streams.len(), 1);
+        assert!(session.content_streams[0].byte_len > 0);
+        assert_eq!(session.text_map.len(), 1);
+        assert_eq!(session.text_map[0].geometry_confidence, "page_fallback");
+        assert!(session.text_map[0].text.contains("Fe Reader Search"));
+        assert!(
+            session
+                .findings
+                .iter()
+                .any(|finding| finding.code == "content_stream_text_map_smoke")
         );
     }
 
