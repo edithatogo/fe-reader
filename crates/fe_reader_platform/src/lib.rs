@@ -56,6 +56,12 @@ impl PlatformTarget {
 pub enum PlatformOperation {
     /// Register a local document in the host platform's recent-document list.
     RegisterRecentDocument,
+    /// Open or inspect a document through a native automation surface.
+    AutomationRead,
+    /// Plan a workflow, redaction or conversion through a native automation surface.
+    AutomationPlan,
+    /// Attempt to apply an approved patch through a native automation surface.
+    AutomationApply,
 }
 
 /// Default policy decision for a platform operation.
@@ -82,6 +88,153 @@ pub enum PlatformMutationGuard {
     ApprovalTokenOrInteractiveConfirmation,
     /// The adapter must emit an audit receipt for any approved mutation.
     AuditReceiptEmission,
+}
+
+/// Native automation contract surface.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationSurface {
+    /// Windows COM automation.
+    WindowsCom,
+    /// macOS AppleScript.
+    MacosAppleScript,
+    /// macOS App Intents.
+    MacosAppIntent,
+    /// Linux D-Bus.
+    LinuxDbus,
+    /// Android intents/DocumentsProvider.
+    AndroidIntent,
+    /// iOS App Intents.
+    IosAppIntent,
+}
+
+impl AutomationSurface {
+    /// Returns all Wave 5 native automation contract surfaces.
+    #[must_use]
+    pub const fn wave5_surfaces() -> [Self; 6] {
+        [
+            Self::WindowsCom,
+            Self::MacosAppleScript,
+            Self::MacosAppIntent,
+            Self::LinuxDbus,
+            Self::AndroidIntent,
+            Self::IosAppIntent,
+        ]
+    }
+}
+
+/// Native automation request.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AutomationContractRequest {
+    /// Automation surface.
+    pub surface: AutomationSurface,
+    /// Requested operation.
+    pub operation: PlatformOperation,
+    /// Optional document hash supplied by the caller.
+    pub document_hash: Option<String>,
+    /// Optional patch plan id supplied by the caller.
+    pub patch_plan_id: Option<String>,
+    /// Optional approval token supplied by the caller.
+    pub approval_token: Option<String>,
+}
+
+impl AutomationContractRequest {
+    /// Creates a read-only automation request.
+    #[must_use]
+    pub const fn read_only(surface: AutomationSurface) -> Self {
+        Self {
+            surface,
+            operation: PlatformOperation::AutomationRead,
+            document_hash: None,
+            patch_plan_id: None,
+            approval_token: None,
+        }
+    }
+
+    /// Creates a plan-only automation request.
+    #[must_use]
+    pub const fn plan_only(surface: AutomationSurface) -> Self {
+        Self {
+            surface,
+            operation: PlatformOperation::AutomationPlan,
+            document_hash: None,
+            patch_plan_id: None,
+            approval_token: None,
+        }
+    }
+}
+
+/// Native automation contract response.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AutomationContractReceipt {
+    /// Automation surface.
+    pub surface: AutomationSurface,
+    /// Requested operation.
+    pub operation: PlatformOperation,
+    /// Policy decision.
+    pub decision: PlatformPolicyDecision,
+    /// Whether native automation mutated document or host state.
+    pub applied: bool,
+    /// Required mutation guards.
+    pub required_guards: Vec<PlatformMutationGuard>,
+    /// Local diagnostic note.
+    pub note: String,
+}
+
+impl AutomationContractReceipt {
+    /// Validates Wave 5 read-only/plan-only automation invariants.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the receipt implies mutation or omits mutation guards.
+    pub fn validate_wave5(&self) -> Result<(), PlatformContractError> {
+        if self.applied {
+            return Err(PlatformContractError::UnexpectedPlatformMutation);
+        }
+        if matches!(self.operation, PlatformOperation::AutomationApply)
+            && self.decision != PlatformPolicyDecision::DefaultDenied
+        {
+            return Err(PlatformContractError::ExpectedDefaultDeny);
+        }
+        let required = PlatformMutationGuard::required_for_mutation();
+        if required
+            .iter()
+            .any(|guard| !self.required_guards.contains(guard))
+        {
+            return Err(PlatformContractError::MissingMutationGuard);
+        }
+        Ok(())
+    }
+}
+
+/// No-op native automation adapter.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct NativeAutomationAdapter;
+
+impl NativeAutomationAdapter {
+    /// Constructs the no-op automation adapter.
+    #[must_use]
+    pub const fn new() -> Self {
+        Self
+    }
+
+    /// Handles automation without calling native APIs.
+    #[must_use]
+    pub fn handle(&self, request: &AutomationContractRequest) -> AutomationContractReceipt {
+        let decision = if matches!(request.operation, PlatformOperation::AutomationRead) {
+            PlatformPolicyDecision::ReadOnly
+        } else {
+            PlatformPolicyDecision::DefaultDenied
+        };
+        AutomationContractReceipt {
+            surface: request.surface,
+            operation: request.operation,
+            decision,
+            applied: false,
+            required_guards: PlatformMutationGuard::required_for_mutation().to_vec(),
+            note: "native automation is read-only or plan-only by default in Wave 5".to_string(),
+        }
+    }
 }
 
 impl PlatformMutationGuard {
@@ -233,6 +386,28 @@ pub fn wave1_recent_document_smoke() -> Result<Vec<PlatformOperationReceipt>, Pl
         .collect()
 }
 
+/// Runs the bounded Wave 5 native automation smoke contract.
+///
+/// # Errors
+///
+/// Returns an error if any surface violates read-only/default-deny invariants.
+pub fn wave5_native_automation_smoke()
+-> Result<Vec<AutomationContractReceipt>, PlatformContractError> {
+    let adapter = NativeAutomationAdapter::new();
+    let mut receipts = Vec::new();
+    for surface in AutomationSurface::wave5_surfaces() {
+        for request in [
+            AutomationContractRequest::read_only(surface),
+            AutomationContractRequest::plan_only(surface),
+        ] {
+            let receipt = adapter.handle(&request);
+            receipt.validate_wave5()?;
+            receipts.push(receipt);
+        }
+    }
+    Ok(receipts)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -267,6 +442,26 @@ mod tests {
             assert!(!receipt.applied);
             receipt.validate_default_deny().unwrap();
         }
+    }
+
+    #[test]
+    fn native_automation_surfaces_are_read_only_or_plan_only() {
+        let receipts = wave5_native_automation_smoke().expect("automation smoke");
+        assert_eq!(
+            receipts.len(),
+            AutomationSurface::wave5_surfaces().len() * 2
+        );
+        assert!(receipts.iter().all(|receipt| !receipt.applied));
+        assert!(
+            receipts
+                .iter()
+                .any(|receipt| matches!(receipt.decision, PlatformPolicyDecision::ReadOnly))
+        );
+        assert!(
+            receipts
+                .iter()
+                .any(|receipt| matches!(receipt.decision, PlatformPolicyDecision::DefaultDenied))
+        );
     }
 
     #[test]

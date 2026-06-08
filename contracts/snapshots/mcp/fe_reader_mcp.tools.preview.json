@@ -1,0 +1,46 @@
+{
+  "contract": "fe_reader_mcp.tools",
+  "version": "0.1.0",
+  "stability": "preview",
+  "default_mode": "read_only",
+  "mutation_policy": "read_only_or_plan_only",
+  "tools": [
+    {
+      "name": "fe.open_document",
+      "risk": "read_only"
+    },
+    {
+      "name": "fe.read_page_text",
+      "risk": "read_only"
+    },
+    {
+      "name": "fe.get_metadata",
+      "risk": "read_only"
+    },
+    {
+      "name": "fe.search",
+      "risk": "read_only"
+    },
+    {
+      "name": "fe.plan_redaction",
+      "risk": "plan_only"
+    },
+    {
+      "name": "fe.plan_workflow",
+      "risk": "plan_only"
+    },
+    {
+      "name": "fe.plan_conversion",
+      "risk": "plan_only"
+    },
+    {
+      "name": "fe.apply_approved_patch",
+      "risk": "approved_mutation_disabled"
+    }
+  ],
+  "disabled_by_default": [
+    "fe.apply_approved_patch",
+    "fe.apply_approved_conversion",
+    "fe.export_document"
+  ]
+}
