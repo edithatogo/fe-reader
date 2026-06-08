@@ -51,6 +51,7 @@ if [[ -x scripts/wave1_render_smoke.sh ]]; then scripts/wave1_render_smoke.sh ||
 if [[ -x scripts/platform_recent_smoke.sh ]]; then scripts/platform_recent_smoke.sh || echo "platform recent-document advisory skip"; fi
 if [[ -x scripts/pdf_lab_inspect_smoke.sh ]]; then scripts/pdf_lab_inspect_smoke.sh || echo "PDF lab inspect advisory skip"; fi
 if [[ -x scripts/pdf_lab_text_map_smoke.sh ]]; then scripts/pdf_lab_text_map_smoke.sh || echo "PDF lab text-map advisory skip"; fi
+if [[ -x scripts/wave4_distribution_smoke.sh ]]; then scripts/wave4_distribution_smoke.sh || echo "Wave 4 distribution advisory skip"; fi
 if [[ -f scripts/mobile_smoke_bindings_check.py ]]; then python3 scripts/mobile_smoke_bindings_check.py || echo "mobile smoke bindings advisory skip"; fi
 if [[ -x scripts/uniffi_smoke_check.sh ]]; then scripts/uniffi_smoke_check.sh || echo "UniFFI smoke advisory skip"; fi
 if [[ -f scripts/visual_regression_compare.py ]]; then python3 scripts/visual_regression_compare.py --smoke || echo "visual regression advisory skip"; fi
