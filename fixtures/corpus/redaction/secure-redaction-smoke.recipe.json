@@ -1,0 +1,24 @@
+{
+  "recipe_id": "wave3-smoke-secure-redaction",
+  "version": "0.1.0",
+  "display_name": "Wave 3 secure redaction smoke",
+  "security_level": "SanitizedRewrite",
+  "detectors": [
+    {
+      "kind": "manual_region",
+      "page_index": 0,
+      "region": "bbox:72,72,144,24"
+    }
+  ],
+  "regions": [
+    {
+      "page_index": 0,
+      "region": "bbox:72,72,144,24"
+    }
+  ],
+  "requires_human_review": true,
+  "verification": [
+    "no_incremental_append",
+    "planned_regions_have_no_visible_text_leaks"
+  ]
+}

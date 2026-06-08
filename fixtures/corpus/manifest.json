@@ -65,6 +65,49 @@
         "prepress_font_fallback_finding": true
       },
       "notes": "UTF-8 placeholder only; it supports Wave2 corpus coverage without claiming PDF text extraction or shaping support."
+    },
+    {
+      "id": "secure-redaction-smoke-recipe",
+      "fixture_id": "secure-redaction-smoke-recipe",
+      "path": "fixtures/corpus/redaction/secure-redaction-smoke.recipe.json",
+      "category": "redaction",
+      "source_kind": "json_recipe",
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "expected_features": [
+        "secure_redaction_plan",
+        "redaction_verification_receipt"
+      ],
+      "risk_tags": [
+        "generated",
+        "redaction",
+        "high-risk"
+      ],
+      "expected_behavior": {
+        "requires_sanitizing_rewrite": true,
+        "reject_incremental_append": true,
+        "requires_human_review": true
+      }
+    },
+    {
+      "id": "signed-document-placeholder",
+      "fixture_id": "signed-document-placeholder",
+      "path": "fixtures/corpus/signed/README.md",
+      "category": "signed",
+      "source_kind": "placeholder",
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "expected_features": [
+        "signed_document_corpus_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "signed-document"
+      ],
+      "expected_behavior": {
+        "signature_capability_claim_allowed": false
+      },
+      "notes": "Placeholder only; real signed PDFs require accepted provenance and oracle expectations."
     }
   ]
 }
