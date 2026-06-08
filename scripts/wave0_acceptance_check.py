@@ -203,10 +203,20 @@ def check_additive_cli_contracts() -> None:
         search["text"]["extraction"]["precise_geometry"] is False,
         "search extraction must disclose fallback geometry",
     )
+    expect(len(search["index_records"]) == 1, "text fixture search must emit one index record")
+    expect(
+        search["index_records"][0]["bbox"] == [0.0, 0.0, 612.0, 792.0],
+        "text fixture index bbox must use non-empty page fallback geometry",
+    )
     expect(len(search["hits"]) == 1, "text fixture search must find one hit")
     expect(
         search["hits"][0]["text"] == "Fe Reader Search Fixture\n",
         "text fixture search must preserve extracted text",
+    )
+    expect(
+        search["hits"][0]["bbox"]["width"] == 612.0
+        and search["hits"][0]["bbox"]["height"] == 792.0,
+        "text fixture hit bbox must use non-empty page fallback geometry",
     )
     expect(search["hits"][0]["char_offset"] == 3, "text fixture hit offset must be stable")
 

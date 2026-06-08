@@ -3,11 +3,12 @@
 use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
 use fe_reader_core::{
-    OperationIntent, OperationKind, OperationSource, PatchOperation, TransactionId,
+    OperationIntent, OperationKind, OperationSource, PatchOperation, RiskLevel, TransactionId,
     TransactionJournalEntry, TransactionJournalSidecar, TransactionPhase,
     write_transaction_sidecar,
 };
-use fe_reader_search::{SearchQuery, search_spans};
+use fe_reader_render::RenderBackend;
+use fe_reader_search::{SearchQuery, build_search_index_records, search_spans};
 use fe_reader_security::{PolicyAction, SecurityPolicy, evaluate_policy};
 
 /// Local-first PDF workflow platform CLI.
@@ -43,6 +44,11 @@ enum Command {
         #[command(subcommand)]
         command: JournalCommand,
     },
+    /// Inspect PDF internals without mutating or executing active content.
+    Lab {
+        #[command(subcommand)]
+        command: LabCommand,
+    },
     /// Search extracted text with deterministic literal matching.
     Search {
         /// Path to a PDF file.
@@ -52,6 +58,32 @@ enum Command {
         /// Match case exactly.
         #[arg(long)]
         case_sensitive: bool,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Render one deterministic tile through the render adapter boundary.
+    RenderTile {
+        /// Path to a PDF file.
+        path: String,
+        /// Zero-based page index.
+        #[arg(long, default_value_t = 0)]
+        page: u32,
+        /// Tile left x coordinate in PDF points.
+        #[arg(long, default_value_t = 0.0)]
+        x: f32,
+        /// Tile bottom y coordinate in PDF points.
+        #[arg(long, default_value_t = 0.0)]
+        y: f32,
+        /// Tile width in PDF points.
+        #[arg(long, default_value_t = 16.0)]
+        width: f32,
+        /// Tile height in PDF points.
+        #[arg(long, default_value_t = 12.0)]
+        height: f32,
+        /// Scale multiplier.
+        #[arg(long, default_value_t = 1.0)]
+        scale: f32,
         /// Emit JSON output.
         #[arg(long)]
         json: bool,
@@ -77,6 +109,18 @@ enum JournalCommand {
         /// Output journal sidecar path.
         #[arg(long)]
         out: String,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+enum LabCommand {
+    /// Inspect object and page graph summary.
+    Inspect {
+        /// Path to a PDF file.
+        path: String,
         /// Emit JSON output.
         #[arg(long)]
         json: bool,
@@ -213,6 +257,42 @@ fn main() -> Result<()> {
                 }
             }
         },
+        Command::Lab { command } => match command {
+            LabCommand::Inspect { path, json } => {
+                let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
+                let lab = fe_reader_pdf_model::inspect_lab_path(&path)?;
+                let intent = OperationIntent::new(
+                    OperationSource::Cli,
+                    summary.document_id.clone(),
+                    OperationKind::Custom("lab_inspect".to_string()),
+                    "lab_inspect",
+                    RiskLevel::ReadOnly,
+                )
+                .with_document_fingerprint(summary.fingerprint.clone());
+                let plan = fe_reader_core::PatchPlan::draft(
+                    &intent,
+                    format!("lab inspect {path}"),
+                    vec![PatchOperation::Noop],
+                );
+                if json {
+                    let value = serde_json::json!({
+                        "intent": intent,
+                        "plan": plan,
+                        "summary": summary,
+                        "lab": lab,
+                    });
+                    println!("{}", serde_json::to_string_pretty(&value)?);
+                } else {
+                    println!("mode={}", lab.mode);
+                    println!("objects={}", lab.object_count);
+                    println!("streams={}", lab.stream_count);
+                    println!("pages={}", lab.pages.len());
+                    println!("findings={}", lab.findings.len());
+                    println!("parser_error={}", lab.error.as_deref().unwrap_or(""));
+                    println!("plan_id={}", plan.plan_id.0);
+                }
+            }
+        },
         Command::Search {
             path,
             query,
@@ -233,6 +313,12 @@ fn main() -> Result<()> {
                 text: query,
                 case_sensitive,
             };
+            let index_records = build_search_index_records(
+                &format!("sha256:{}", summary.fingerprint.sha256_hex),
+                &summary.fingerprint.sha256_hex,
+                &extraction.spans,
+                None,
+            );
             let hits = search_spans(&extraction.spans, &search_query);
             let intent = OperationIntent::new(
                 OperationSource::Cli,
@@ -257,6 +343,7 @@ fn main() -> Result<()> {
                         "summary": text_summary,
                     },
                     "query": search_query,
+                    "index_records": index_records,
                     "hits": hits,
                 });
                 println!("{}", serde_json::to_string_pretty(&value)?);
@@ -264,6 +351,72 @@ fn main() -> Result<()> {
                 println!("hits={}", hits.len());
                 println!("precise_geometry={}", extraction.precise_geometry);
                 println!("parser_error={}", extraction.error.as_deref().unwrap_or(""));
+                println!("plan_id={}", plan.plan_id.0);
+            }
+        }
+        Command::RenderTile {
+            path,
+            page,
+            x,
+            y,
+            width,
+            height,
+            scale,
+            json,
+        } => {
+            let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
+            let intent = OperationIntent::new(
+                OperationSource::Cli,
+                summary.document_id.clone(),
+                OperationKind::Render,
+                "render_tile",
+                RiskLevel::ReadOnly,
+            )
+            .with_document_fingerprint(summary.fingerprint.clone());
+            let plan = fe_reader_core::PatchPlan::draft(
+                &intent,
+                format!("render tile {path} page={page}"),
+                vec![PatchOperation::Noop],
+            );
+            let backend = fe_reader_render::NullRenderBackend;
+            let request = fe_reader_render::RenderTileRequest {
+                document_ref: format!("sha256:{}", summary.fingerprint.sha256_hex),
+                page_index: fe_reader_pdf_model::PageIndex(page),
+                tile_rect: fe_reader_pdf_model::PdfRect::new(x, y, width, height),
+                scale,
+                rotation_degrees: 0,
+                color_mode: fe_reader_render::ColorMode::Normal,
+                acceleration: fe_reader_render::AccelerationPreference::CpuOnly,
+            };
+            let tile = backend.render_tile(request.clone())?;
+            if json {
+                let value = serde_json::json!({
+                    "intent": intent,
+                    "plan": plan,
+                    "summary": summary,
+                    "render": {
+                        "backend": backend.backend_name(),
+                        "request": request,
+                        "tile": {
+                            "cache_key": tile.cache_key,
+                            "width": tile.width,
+                            "height": tile.height,
+                            "pixel_format": tile.pixel_format,
+                            "byte_len": tile.bytes.len(),
+                            "all_zero": tile.bytes.iter().all(|byte| *byte == 0),
+                        },
+                        "status": "pass",
+                    },
+                });
+                println!("{}", serde_json::to_string_pretty(&value)?);
+            } else {
+                println!("backend={}", backend.backend_name());
+                println!("page_index={page}");
+                println!("width={}", tile.width);
+                println!("height={}", tile.height);
+                println!("pixel_format={:?}", tile.pixel_format);
+                println!("byte_len={}", tile.bytes.len());
+                println!("cache_key={}", tile.cache_key);
                 println!("plan_id={}", plan.plan_id.0);
             }
         }

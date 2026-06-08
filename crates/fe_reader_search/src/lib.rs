@@ -34,6 +34,55 @@ pub struct SearchHit {
     pub char_offset: usize,
 }
 
+/// Schema-compatible deterministic search index record.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SearchIndexRecord {
+    /// Stable document identifier.
+    pub document_id: String,
+    /// SHA-256 of indexed document bytes.
+    pub document_sha256: String,
+    /// Zero-based page index.
+    pub page_index: u32,
+    /// Stable span id within the document.
+    pub span_id: String,
+    /// Indexed text.
+    pub text: String,
+    /// Bounding box as `[x, y, width, height]`.
+    pub bbox: [f32; 4],
+    /// Reading order for deterministic sorting.
+    pub reading_order: u32,
+    /// Optional language hint.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub language_hint: Option<String>,
+}
+
+/// Builds deterministic search index records from extracted spans.
+#[must_use]
+pub fn build_search_index_records(
+    document_id: &str,
+    document_sha256: &str,
+    spans: &[TextSpan],
+    language_hint: Option<&str>,
+) -> Vec<SearchIndexRecord> {
+    spans
+        .iter()
+        .enumerate()
+        .map(|(span_index, span)| {
+            let reading_order = span.reading_order.unwrap_or(span_index as u32);
+            SearchIndexRecord {
+                document_id: document_id.to_string(),
+                document_sha256: document_sha256.to_string(),
+                page_index: span.page_index.0,
+                span_id: format!("page-{}-span-{reading_order}", span.page_index.0),
+                text: span.text.clone(),
+                bbox: [span.bbox.x, span.bbox.y, span.bbox.width, span.bbox.height],
+                reading_order,
+                language_hint: language_hint.map(str::to_string),
+            }
+        })
+        .collect()
+}
+
 /// Runs deterministic substring search over extracted spans.
 #[must_use]
 pub fn search_spans(spans: &[TextSpan], query: &SearchQuery) -> Vec<SearchHit> {
@@ -182,6 +231,28 @@ mod tests {
 
         assert_eq!(hits[0].bbox, bbox);
         assert_eq!(hits[0].page_index, PageIndex(3));
+    }
+
+    #[test]
+    fn builds_schema_shaped_index_records() {
+        let spans = vec![span(
+            0,
+            "Fe Reader Search Fixture\n",
+            PdfRect::new(0.0, 0.0, 612.0, 792.0),
+            Some(0),
+        )];
+
+        let records =
+            build_search_index_records("fixture:text-search-fixture", "abc123", &spans, Some("en"));
+
+        assert_eq!(records.len(), 1);
+        assert_eq!(records[0].document_id, "fixture:text-search-fixture");
+        assert_eq!(records[0].document_sha256, "abc123");
+        assert_eq!(records[0].page_index, 0);
+        assert_eq!(records[0].span_id, "page-0-span-0");
+        assert_eq!(records[0].bbox, [0.0, 0.0, 612.0, 792.0]);
+        assert_eq!(records[0].reading_order, 0);
+        assert_eq!(records[0].language_hint.as_deref(), Some("en"));
     }
 
     #[test]

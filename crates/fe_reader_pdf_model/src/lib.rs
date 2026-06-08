@@ -141,6 +141,59 @@ pub struct PdfTextExtractionSummary {
     pub error: Option<String>,
 }
 
+/// Read-only PDF Engineering Lab session.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PdfLabSession {
+    /// Deterministic local session id.
+    pub session_id: String,
+    /// SHA-256 of inspected bytes.
+    pub document_sha256: String,
+    /// Lab inspection mode.
+    pub mode: String,
+    /// Object/page findings.
+    pub findings: Vec<PdfLabFinding>,
+    /// Number of indirect objects observed by the parser.
+    pub object_count: usize,
+    /// Number of stream objects observed by the parser.
+    pub stream_count: usize,
+    /// Trailer dictionary keys.
+    pub trailer_keys: Vec<String>,
+    /// Page graph summary.
+    pub pages: Vec<PdfLabPageSummary>,
+    /// Non-fatal parser error.
+    pub error: Option<String>,
+}
+
+/// Read-only PDF Engineering Lab finding.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PdfLabFinding {
+    /// Finding severity.
+    pub severity: String,
+    /// Stable finding code.
+    pub code: String,
+    /// Human-readable message.
+    pub message: String,
+    /// Optional object id location.
+    pub object_id: Option<String>,
+    /// Optional page location.
+    pub page_index: Option<u32>,
+}
+
+/// Page graph summary for the PDF Engineering Lab.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PdfLabPageSummary {
+    /// Zero-based page index.
+    pub page_index: PageIndex,
+    /// Page object id.
+    pub object_id: String,
+    /// MediaBox if present.
+    pub media_box: Option<PdfRect>,
+    /// CropBox if present.
+    pub crop_box: Option<PdfRect>,
+    /// Effective fallback box used by simple diagnostics.
+    pub effective_box: PdfRect,
+}
+
 /// Parser-backed inspection details for a PDF document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PdfParserSummary {
@@ -205,6 +258,27 @@ pub fn extract_text_spans_bytes(bytes: &[u8]) -> Result<PdfTextExtractionSummary
     Ok(extract_text_with_lopdf(bytes))
 }
 
+/// Builds a read-only PDF Engineering Lab object/page graph summary from a path.
+///
+/// # Errors
+///
+/// Returns an error if the file cannot be read or does not begin with a PDF header.
+pub fn inspect_lab_path(path: impl AsRef<Path>) -> Result<PdfLabSession, FeError> {
+    let bytes = fs::read(path.as_ref())
+        .map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    inspect_lab_bytes(&bytes)
+}
+
+/// Builds a read-only PDF Engineering Lab object/page graph summary from bytes.
+///
+/// # Errors
+///
+/// Returns an error if the byte stream does not begin with a `%PDF-` header.
+pub fn inspect_lab_bytes(bytes: &[u8]) -> Result<PdfLabSession, FeError> {
+    require_pdf_header(bytes)?;
+    Ok(inspect_lab_with_lopdf(bytes))
+}
+
 /// Sniffs PDF bytes without full parsing.
 ///
 /// # Errors
@@ -267,19 +341,101 @@ fn inspect_pdf_with_lopdf(bytes: &[u8]) -> PdfParserSummary {
     }
 }
 
+fn inspect_lab_with_lopdf(bytes: &[u8]) -> PdfLabSession {
+    let fingerprint = DocumentFingerprint::from_bytes(bytes);
+    let session_id = format!("lab-{}", &fingerprint.sha256_hex[..16]);
+    match lopdf::Document::load_mem(bytes) {
+        Ok(document) => {
+            let mut findings = Vec::new();
+            let pages = document
+                .get_pages()
+                .into_iter()
+                .map(|(page_number, page_id)| {
+                    let media_box = page_box_rect(&document, page_id, b"MediaBox");
+                    let crop_box = page_box_rect(&document, page_id, b"CropBox");
+                    let effective_box = crop_box
+                        .or(media_box)
+                        .unwrap_or_else(|| PdfRect::new(0.0, 0.0, 1.0, 1.0));
+                    if media_box.is_none() {
+                        findings.push(PdfLabFinding {
+                            severity: "warning".to_string(),
+                            code: "missing_media_box".to_string(),
+                            message: "page has no direct MediaBox; inherited boxes are not resolved in this smoke path".to_string(),
+                            object_id: Some(format_object_id(page_id)),
+                            page_index: Some(page_number.saturating_sub(1)),
+                        });
+                    }
+                    PdfLabPageSummary {
+                        page_index: PageIndex(page_number.saturating_sub(1)),
+                        object_id: format_object_id(page_id),
+                        media_box,
+                        crop_box,
+                        effective_box,
+                    }
+                })
+                .collect::<Vec<_>>();
+            findings.push(PdfLabFinding {
+                severity: "info".to_string(),
+                code: "object_page_graph_smoke".to_string(),
+                message: "read-only object and page graph inspection completed without executing active content".to_string(),
+                object_id: None,
+                page_index: None,
+            });
+            PdfLabSession {
+                session_id,
+                document_sha256: fingerprint.sha256_hex,
+                mode: "object_page_graph".to_string(),
+                findings,
+                object_count: document.objects.len(),
+                stream_count: document
+                    .objects
+                    .values()
+                    .filter(|object| matches!(object, lopdf::Object::Stream(_)))
+                    .count(),
+                trailer_keys: document
+                    .trailer
+                    .iter()
+                    .map(|(key, _)| String::from_utf8_lossy(key).to_string())
+                    .collect(),
+                pages,
+                error: None,
+            }
+        }
+        Err(error) => PdfLabSession {
+            session_id,
+            document_sha256: fingerprint.sha256_hex,
+            mode: "object_page_graph".to_string(),
+            findings: vec![PdfLabFinding {
+                severity: "error".to_string(),
+                code: "parser_error".to_string(),
+                message: error.to_string(),
+                object_id: None,
+                page_index: None,
+            }],
+            object_count: 0,
+            stream_count: 0,
+            trailer_keys: Vec::new(),
+            pages: Vec::new(),
+            error: Some(error.to_string()),
+        },
+    }
+}
+
 fn extract_text_with_lopdf(bytes: &[u8]) -> PdfTextExtractionSummary {
     match lopdf::Document::load_mem(bytes) {
         Ok(document) => {
             let mut spans = Vec::new();
             let mut diagnostics =
                 vec!["lopdf text extraction provides page-level fallback geometry".to_string()];
-            for (page_number, _page_id) in document.get_pages() {
+            for (page_number, page_id) in document.get_pages() {
                 match document.extract_text(&[page_number]) {
                     Ok(text) if !text.trim().is_empty() => {
+                        let bbox = page_fallback_rect(&document, page_id)
+                            .unwrap_or_else(|| PdfRect::new(0.0, 0.0, 1.0, 1.0));
                         spans.push(TextSpan {
                             page_index: PageIndex(page_number.saturating_sub(1)),
                             text,
-                            bbox: PdfRect::new(0.0, 0.0, 0.0, 0.0),
+                            bbox,
                             reading_order: Some(spans.len() as u32),
                             font_name: None,
                         });
@@ -306,6 +462,39 @@ fn extract_text_with_lopdf(bytes: &[u8]) -> PdfTextExtractionSummary {
             error: Some(error.to_string()),
         },
     }
+}
+
+fn page_fallback_rect(document: &lopdf::Document, page_id: lopdf::ObjectId) -> Option<PdfRect> {
+    page_box_rect(document, page_id, b"CropBox")
+        .or_else(|| page_box_rect(document, page_id, b"MediaBox"))
+}
+
+fn page_box_rect(
+    document: &lopdf::Document,
+    page_id: lopdf::ObjectId,
+    key: &[u8],
+) -> Option<PdfRect> {
+    let page = document.get_dictionary(page_id).ok()?;
+    page.get(key)
+        .ok()
+        .and_then(pdf_box_to_rect)
+        .filter(|rect| rect.is_non_empty())
+}
+
+fn pdf_box_to_rect(object: &lopdf::Object) -> Option<PdfRect> {
+    let values = object.as_array().ok()?;
+    if values.len() != 4 {
+        return None;
+    }
+    let x0 = values[0].as_float().ok()?;
+    let y0 = values[1].as_float().ok()?;
+    let x1 = values[2].as_float().ok()?;
+    let y1 = values[3].as_float().ok()?;
+    Some(PdfRect::new(x0, y0, x1 - x0, y1 - y0))
+}
+
+fn format_object_id(object_id: lopdf::ObjectId) -> String {
+    format!("{} {}", object_id.0, object_id.1)
 }
 
 #[cfg(test)]
@@ -354,13 +543,46 @@ mod tests {
         assert_eq!(summary.spans.len(), 1);
         assert_eq!(summary.spans[0].page_index, PageIndex(0));
         assert!(summary.spans[0].text.contains("Fe Reader Search"));
-        assert_eq!(summary.spans[0].bbox, PdfRect::new(0.0, 0.0, 0.0, 0.0));
+        assert_eq!(summary.spans[0].bbox, PdfRect::new(0.0, 0.0, 612.0, 792.0));
         assert!(
             summary
                 .diagnostics
                 .iter()
                 .any(|diagnostic| diagnostic.contains("page-level fallback geometry"))
         );
+    }
+
+    #[test]
+    fn lab_inspection_reports_object_and_page_graph() {
+        let bytes = minimal_xref_stream_pdf();
+        let session = inspect_lab_bytes(&bytes).unwrap();
+
+        assert_eq!(session.mode, "object_page_graph");
+        assert_eq!(session.error, None);
+        assert_eq!(session.pages.len(), 1);
+        assert!(session.object_count > 0);
+        assert!(session.stream_count > 0);
+        assert_eq!(
+            session.pages[0].effective_box,
+            PdfRect::new(0.0, 0.0, 612.0, 792.0)
+        );
+        assert!(
+            session
+                .findings
+                .iter()
+                .any(|finding| finding.code == "object_page_graph_smoke")
+        );
+    }
+
+    #[test]
+    fn lab_inspection_reports_parser_error_without_mutation() {
+        let session =
+            inspect_lab_bytes(b"%PDF-1.7\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R\n").unwrap();
+
+        assert_eq!(session.mode, "object_page_graph");
+        assert!(session.error.is_some());
+        assert!(session.pages.is_empty());
+        assert_eq!(session.findings[0].code, "parser_error");
     }
 
     #[test]

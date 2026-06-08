@@ -147,7 +147,7 @@ import json
 import os
 
 payload = json.loads(os.environ["SEARCH_JSON"])
-assert set(payload) == {"intent", "plan", "summary", "text", "query", "hits"}
+assert set(payload) == {"intent", "plan", "summary", "text", "query", "index_records", "hits"}
 assert payload["intent"]["source"] == "cli"
 assert payload["intent"]["kind"] == "search"
 assert payload["intent"]["risk_level"] == "read_only"
@@ -157,7 +157,11 @@ assert payload["query"]["text"] == "Reader"
 assert payload["text"]["extraction"]["adapter"] == "lopdf"
 assert payload["text"]["extraction"]["precise_geometry"] is False
 assert payload["summary"]["fingerprint"]["sha256_hex"] == "f7e2b4436614640779c890a882537d543cf4579ae6cc43ad5f43f193afa6cd7f"
+assert len(payload["index_records"]) == 1
+assert payload["index_records"][0]["bbox"] == [0.0, 0.0, 612.0, 792.0]
 assert len(payload["hits"]) == 1
 assert payload["hits"][0]["text"] == "Fe Reader Search Fixture\n"
+assert payload["hits"][0]["bbox"]["width"] == 612.0
+assert payload["hits"][0]["bbox"]["height"] == 792.0
 assert payload["hits"][0]["char_offset"] == 3
 PY

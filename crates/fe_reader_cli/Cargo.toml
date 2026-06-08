@@ -16,6 +16,7 @@ clap = { version = "4", features = ["derive"] }
 fe_reader_core = { path = "../fe_reader_core" }
 fe_reader_metadata = { path = "../fe_reader_metadata" }
 fe_reader_pdf_model = { path = "../fe_reader_pdf_model" }
+fe_reader_render = { path = "../fe_reader_render" }
 fe_reader_search = { path = "../fe_reader_search" }
 fe_reader_security = { path = "../fe_reader_security" }
 fe_reader_text = { path = "../fe_reader_text" }

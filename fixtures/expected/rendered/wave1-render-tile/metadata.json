@@ -1,0 +1,18 @@
+{
+  "fixture_id": "text-search-fixture",
+  "sha256_hex": "f7e2b4436614640779c890a882537d543cf4579ae6cc43ad5f43f193afa6cd7f",
+  "page_index": 0,
+  "tile_rect": {
+    "x": 0.0,
+    "y": 0.0,
+    "width": 16.0,
+    "height": 12.0
+  },
+  "scale": 1.0,
+  "backend": "null",
+  "width": 16,
+  "height": 12,
+  "pixel_format": "rgba8",
+  "byte_len": 768,
+  "status": "pass"
+}

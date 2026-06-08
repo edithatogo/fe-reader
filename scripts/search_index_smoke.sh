@@ -27,9 +27,16 @@ assert payload["text"]["extraction"]["adapter"] == "lopdf"
 assert payload["text"]["extraction"]["precise_geometry"] is False
 assert payload["text"]["extraction"]["error"] is None
 assert len(payload["text"]["extraction"]["spans"]) == 1
+assert payload["index_records"] == expected
 assert len(payload["hits"]) == 1
 assert payload["hits"][0]["text"] == expected[0]["text"]
 assert payload["hits"][0]["page_index"] == expected[0]["page_index"]
+assert [
+    payload["hits"][0]["bbox"]["x"],
+    payload["hits"][0]["bbox"]["y"],
+    payload["hits"][0]["bbox"]["width"],
+    payload["hits"][0]["bbox"]["height"],
+] == expected[0]["bbox"]
 assert payload["hits"][0]["char_offset"] == 3
 
 if jsonschema is not None:
