@@ -5,9 +5,7 @@ version = "0.10"
 url = "https://raw.githubusercontent.com/google/rust-crate-audits/main/audits.toml"
 
 [policy.fe_reader_core]
-audit-as-crates-io = true
 criteria = ["safe-to-run", "safe-to-deploy"]
 
 [policy.fe_reader_pdf_model]
-audit-as-crates-io = true
 criteria = ["safe-to-run", "safe-to-deploy"]

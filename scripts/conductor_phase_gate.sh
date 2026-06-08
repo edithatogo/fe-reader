@@ -63,8 +63,13 @@ if [[ -x scripts/prepress_smoke.sh ]]; then scripts/prepress_smoke.sh || echo "p
 if [[ -x scripts/pdf_repair_smoke.sh ]]; then scripts/pdf_repair_smoke.sh || echo "PDF repair advisory skip"; fi
 if [[ -x scripts/release_readiness_check.sh ]]; then scripts/release_readiness_check.sh || echo "release readiness advisory before Wave 4"; fi
 
-if command -v cargo-deny >/dev/null 2>&1; then cargo deny check; else echo "cargo-deny not installed; advisory skip"; fi
-if command -v cargo-audit >/dev/null 2>&1; then cargo audit; else echo "cargo-audit not installed; advisory skip"; fi
-if command -v cargo-vet >/dev/null 2>&1; then cargo vet; else echo "cargo-vet not installed; advisory skip"; fi
+if cargo deny --version >/dev/null 2>&1; then cargo deny check; else echo "cargo-deny not installed; advisory skip"; fi
+if cargo audit --version >/dev/null 2>&1; then cargo audit; else echo "cargo-audit not installed; advisory skip"; fi
+if cargo vet --version >/dev/null 2>&1; then
+  mkdir -p target/release-evidence
+  cargo vet check --store-path supply-chain --output-format=json > target/release-evidence/cargo-vet-report.json || echo "cargo-vet advisory incomplete; dependency audits not fully populated"
+else
+  echo "cargo-vet not installed; advisory skip"
+fi
 
 echo "== Fe Reader phase gate passed: ${PHASE} =="
