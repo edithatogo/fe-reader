@@ -3,10 +3,11 @@
 use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
 use fe_reader_core::{
-    OperationIntent, OperationKind, OperationSource, PatchOperation, RiskLevel, TransactionId,
-    TransactionJournalEntry, TransactionJournalSidecar, TransactionPhase,
+    OperationIntent, OperationKind, OperationSource, PatchOperation, PatchPlan, RiskLevel,
+    TransactionId, TransactionJournalEntry, TransactionJournalSidecar, TransactionPhase,
     write_transaction_sidecar,
 };
+use fe_reader_metadata::{MetadataOperation, MetadataScrubMode};
 use fe_reader_render::RenderBackend;
 use fe_reader_search::{SearchQuery, build_search_index_records, search_spans};
 use fe_reader_security::{PolicyAction, SecurityPolicy, evaluate_policy};
@@ -35,6 +36,30 @@ enum Command {
     Metadata {
         /// Path to a PDF file.
         path: String,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Diff two PDF metadata snapshots without mutating either document.
+    MetadataDiff {
+        /// Path to the before PDF file.
+        before: String,
+        /// Path to the after PDF file.
+        after: String,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Plan a metadata scrub without applying document writes.
+    MetadataScrub {
+        /// Path to a PDF file.
+        path: String,
+        /// Scrub profile: preserve, clean-share, aggressive.
+        #[arg(long, default_value = "clean-share")]
+        profile: String,
+        /// Require plan-only output. Apply is intentionally unavailable in Wave 2.
+        #[arg(long)]
+        plan_only: bool,
         /// Emit JSON output.
         #[arg(long)]
         json: bool,
@@ -172,14 +197,14 @@ fn main() -> Result<()> {
         }
         Command::Metadata { path, json } => {
             let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
-            let metadata = fe_reader_metadata::inspect_metadata_path(&path)?;
+            let metadata = fe_reader_metadata::metadata_snapshot_path(&path)?;
             let intent = OperationIntent::read_only(
                 OperationSource::Cli,
                 summary.document_id.clone(),
                 "metadata",
             )
             .with_document_fingerprint(summary.fingerprint.clone());
-            let plan = fe_reader_core::PatchPlan::draft(
+            let plan = PatchPlan::draft(
                 &intent,
                 format!("metadata {path}"),
                 vec![PatchOperation::Noop],
@@ -189,23 +214,112 @@ fn main() -> Result<()> {
                     "intent": intent,
                     "plan": plan,
                     "summary": summary,
-                    "metadata": metadata,
+                    "metadata": metadata.summary,
+                    "snapshot": metadata,
                 });
                 println!("{}", serde_json::to_string_pretty(&value)?);
             } else {
                 println!(
                     "title={}",
-                    metadata.document_info.title.as_deref().unwrap_or("")
+                    metadata
+                        .summary
+                        .document_info
+                        .title
+                        .as_deref()
+                        .unwrap_or("")
                 );
                 println!(
                     "author={}",
-                    metadata.document_info.author.as_deref().unwrap_or("")
+                    metadata
+                        .summary
+                        .document_info
+                        .author
+                        .as_deref()
+                        .unwrap_or("")
                 );
-                println!("xmp_metadata_present={}", metadata.xmp_metadata_present);
+                println!(
+                    "xmp_metadata_present={}",
+                    metadata.summary.xmp_metadata_present
+                );
                 println!(
                     "parser_error={}",
-                    metadata.parser_error.as_deref().unwrap_or("")
+                    metadata.summary.parser_error.as_deref().unwrap_or("")
                 );
+                println!("plan_id={}", plan.plan_id.0);
+            }
+        }
+        Command::MetadataDiff {
+            before,
+            after,
+            json,
+        } => {
+            let before_summary = fe_reader_pdf_model::sniff_pdf_path(&before)?;
+            let after_summary = fe_reader_pdf_model::sniff_pdf_path(&after)?;
+            let diff = fe_reader_metadata::diff_metadata_paths(&before, &after)?;
+            let intent = OperationIntent::read_only(
+                OperationSource::Cli,
+                before_summary.document_id.clone(),
+                "metadata_diff",
+            )
+            .with_document_fingerprint(before_summary.fingerprint.clone());
+            let plan = PatchPlan::draft(
+                &intent,
+                format!("metadata diff {before} {after}"),
+                vec![PatchOperation::Noop],
+            );
+            if json {
+                let value = serde_json::json!({
+                    "intent": intent,
+                    "plan": plan,
+                    "before_summary": before_summary,
+                    "after_summary": after_summary,
+                    "diff": diff,
+                });
+                println!("{}", serde_json::to_string_pretty(&value)?);
+            } else {
+                println!("changes={}", diff.changes.len());
+                println!("before_sha256={}", before_summary.fingerprint.sha256_hex);
+                println!("after_sha256={}", after_summary.fingerprint.sha256_hex);
+                println!("plan_id={}", plan.plan_id.0);
+            }
+        }
+        Command::MetadataScrub {
+            path,
+            profile,
+            plan_only,
+            json,
+        } => {
+            if !plan_only {
+                bail!("metadata-scrub is plan-only in Wave 2; pass --plan-only");
+            }
+            let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
+            let metadata = fe_reader_metadata::metadata_snapshot_path(&path)?;
+            let scrub_mode = MetadataScrubMode::parse_profile(&profile)?;
+            let intent = OperationIntent::mutation(
+                OperationSource::Cli,
+                summary.document_id.clone(),
+                OperationKind::PlanMutation,
+                "metadata_scrub",
+            )
+            .with_document_fingerprint(summary.fingerprint.clone());
+            let plan = fe_reader_metadata::plan_metadata_operations(
+                &intent,
+                &[MetadataOperation::Scrub { mode: scrub_mode }],
+            );
+            if json {
+                let value = serde_json::json!({
+                    "intent": intent,
+                    "plan": plan,
+                    "summary": summary,
+                    "metadata": metadata.summary,
+                    "profile": profile,
+                    "plan_only": true,
+                });
+                println!("{}", serde_json::to_string_pretty(&value)?);
+            } else {
+                println!("profile={profile}");
+                println!("write_mode={:?}", plan.write_mode);
+                println!("approved_for_apply={}", plan.approved_for_apply);
                 println!("plan_id={}", plan.plan_id.0);
             }
         }

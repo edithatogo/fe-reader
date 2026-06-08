@@ -1,0 +1,5 @@
+Fe Reader Wave2 deterministic text placeholder
+CJK: 日本語 简体中文 繁體中文 한국어
+RTL: مرحبا بالعالم שלום עולם
+Mixed direction: Reader 123 مرحبا 日本語
+Expectation: record font fallback risk; do not claim shaped PDF extraction until PDF fixtures and oracles exist.

@@ -29,6 +29,8 @@ def require_schema_tokens() -> None:
         '"place_stamp"',
         'metadata_scrub_mode',
         '"delete_pages"',
+        '"add_highlight_annotation"',
+        '"add_note_annotation"',
     ):
         if token not in schema_text:
             fail(f"patch plan schema missing write-mode token {token}")
@@ -62,6 +64,8 @@ def require_snapshot() -> None:
         "delete_pages": "full_rewrite",
         "rotate_pages": "full_rewrite",
         "reorder_pages": "full_rewrite",
+        "add_highlight_annotation": "incremental_append",
+        "add_note_annotation": "incremental_append",
     }
     for key, value in expected_policy.items():
         if policy.get(key) != value:

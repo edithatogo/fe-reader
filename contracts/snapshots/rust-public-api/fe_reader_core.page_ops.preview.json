@@ -4,19 +4,24 @@
   "version": "0.1.0",
   "stability": "preview",
   "phase": "A4",
-  "contract": "page_ops",
-  "mutation_policy": "page_operations_are_patch_plan_operations_only",
+  "contract": "page_annotation_ops",
+  "mutation_policy": "page_and_annotation_operations_are_patch_plan_operations_only",
   "public_types": [
     "PatchOperation",
     "PatchPlan",
     "OperationIntent",
     "WriteMode",
-    "RiskLevel"
+    "RiskLevel",
+    "PageRect",
+    "PagePoint",
+    "AnnotationColor"
   ],
   "constructors": [
     "PatchOperation::delete_pages",
     "PatchOperation::rotate_pages",
-    "PatchOperation::reorder_pages"
+    "PatchOperation::reorder_pages",
+    "PatchOperation::add_highlight_annotation",
+    "PatchOperation::add_note_annotation"
   ],
   "schema_evidence": {
     "patch_plan_schema": "schemas/patch-plan.schema.json"
@@ -25,6 +30,9 @@
     "Page operations are patch operation variants only and do not apply document mutations directly.",
     "Delete and rotate operations require non-empty page_indexes.",
     "Rotate operations reject non-right-angle degrees before planning.",
-    "Page operations inside a patch plan are mutating, full-rewrite, and unapproved by default."
+    "Highlight annotations require at least one non-empty rectangle.",
+    "Note annotations require non-empty contents.",
+    "Page operations inside a patch plan are mutating, full-rewrite, and unapproved by default.",
+    "Annotation operations inside a patch plan are mutating, incremental-append, and unapproved by default."
   ]
 }

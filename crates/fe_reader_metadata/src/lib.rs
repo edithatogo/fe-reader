@@ -5,7 +5,7 @@
 #![forbid(unsafe_code)]
 #![warn(missing_docs)]
 
-use fe_reader_core::{OperationIntent, PatchOperation, PatchPlan};
+use fe_reader_core::{FeError, FeErrorKind, OperationIntent, PatchOperation, PatchPlan};
 use lopdf::{Dictionary, Document, Object};
 use serde::{Deserialize, Serialize};
 use std::{fs, path::Path};
@@ -46,6 +46,48 @@ pub struct MetadataSummary {
     pub parser_error: Option<String>,
 }
 
+/// Stable Wave 2 metadata snapshot payload.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MetadataSnapshot {
+    /// Snapshot contract version.
+    pub snapshot_version: u8,
+    /// Read-only metadata summary captured from the input document.
+    pub summary: MetadataSummary,
+}
+
+impl MetadataSnapshot {
+    /// Builds a Wave 2 metadata snapshot from a read-only summary.
+    #[must_use]
+    pub const fn new(summary: MetadataSummary) -> Self {
+        Self {
+            snapshot_version: 1,
+            summary,
+        }
+    }
+}
+
+/// One metadata snapshot difference.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MetadataDiffEntry {
+    /// Dot-separated metadata field path.
+    pub field: String,
+    /// Value in the before snapshot.
+    pub before: serde_json::Value,
+    /// Value in the after snapshot.
+    pub after: serde_json::Value,
+}
+
+/// Stable Wave 2 metadata diff payload.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MetadataDiff {
+    /// Before snapshot.
+    pub before: MetadataSnapshot,
+    /// After snapshot.
+    pub after: MetadataSnapshot,
+    /// Changed metadata fields.
+    pub changes: Vec<MetadataDiffEntry>,
+}
+
 /// Metadata scrub strategy.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -56,6 +98,33 @@ pub enum MetadataScrubMode {
     CleanShare,
     /// Remove all non-essential metadata.
     Aggressive,
+}
+
+impl MetadataScrubMode {
+    /// Parses a user-facing scrub profile.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the profile is not a supported Wave 2 scrub mode.
+    pub fn parse_profile(profile: &str) -> Result<Self, FeError> {
+        match profile {
+            "preserve" => Ok(Self::Preserve),
+            "clean-share" | "clean_share" => Ok(Self::CleanShare),
+            "aggressive" => Ok(Self::Aggressive),
+            _ => Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                format!("unknown metadata scrub profile: {profile}"),
+            )),
+        }
+    }
+
+    fn as_plan_value(self) -> &'static str {
+        match self {
+            Self::Preserve => "preserve",
+            Self::CleanShare => "clean_share",
+            Self::Aggressive => "aggressive",
+        }
+    }
 }
 
 /// Metadata operation.
@@ -91,11 +160,107 @@ pub fn plan_metadata_operations(
             },
             MetadataOperation::Scrub { mode } => PatchOperation::SetMetadata {
                 key: "metadata_scrub_mode".to_string(),
-                value: format!("{mode:?}"),
+                value: mode.as_plan_value().to_string(),
             },
         })
         .collect();
     PatchPlan::draft(intent, "metadata operations", patch_ops)
+}
+
+/// Creates a stable Wave 2 metadata snapshot from PDF bytes.
+#[must_use]
+pub fn metadata_snapshot_bytes(bytes: &[u8]) -> MetadataSnapshot {
+    MetadataSnapshot::new(inspect_metadata_bytes(bytes))
+}
+
+/// Creates a stable Wave 2 metadata snapshot from a path.
+///
+/// # Errors
+///
+/// Returns an error if the file cannot be read.
+pub fn metadata_snapshot_path(path: impl AsRef<Path>) -> anyhow::Result<MetadataSnapshot> {
+    let bytes = fs::read(path)?;
+    Ok(metadata_snapshot_bytes(&bytes))
+}
+
+/// Computes a deterministic diff between two metadata snapshots.
+#[must_use]
+pub fn diff_metadata_snapshots(before: MetadataSnapshot, after: MetadataSnapshot) -> MetadataDiff {
+    let mut changes = Vec::new();
+    push_diff(
+        &mut changes,
+        "document_info.title",
+        &before.summary.document_info.title,
+        &after.summary.document_info.title,
+    );
+    push_diff(
+        &mut changes,
+        "document_info.author",
+        &before.summary.document_info.author,
+        &after.summary.document_info.author,
+    );
+    push_diff(
+        &mut changes,
+        "document_info.subject",
+        &before.summary.document_info.subject,
+        &after.summary.document_info.subject,
+    );
+    push_diff(
+        &mut changes,
+        "document_info.keywords",
+        &before.summary.document_info.keywords,
+        &after.summary.document_info.keywords,
+    );
+    push_diff(
+        &mut changes,
+        "document_info.creator",
+        &before.summary.document_info.creator,
+        &after.summary.document_info.creator,
+    );
+    push_diff(
+        &mut changes,
+        "document_info.producer",
+        &before.summary.document_info.producer,
+        &after.summary.document_info.producer,
+    );
+    push_diff(
+        &mut changes,
+        "xmp_metadata_present",
+        &before.summary.xmp_metadata_present,
+        &after.summary.xmp_metadata_present,
+    );
+    push_diff(
+        &mut changes,
+        "trailer_keys",
+        &before.summary.trailer_keys,
+        &after.summary.trailer_keys,
+    );
+    push_diff(
+        &mut changes,
+        "parser_error",
+        &before.summary.parser_error,
+        &after.summary.parser_error,
+    );
+    MetadataDiff {
+        before,
+        after,
+        changes,
+    }
+}
+
+/// Computes a deterministic diff between two metadata snapshot paths.
+///
+/// # Errors
+///
+/// Returns an error if either file cannot be read.
+pub fn diff_metadata_paths(
+    before_path: impl AsRef<Path>,
+    after_path: impl AsRef<Path>,
+) -> anyhow::Result<MetadataDiff> {
+    Ok(diff_metadata_snapshots(
+        metadata_snapshot_path(before_path)?,
+        metadata_snapshot_path(after_path)?,
+    ))
 }
 
 /// Inspects PDF metadata bytes without mutating the document.
@@ -217,6 +382,20 @@ fn sorted_dictionary_keys(dictionary: &Dictionary) -> Vec<String> {
     keys
 }
 
+fn push_diff<T>(changes: &mut Vec<MetadataDiffEntry>, field: &str, before: &T, after: &T)
+where
+    T: PartialEq + Serialize,
+{
+    if before == after {
+        return;
+    }
+    changes.push(MetadataDiffEntry {
+        field: field.to_string(),
+        before: serde_json::to_value(before).unwrap_or(serde_json::Value::Null),
+        after: serde_json::to_value(after).unwrap_or(serde_json::Value::Null),
+    });
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -268,6 +447,67 @@ mod tests {
         assert_eq!(scrub_plan.write_mode, WriteMode::SanitizingRewrite);
         assert!(!update_plan.approved_for_apply);
         assert!(!scrub_plan.approved_for_apply);
+    }
+
+    #[test]
+    fn metadata_scrub_plan_uses_stable_profile_values() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "metadata_scrub",
+        );
+        let plan = plan_metadata_operations(
+            &intent,
+            &[MetadataOperation::Scrub {
+                mode: MetadataScrubMode::CleanShare,
+            }],
+        );
+
+        assert_eq!(
+            plan.operations,
+            vec![PatchOperation::SetMetadata {
+                key: "metadata_scrub_mode".into(),
+                value: "clean_share".into()
+            }]
+        );
+        assert_eq!(plan.write_mode, WriteMode::SanitizingRewrite);
+        assert!(!plan.approved_for_apply);
+    }
+
+    #[test]
+    fn metadata_diff_reports_changed_fields() {
+        let before = metadata_snapshot_bytes(&minimal_pdf_bytes(Some(dictionary! {
+            "Title" => lopdf::text_string("Before"),
+            "Author" => lopdf::text_string("Local User"),
+        })));
+        let after = metadata_snapshot_bytes(&minimal_pdf_bytes(Some(dictionary! {
+            "Title" => lopdf::text_string("After"),
+            "Author" => lopdf::text_string("Local User"),
+        })));
+
+        let diff = diff_metadata_snapshots(before, after);
+
+        assert!(
+            diff.changes
+                .iter()
+                .any(|change| change.field == "document_info.title")
+        );
+        assert!(
+            !diff
+                .changes
+                .iter()
+                .any(|change| change.field == "document_info.author")
+        );
+    }
+
+    #[test]
+    fn metadata_profile_parser_rejects_unknown_values() {
+        assert_eq!(
+            MetadataScrubMode::parse_profile("clean-share").unwrap(),
+            MetadataScrubMode::CleanShare
+        );
+        assert!(MetadataScrubMode::parse_profile("unknown").is_err());
     }
 
     #[test]

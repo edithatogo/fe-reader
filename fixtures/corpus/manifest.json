@@ -39,6 +39,32 @@
         "search_hits": 1
       },
       "expected_search_index": "fixtures/expected/search/text-search-fixture.search-index.json"
+    },
+    {
+      "id": "cjk-rtl-font-fallback-placeholder",
+      "fixture_id": "cjk-rtl-font-fallback-placeholder",
+      "path": "fixtures/corpus/rtl-cjk-complex-text/cjk-rtl-font-fallback.txt",
+      "category": "rtl-cjk-complex-text",
+      "source_kind": "utf8_text_placeholder",
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "expected_features": [
+        "cjk_text_manifest_coverage",
+        "rtl_text_manifest_coverage",
+        "font_fallback_diagnostic_baseline"
+      ],
+      "risk_tags": [
+        "generated",
+        "cjk",
+        "rtl",
+        "font-fallback",
+        "placeholder-not-pdf"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true,
+        "prepress_font_fallback_finding": true
+      },
+      "notes": "UTF-8 placeholder only; it supports Wave2 corpus coverage without claiming PDF text extraction or shaping support."
     }
   ]
 }
