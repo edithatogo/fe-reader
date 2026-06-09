@@ -22,6 +22,7 @@ members = [
   "crates/fe_reader_config",
   "crates/fe_reader_accessibility",
   "crates/fe_reader_quality_dashboard",
+  "crates/fe_reader_platform",
   "crates/fe_reader_cli",
   "crates/fe_reader_uniffi",
   "crates/fe_reader_c_abi",

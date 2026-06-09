@@ -37,6 +37,17 @@ if [[ ! -f target/release-evidence/signing-readiness.json ]]; then
     exit 1
   fi
   SIGNING_STATUS="advisory"
+else
+  SIGNING_STATUS="$(python3 - <<'PY'
+import json
+from pathlib import Path
+print(json.loads(Path("target/release-evidence/signing-readiness.json").read_text()).get("status", "unknown"))
+PY
+)"
+  if [[ "$SIGNING_STATUS" == "blocked" && ( "$CHANNEL" == "stable" || "$CHANNEL" == "preview" || "$CHANNEL" == "beta" || "$CHANNEL" == "lts" || "$CHANNEL" == "store_submission" ) ]]; then
+    echo "signing readiness blocked for release channel: $CHANNEL" >&2
+    exit 1
+  fi
 fi
 python3 - "$CHANNEL" "$SBOM_STATUS" "$SBOM_DETAIL" "$PROVENANCE_STATUS" "$SIGNING_STATUS" "${REQUIRED[@]}" <<'PY'
 import hashlib

@@ -1,0 +1,14 @@
+{
+  "fixture_id": "text-search-fixture",
+  "page_index": 0,
+  "backend": "null",
+  "width": 16,
+  "height": 12,
+  "pixel_format": "rgba8",
+  "byte_len": 768,
+  "artifact_kind": "deterministic-null-render-rgba",
+  "artifact_sha256": "ef115a0e0c15cdc41958ca46b5b14b456115f4baec5e3ca68599d2a8f435e3b8",
+  "status": "pass",
+  "max_delta": 0,
+  "changed_pixels": 0
+}

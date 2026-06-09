@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 try:
@@ -98,6 +99,40 @@ def check_policy_matrix() -> None:
             ),
         )
 
+    source_expectations = [
+        ("mcp", "apply", True, True),
+        ("automation", "apply", True, True),
+        ("web", "apply", True, True),
+        ("plugin", "apply", True, True),
+        ("web", "network", False, True),
+        ("plugin", "plugin", False, True),
+        ("automation", "external-tool", False, True),
+    ]
+    for source, action, allowed, requires_review in source_expectations:
+        decision = run_json(
+            "cargo",
+            "run",
+            "-q",
+            "-p",
+            "fe_reader_cli",
+            "--",
+            "policy",
+            action,
+            "--source",
+            source,
+        )
+        expect(
+            decision["allowed"] is allowed,
+            f"policy {source}/{action} allowed expected {allowed}, got {decision['allowed']}",
+        )
+        expect(
+            decision["requires_review"] is requires_review,
+            (
+                f"policy {source}/{action} requires_review expected {requires_review}, "
+                f"got {decision['requires_review']}"
+            ),
+        )
+
     unknown = subprocess.run(
         ["cargo", "run", "-q", "-p", "fe_reader_cli", "--", "policy", "unknown-action"],
         cwd=ROOT,
@@ -107,10 +142,155 @@ def check_policy_matrix() -> None:
     )
     expect(unknown.returncode != 0, "unknown policy actions must fail closed")
 
+    unknown_source = subprocess.run(
+        [
+            "cargo",
+            "run",
+            "-q",
+            "-p",
+            "fe_reader_cli",
+            "--",
+            "policy",
+            "read",
+            "--source",
+            "unknown-source",
+        ],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    expect(unknown_source.returncode != 0, "unknown policy sources must fail closed")
+
+
+def check_additive_cli_contracts() -> None:
+    metadata = run_json(
+        "cargo",
+        "run",
+        "-q",
+        "-p",
+        "fe_reader_cli",
+        "--",
+        "metadata",
+        "fixtures/minimal/minimal.pdf",
+        "--json",
+    )
+    expect(isinstance(metadata, dict), "metadata output must be a JSON object")
+    expect(metadata["intent"]["risk_level"] == "read_only", "metadata must be read-only")
+    expect(metadata["plan"]["write_mode"] == "no_write", "metadata must not write")
+    expect(
+        metadata["metadata"]["parser_error"] is None,
+        "minimal metadata inspection must parse without error",
+    )
+
+    search = run_json(
+        "cargo",
+        "run",
+        "-q",
+        "-p",
+        "fe_reader_cli",
+        "--",
+        "search",
+        "fixtures/corpus/basic/text-search-fixture.pdf",
+        "Reader",
+        "--json",
+    )
+    expect(isinstance(search, dict), "search output must be a JSON object")
+    expect(search["intent"]["kind"] == "search", "search intent kind must be search")
+    expect(search["intent"]["risk_level"] == "read_only", "search must be read-only")
+    expect(search["plan"]["write_mode"] == "no_write", "search must not write")
+    expect(
+        search["text"]["extraction"]["precise_geometry"] is False,
+        "search extraction must disclose fallback geometry",
+    )
+    expect(len(search["index_records"]) == 1, "text fixture search must emit one index record")
+    expect(
+        search["index_records"][0]["bbox"] == [0.0, 0.0, 612.0, 792.0],
+        "text fixture index bbox must use non-empty page fallback geometry",
+    )
+    expect(len(search["hits"]) == 1, "text fixture search must find one hit")
+    expect(
+        search["hits"][0]["text"] == "Fe Reader Search Fixture\n",
+        "text fixture search must preserve extracted text",
+    )
+    expect(
+        search["hits"][0]["bbox"]["width"] == 612.0
+        and search["hits"][0]["bbox"]["height"] == 792.0,
+        "text fixture hit bbox must use non-empty page fallback geometry",
+    )
+    expect(search["hits"][0]["char_offset"] == 3, "text fixture hit offset must be stable")
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        journal_path = Path(tmpdir) / "journal.json"
+        journal = run_json(
+            "cargo",
+            "run",
+            "-q",
+            "-p",
+            "fe_reader_cli",
+            "--",
+            "journal",
+            "plan",
+            "fixtures/minimal/minimal.pdf",
+            "--out",
+            str(journal_path),
+            "--json",
+        )
+        expect(journal_path.is_file(), "journal plan must persist the sidecar")
+        expect(
+            journal["intent"]["risk_level"] == "document_mutation",
+            "journal plan must be review-gated mutation planning",
+        )
+        expect(
+            journal["plan"]["approved_for_apply"] is False,
+            "journal plan must not approve apply",
+        )
+        entries = journal["journal"]["entries"]
+        expect(
+            [entry["phase"] for entry in entries] == ["intent_received", "plan_generated"],
+            "journal plan must record intent and plan phases",
+        )
+        persisted = json.loads(journal_path.read_text(encoding="utf-8"))
+        expect(persisted == journal["journal"], "persisted sidecar must match CLI JSON")
+
+
+def check_ir_schema_smoke() -> None:
+    result = subprocess.run(
+        ["python3", "scripts/ir_schema_smoke.py"],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    expect(result.returncode == 0, f"IR schema smoke failed: {result.stderr}")
+
+
+def check_contract_smokes() -> None:
+    for script in (
+        "scripts/job_contract_smoke.py",
+        "scripts/quality_dashboard_smoke.py",
+        "scripts/active_content_firewall_smoke.py",
+        "scripts/visual_regression_compare.py",
+    ):
+        args = ["python3", script]
+        if script.endswith("visual_regression_compare.py"):
+            args.append("--smoke")
+        result = subprocess.run(
+            args,
+            cwd=ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        expect(result.returncode == 0, f"{script} failed: {result.stderr}")
+
 
 def main() -> None:
     check_cli_inspect_contract()
     check_policy_matrix()
+    check_additive_cli_contracts()
+    check_ir_schema_smoke()
+    check_contract_smokes()
     print("wave0 acceptance check passed")
 
 

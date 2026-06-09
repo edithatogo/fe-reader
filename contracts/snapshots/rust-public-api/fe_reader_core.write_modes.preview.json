@@ -25,7 +25,9 @@
     "redact_region": "sanitizing_rewrite",
     "delete_pages": "full_rewrite",
     "rotate_pages": "full_rewrite",
-    "reorder_pages": "full_rewrite"
+    "reorder_pages": "full_rewrite",
+    "add_highlight_annotation": "incremental_append",
+    "add_note_annotation": "incremental_append"
   },
   "notes": [
     "Patch plans derive write mode from operations rather than caller-selected shortcuts.",

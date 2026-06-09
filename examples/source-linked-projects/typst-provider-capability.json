@@ -1,0 +1,14 @@
+{
+  "example": "source-linked-provider-capability-discovery",
+  "provider": "typst",
+  "provider_capability_discovery": {
+    "required_before_execution": true,
+    "reports_missing_tool": true,
+    "reports_supported_outputs": ["pdf"],
+    "external_tool_execution_default": "disabled"
+  },
+  "policy": {
+    "requires_explicit_user_action": true,
+    "requires_audit_receipt": true
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "document_id": "fixture:text-search-fixture",
+  "output_intents": [],
+  "colour_findings": [
+    {
+      "finding_id": "colour-baseline-001",
+      "severity": "info",
+      "category": "device_rgb_placeholder",
+      "message": "Wave2 smoke baseline does not claim PDF/X or managed colour support."
+    }
+  ],
+  "font_findings": [
+    {
+      "finding_id": "font-baseline-001",
+      "severity": "warning",
+      "font_ref": "unknown",
+      "embedded": false,
+      "to_unicode": "unknown",
+      "fallback_risk": "unknown_until_renderer_adapter",
+      "message": "Contract smoke records fallback risk without adding font discovery dependencies."
+    }
+  ],
+  "page_box_findings": [
+    {
+      "finding_id": "page-box-baseline-001",
+      "severity": "info",
+      "page_index": 0,
+      "media_box": {
+        "x0": 0,
+        "y0": 0,
+        "x1": 612,
+        "y1": 792
+      },
+      "crop_box": {
+        "source": "defaults_to_media_box"
+      },
+      "bleed_box": {
+        "source": "not_declared"
+      },
+      "trim_box": {
+        "source": "not_declared"
+      },
+      "art_box": {
+        "source": "not_declared"
+      }
+    }
+  ]
+}

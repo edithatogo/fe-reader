@@ -180,6 +180,62 @@
                 "minItems": 1
               }
             }
+          },
+          {
+            "type": "object",
+            "required": [
+              "op",
+              "page_index",
+              "rects",
+              "color"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "const": "add_highlight_annotation"
+              },
+              "page_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "rects": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/page_rect"
+                },
+                "minItems": 1
+              },
+              "color": {
+                "$ref": "#/$defs/annotation_color"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "op",
+              "page_index",
+              "position",
+              "contents"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "const": "add_note_annotation"
+              },
+              "page_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "position": {
+                "$ref": "#/$defs/page_point"
+              },
+              "contents": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            }
           }
         ]
       },
@@ -203,6 +259,76 @@
     },
     "approved_for_apply": {
       "type": "boolean"
+    }
+  },
+  "$defs": {
+    "page_rect": {
+      "type": "object",
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "integer"
+        },
+        "y": {
+          "type": "integer"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "page_point": {
+      "type": "object",
+      "required": [
+        "x",
+        "y"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "integer"
+        },
+        "y": {
+          "type": "integer"
+        }
+      }
+    },
+    "annotation_color": {
+      "type": "object",
+      "required": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "red": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "green": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "blue": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      }
     }
   }
 }

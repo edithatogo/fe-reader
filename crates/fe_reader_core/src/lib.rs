@@ -9,6 +9,9 @@
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::fmt;
+use std::fs;
+use std::io::ErrorKind;
+use std::path::Path;
 use time::{OffsetDateTime, format_description::well_known::Rfc3339};
 use uuid::Uuid;
 
@@ -225,6 +228,45 @@ impl WriteMode {
     }
 }
 
+/// Rectangle on a zero-based PDF page in integer PDF user-space points.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PageRect {
+    /// Left coordinate.
+    pub x: i32,
+    /// Bottom coordinate.
+    pub y: i32,
+    /// Rectangle width. Must be greater than zero for annotation operations.
+    pub width: u32,
+    /// Rectangle height. Must be greater than zero for annotation operations.
+    pub height: u32,
+}
+
+impl PageRect {
+    fn is_non_empty(self) -> bool {
+        self.width > 0 && self.height > 0
+    }
+}
+
+/// Point on a zero-based PDF page in integer PDF user-space points.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PagePoint {
+    /// X coordinate.
+    pub x: i32,
+    /// Y coordinate.
+    pub y: i32,
+}
+
+/// RGB annotation colour.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AnnotationColor {
+    /// Red channel.
+    pub red: u8,
+    /// Green channel.
+    pub green: u8,
+    /// Blue channel.
+    pub blue: u8,
+}
+
 /// One planned operation inside a patch plan.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case")]
@@ -269,6 +311,24 @@ pub enum PatchOperation {
         /// Complete new zero-based page ordering.
         new_order: Vec<u32>,
     },
+    /// Plan-only highlight annotation insertion.
+    AddHighlightAnnotation {
+        /// Page index, zero-based.
+        page_index: u32,
+        /// Highlight rectangles in page user-space coordinates.
+        rects: Vec<PageRect>,
+        /// Highlight colour.
+        color: AnnotationColor,
+    },
+    /// Plan-only note/comment annotation insertion.
+    AddNoteAnnotation {
+        /// Page index, zero-based.
+        page_index: u32,
+        /// Note anchor position in page user-space coordinates.
+        position: PagePoint,
+        /// User-visible note contents.
+        contents: String,
+    },
 }
 
 impl PatchOperation {
@@ -291,7 +351,9 @@ impl PatchOperation {
                 WriteMode::FullRewrite
             }
             Self::RedactRegion { .. } => WriteMode::SanitizingRewrite,
-            Self::PlaceStamp { .. } => WriteMode::IncrementalAppend,
+            Self::PlaceStamp { .. }
+            | Self::AddHighlightAnnotation { .. }
+            | Self::AddNoteAnnotation { .. } => WriteMode::IncrementalAppend,
         }
     }
 
@@ -347,6 +409,59 @@ impl PatchOperation {
             ));
         }
         Ok(Self::ReorderPages { new_order })
+    }
+
+    /// Creates a highlight annotation operation.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no rectangles are supplied or any rectangle has zero area.
+    pub fn add_highlight_annotation(
+        page_index: u32,
+        rects: Vec<PageRect>,
+        color: AnnotationColor,
+    ) -> Result<Self, FeError> {
+        if rects.is_empty() {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "add_highlight_annotation requires at least one rectangle",
+            ));
+        }
+        if rects.iter().any(|rect| !rect.is_non_empty()) {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "highlight rectangles must have positive width and height",
+            ));
+        }
+        Ok(Self::AddHighlightAnnotation {
+            page_index,
+            rects,
+            color,
+        })
+    }
+
+    /// Creates a note/comment annotation operation.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when note contents are empty or whitespace only.
+    pub fn add_note_annotation(
+        page_index: u32,
+        position: PagePoint,
+        contents: impl Into<String>,
+    ) -> Result<Self, FeError> {
+        let contents = contents.into();
+        if contents.trim().is_empty() {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "add_note_annotation requires non-empty contents",
+            ));
+        }
+        Ok(Self::AddNoteAnnotation {
+            page_index,
+            position,
+            contents,
+        })
     }
 }
 
@@ -522,6 +637,287 @@ pub enum TransactionState {
     RolledBack,
     /// Operation failed.
     Failed,
+}
+
+/// Schema-compatible operation transaction phase.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TransactionPhase {
+    /// Intent received and policy classified.
+    IntentReceived,
+    /// Patch plan generated but not applied.
+    PlanGenerated,
+    /// User or managed policy approved apply.
+    Approved,
+    /// Mutation is being written to a temporary output.
+    Applying,
+    /// Output verification is running.
+    Verifying,
+    /// Transaction completed successfully.
+    Committed,
+    /// Transaction aborted before commit.
+    Aborted,
+    /// Crash recovery must inspect and repair state.
+    RecoveryRequired,
+}
+
+impl TransactionPhase {
+    /// Returns true when this phase requires a patch plan id.
+    #[must_use]
+    pub fn requires_plan_id(self) -> bool {
+        matches!(
+            self,
+            Self::PlanGenerated
+                | Self::Approved
+                | Self::Applying
+                | Self::Verifying
+                | Self::Committed
+        )
+    }
+
+    /// Returns true when crash recovery should inspect the transaction.
+    #[must_use]
+    pub fn requires_recovery(self) -> bool {
+        matches!(
+            self,
+            Self::Applying | Self::Verifying | Self::RecoveryRequired
+        )
+    }
+}
+
+/// Schema-compatible journal entry for one transaction checkpoint.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransactionJournalEntry {
+    /// Transaction id.
+    pub transaction_id: String,
+    /// Operation intent id.
+    pub intent_id: String,
+    /// Patch plan id when a plan exists.
+    pub plan_id: Option<String>,
+    /// Current phase.
+    pub phase: TransactionPhase,
+    /// Monotonic sequence number within the sidecar.
+    pub sequence: u64,
+    /// Human-readable note for recovery diagnostics.
+    pub note: String,
+}
+
+impl TransactionJournalEntry {
+    /// Creates an intent-received entry.
+    #[must_use]
+    pub fn intent_received(
+        transaction_id: &TransactionId,
+        intent: &OperationIntent,
+        note: impl Into<String>,
+    ) -> Self {
+        Self {
+            transaction_id: transaction_id.0.clone(),
+            intent_id: intent.intent_id.0.clone(),
+            plan_id: None,
+            phase: TransactionPhase::IntentReceived,
+            sequence: 0,
+            note: note.into(),
+        }
+    }
+
+    /// Creates a plan-linked entry.
+    #[must_use]
+    pub fn for_plan(
+        transaction_id: &TransactionId,
+        intent: &OperationIntent,
+        plan: &PatchPlan,
+        phase: TransactionPhase,
+        sequence: u64,
+        note: impl Into<String>,
+    ) -> Self {
+        Self {
+            transaction_id: transaction_id.0.clone(),
+            intent_id: intent.intent_id.0.clone(),
+            plan_id: Some(plan.plan_id.0.clone()),
+            phase,
+            sequence,
+            note: note.into(),
+        }
+    }
+
+    /// Validates schema-level invariants that Rust's type system cannot express.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when plan id presence or sequencing is invalid.
+    pub fn validate(&self) -> Result<(), FeError> {
+        if self.transaction_id.is_empty() {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "transaction_id must not be empty",
+            ));
+        }
+        if self.intent_id.is_empty() {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "intent_id must not be empty",
+            ));
+        }
+        if self.phase.requires_plan_id()
+            && self
+                .plan_id
+                .as_ref()
+                .is_none_or(|plan_id| plan_id.is_empty())
+        {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "phase requires non-empty plan_id",
+            ));
+        }
+        Ok(())
+    }
+}
+
+/// Durable transaction sidecar containing ordered journal entries.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransactionJournalSidecar {
+    /// Ordered journal entries.
+    pub entries: Vec<TransactionJournalEntry>,
+}
+
+impl TransactionJournalSidecar {
+    /// Creates an empty sidecar.
+    #[must_use]
+    pub fn new() -> Self {
+        Self {
+            entries: Vec::new(),
+        }
+    }
+
+    /// Appends a journal entry after validating sequence order.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the entry is invalid or not the next sequence.
+    pub fn append(&mut self, entry: TransactionJournalEntry) -> Result<(), FeError> {
+        entry.validate()?;
+        let expected = self.entries.len() as u64;
+        if entry.sequence != expected {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                format!(
+                    "transaction journal sequence must be {expected}, got {}",
+                    entry.sequence
+                ),
+            ));
+        }
+        if let Some(first) = self.entries.first()
+            && (entry.transaction_id != first.transaction_id || entry.intent_id != first.intent_id)
+        {
+            return Err(FeError::new(
+                FeErrorKind::InvalidInput,
+                "transaction journal entry does not match sidecar identity",
+            ));
+        }
+        self.entries.push(entry);
+        Ok(())
+    }
+
+    /// Returns the latest entry, if any.
+    #[must_use]
+    pub fn latest(&self) -> Option<&TransactionJournalEntry> {
+        self.entries.last()
+    }
+
+    /// Returns true when the latest phase requires recovery inspection.
+    #[must_use]
+    pub fn recovery_required(&self) -> bool {
+        self.latest()
+            .is_some_and(|entry| entry.phase.requires_recovery())
+    }
+
+    /// Validates all entries in order.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when any entry is invalid or sequence order is broken.
+    pub fn validate(&self) -> Result<(), FeError> {
+        let mut rebuilt = Self::new();
+        for entry in &self.entries {
+            rebuilt.append(entry.clone())?;
+        }
+        Ok(())
+    }
+}
+
+/// Writes a transaction sidecar as pretty JSON using temp-file then rename.
+///
+/// # Errors
+///
+/// Returns an error when validation, serialization, or filesystem persistence fails.
+pub fn write_transaction_sidecar(
+    path: impl AsRef<Path>,
+    sidecar: &TransactionJournalSidecar,
+) -> Result<(), FeError> {
+    sidecar.validate()?;
+    let path = path.as_ref();
+    let tmp_path = path.with_extension("tmp");
+    let json = serde_json::to_vec_pretty(sidecar)
+        .map_err(|error| FeError::new(FeErrorKind::Internal, error.to_string()))?;
+    fs::write(&tmp_path, json).map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    fs::rename(&tmp_path, path).map_err(|error| {
+        let _ = fs::remove_file(&tmp_path);
+        FeError::new(FeErrorKind::Io, error.to_string())
+    })?;
+    Ok(())
+}
+
+/// Reads and validates a transaction sidecar from JSON.
+///
+/// # Errors
+///
+/// Returns an error when the sidecar cannot be read, parsed, or validated.
+pub fn read_transaction_sidecar(
+    path: impl AsRef<Path>,
+) -> Result<TransactionJournalSidecar, FeError> {
+    let bytes = fs::read(path).map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    let sidecar: TransactionJournalSidecar = serde_json::from_slice(&bytes)
+        .map_err(|error| FeError::new(FeErrorKind::InvalidInput, error.to_string()))?;
+    sidecar.validate()?;
+    Ok(sidecar)
+}
+
+/// Lists readable transaction sidecars in a directory.
+///
+/// # Errors
+///
+/// Returns an error when the directory cannot be read.
+pub fn list_transaction_sidecars(
+    dir: impl AsRef<Path>,
+) -> Result<Vec<TransactionJournalSidecar>, FeError> {
+    let mut sidecars = Vec::new();
+    let entries =
+        fs::read_dir(dir).map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    for entry in entries {
+        let entry = entry.map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+        if entry
+            .file_type()
+            .map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?
+            .is_file()
+            && entry.path().extension().is_some_and(|ext| ext == "json")
+        {
+            sidecars.push(read_transaction_sidecar(entry.path())?);
+        }
+    }
+    Ok(sidecars)
+}
+
+/// Returns whether a transaction sidecar path exists.
+///
+/// # Errors
+///
+/// Returns an error for filesystem failures other than not-found.
+pub fn transaction_sidecar_exists(path: impl AsRef<Path>) -> Result<bool, FeError> {
+    match fs::metadata(path.as_ref()) {
+        Ok(metadata) => Ok(metadata.is_file()),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(false),
+        Err(error) => Err(FeError::new(FeErrorKind::Io, error.to_string())),
+    }
 }
 
 /// Journal entry for one patch plan application.
@@ -907,6 +1303,31 @@ mod tests {
             .required_write_mode(),
             WriteMode::SanitizingRewrite
         );
+        assert_eq!(
+            PatchOperation::add_highlight_annotation(
+                0,
+                vec![PageRect {
+                    x: 10,
+                    y: 20,
+                    width: 30,
+                    height: 12,
+                }],
+                AnnotationColor {
+                    red: 255,
+                    green: 242,
+                    blue: 0,
+                },
+            )
+            .unwrap()
+            .required_write_mode(),
+            WriteMode::IncrementalAppend
+        );
+        assert_eq!(
+            PatchOperation::add_note_annotation(0, PagePoint { x: 72, y: 144 }, "review this")
+                .unwrap()
+                .required_write_mode(),
+            WriteMode::IncrementalAppend
+        );
     }
 
     #[test]
@@ -990,6 +1411,118 @@ mod tests {
     }
 
     #[test]
+    fn annotation_operations_validate_before_planning() {
+        let yellow = AnnotationColor {
+            red: 255,
+            green: 242,
+            blue: 0,
+        };
+        assert_eq!(
+            PatchOperation::add_highlight_annotation(
+                2,
+                vec![PageRect {
+                    x: 10,
+                    y: 20,
+                    width: 30,
+                    height: 12,
+                }],
+                yellow,
+            )
+            .unwrap(),
+            PatchOperation::AddHighlightAnnotation {
+                page_index: 2,
+                rects: vec![PageRect {
+                    x: 10,
+                    y: 20,
+                    width: 30,
+                    height: 12,
+                }],
+                color: yellow,
+            }
+        );
+        assert_eq!(
+            PatchOperation::add_note_annotation(3, PagePoint { x: 72, y: 144 }, "review this")
+                .unwrap(),
+            PatchOperation::AddNoteAnnotation {
+                page_index: 3,
+                position: PagePoint { x: 72, y: 144 },
+                contents: "review this".into(),
+            }
+        );
+
+        assert!(PatchOperation::add_highlight_annotation(0, Vec::new(), yellow).is_err());
+        assert!(
+            PatchOperation::add_highlight_annotation(
+                0,
+                vec![PageRect {
+                    x: 0,
+                    y: 0,
+                    width: 0,
+                    height: 10,
+                }],
+                yellow,
+            )
+            .is_err()
+        );
+        assert!(PatchOperation::add_note_annotation(0, PagePoint { x: 0, y: 0 }, "   ").is_err());
+    }
+
+    #[test]
+    fn annotation_operation_patch_plan_is_mutating_append_only_and_unapproved() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "add_annotations",
+        );
+        let plan = PatchPlan::draft(
+            &intent,
+            "add highlight and note",
+            vec![
+                PatchOperation::add_highlight_annotation(
+                    0,
+                    vec![PageRect {
+                        x: 10,
+                        y: 20,
+                        width: 30,
+                        height: 12,
+                    }],
+                    AnnotationColor {
+                        red: 255,
+                        green: 242,
+                        blue: 0,
+                    },
+                )
+                .unwrap(),
+                PatchOperation::add_note_annotation(0, PagePoint { x: 72, y: 144 }, "review this")
+                    .unwrap(),
+            ],
+        );
+
+        assert_eq!(plan.write_mode, WriteMode::IncrementalAppend);
+        assert_eq!(plan.risk_level, RiskLevel::DocumentMutation);
+        assert!(!plan.approved_for_apply);
+    }
+
+    #[test]
+    fn annotation_operation_raises_read_only_intent_risk() {
+        let intent =
+            OperationIntent::read_only(OperationSource::Automation, DocumentId::new(), "bad");
+        let plan = PatchPlan::draft(
+            &intent,
+            "add note",
+            vec![
+                PatchOperation::add_note_annotation(0, PagePoint { x: 72, y: 144 }, "review")
+                    .unwrap(),
+            ],
+        );
+
+        assert_eq!(plan.write_mode, WriteMode::IncrementalAppend);
+        assert_eq!(plan.risk_level, RiskLevel::DocumentMutation);
+        assert!(!plan.approved_for_apply);
+    }
+
+    #[test]
     fn sha256_is_stable() {
         assert_eq!(
             sha256_hex(b"Fe Reader"),
@@ -1004,6 +1537,127 @@ mod tests {
         let journal =
             TransactionJournal::planned(&plan).transition(TransactionState::Journaled, "persisted");
         assert_eq!(journal.state, TransactionState::Journaled);
+    }
+
+    #[test]
+    fn transaction_sidecar_persists_schema_compatible_entries() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_patch",
+        );
+        let plan = PatchPlan::draft(&intent, "noop", vec![PatchOperation::Noop]);
+        let transaction_id = TransactionId::new();
+        let mut sidecar = TransactionJournalSidecar::new();
+
+        sidecar
+            .append(TransactionJournalEntry::intent_received(
+                &transaction_id,
+                &intent,
+                "intent received",
+            ))
+            .unwrap();
+        sidecar
+            .append(TransactionJournalEntry::for_plan(
+                &transaction_id,
+                &intent,
+                &plan,
+                TransactionPhase::PlanGenerated,
+                1,
+                "plan generated",
+            ))
+            .unwrap();
+
+        let path = unique_temp_path("transaction-sidecar.json");
+        write_transaction_sidecar(&path, &sidecar).unwrap();
+        let loaded = read_transaction_sidecar(&path).unwrap();
+        let _ = fs::remove_file(&path);
+
+        assert_eq!(loaded, sidecar);
+        assert!(!loaded.recovery_required());
+    }
+
+    #[test]
+    fn transaction_sidecar_recovery_required_for_incomplete_apply() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_patch",
+        );
+        let plan = PatchPlan::draft(&intent, "noop", vec![PatchOperation::Noop]);
+        let transaction_id = TransactionId::new();
+        let mut sidecar = TransactionJournalSidecar::new();
+
+        sidecar
+            .append(TransactionJournalEntry::intent_received(
+                &transaction_id,
+                &intent,
+                "intent received",
+            ))
+            .unwrap();
+        sidecar
+            .append(TransactionJournalEntry::for_plan(
+                &transaction_id,
+                &intent,
+                &plan,
+                TransactionPhase::Applying,
+                1,
+                "writing output",
+            ))
+            .unwrap();
+
+        assert!(sidecar.recovery_required());
+    }
+
+    #[test]
+    fn transaction_sidecar_rejects_bad_sequence_and_missing_plan() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_patch",
+        );
+        let transaction_id = TransactionId::new();
+        let mut sidecar = TransactionJournalSidecar::new();
+        let bad_sequence = TransactionJournalEntry {
+            transaction_id: transaction_id.0.clone(),
+            intent_id: intent.intent_id.0.clone(),
+            plan_id: None,
+            phase: TransactionPhase::IntentReceived,
+            sequence: 2,
+            note: "bad sequence".to_string(),
+        };
+
+        assert_eq!(
+            sidecar.append(bad_sequence).unwrap_err().kind,
+            FeErrorKind::InvalidInput
+        );
+
+        let missing_plan = TransactionJournalEntry {
+            transaction_id: transaction_id.0,
+            intent_id: intent.intent_id.0,
+            plan_id: None,
+            phase: TransactionPhase::Applying,
+            sequence: 0,
+            note: "missing plan".to_string(),
+        };
+
+        assert_eq!(
+            missing_plan.validate().unwrap_err().kind,
+            FeErrorKind::InvalidInput
+        );
+    }
+
+    #[test]
+    fn malformed_transaction_sidecar_fails_closed() {
+        let path = unique_temp_path("malformed-transaction-sidecar.json");
+        fs::write(&path, b"{not json").unwrap();
+        let error = read_transaction_sidecar(&path).unwrap_err();
+        let _ = fs::remove_file(&path);
+
+        assert_eq!(error.kind, FeErrorKind::InvalidInput);
     }
 
     #[test]
@@ -1114,5 +1768,9 @@ mod tests {
         assert_eq!(receipt.write_mode, WriteMode::FullRewrite);
         assert_eq!(receipt.risk_level, RiskLevel::DocumentMutation);
         assert_eq!(receipt.verification_status, VerificationStatus::Failed);
+    }
+
+    fn unique_temp_path(name: &str) -> std::path::PathBuf {
+        std::env::temp_dir().join(format!("fe-reader-{}-{name}", Uuid::new_v4()))
     }
 }

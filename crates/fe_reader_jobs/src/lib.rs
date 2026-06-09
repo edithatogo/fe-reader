@@ -4,6 +4,7 @@
 #![warn(missing_docs)]
 
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use std::sync::{
     Arc,
     atomic::{AtomicBool, Ordering},
@@ -65,6 +66,117 @@ pub struct ProgressEvent {
     pub message: String,
 }
 
+/// Schema-compatible job run state.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum JobRunState {
+    /// Queued.
+    Queued,
+    /// Running.
+    Running,
+    /// Paused.
+    Paused,
+    /// Cancellation requested.
+    Cancelling,
+    /// Cancelled.
+    Cancelled,
+    /// Completed.
+    Completed,
+    /// Failed.
+    Failed,
+}
+
+/// Schema-compatible job progress.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct JobProgress {
+    /// Completed work units.
+    pub completed_units: u64,
+    /// Total work units, if known.
+    pub total_units: Option<u64>,
+    /// Human-readable progress message.
+    pub message: String,
+}
+
+impl JobProgress {
+    /// Returns true when completed work does not exceed known total work.
+    #[must_use]
+    pub fn is_consistent(&self) -> bool {
+        self.total_units
+            .is_none_or(|total_units| self.completed_units <= total_units)
+    }
+}
+
+/// Schema-compatible job run summary.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct JobRun {
+    /// Job id.
+    pub job_id: String,
+    /// Job kind.
+    pub kind: String,
+    /// Job state.
+    pub state: JobRunState,
+    /// Progress.
+    pub progress: JobProgress,
+    /// Resource limits or policy notes.
+    pub resource_limits: BTreeMap<String, serde_json::Value>,
+}
+
+impl JobRun {
+    /// Creates a completed smoke job.
+    #[must_use]
+    pub fn smoke_completed() -> Self {
+        Self {
+            job_id: "job:wave0-smoke".to_string(),
+            kind: "contract_smoke".to_string(),
+            state: JobRunState::Completed,
+            progress: JobProgress {
+                completed_units: 1,
+                total_units: Some(1),
+                message: "contract smoke completed".to_string(),
+            },
+            resource_limits: BTreeMap::from([
+                ("max_wall_time_ms".to_string(), serde_json::json!(30_000)),
+                ("max_memory_mib".to_string(), serde_json::json!(1024)),
+            ]),
+        }
+    }
+
+    /// Validates job-run invariants.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when ids/kinds are empty or progress is inconsistent.
+    pub fn validate(&self) -> Result<(), JobError> {
+        if self.job_id.trim().is_empty() {
+            return Err(JobError::invalid("job_id must not be empty"));
+        }
+        if self.kind.trim().is_empty() {
+            return Err(JobError::invalid("kind must not be empty"));
+        }
+        if !self.progress.is_consistent() {
+            return Err(JobError::invalid(
+                "completed_units must not exceed total_units",
+            ));
+        }
+        Ok(())
+    }
+}
+
+/// Job contract validation error.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[error("job contract error: {message}")]
+pub struct JobError {
+    /// Human-readable validation message.
+    pub message: String,
+}
+
+impl JobError {
+    fn invalid(message: impl Into<String>) -> Self {
+        Self {
+            message: message.into(),
+        }
+    }
+}
+
 /// Cooperative cancellation token.
 #[derive(Debug, Clone, Default)]
 pub struct CancellationToken {
@@ -100,5 +212,19 @@ mod tests {
         assert!(!token.is_cancelled());
         token.cancel();
         assert!(token.is_cancelled());
+    }
+
+    #[test]
+    fn smoke_job_run_validates() {
+        let run = JobRun::smoke_completed();
+        run.validate().unwrap();
+        assert_eq!(run.state, JobRunState::Completed);
+    }
+
+    #[test]
+    fn job_run_rejects_inconsistent_progress() {
+        let mut run = JobRun::smoke_completed();
+        run.progress.completed_units = 2;
+        assert!(run.validate().is_err());
     }
 }

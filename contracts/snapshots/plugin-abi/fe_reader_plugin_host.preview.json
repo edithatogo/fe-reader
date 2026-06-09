@@ -1,0 +1,26 @@
+{
+  "contract": "fe_reader_plugin_host",
+  "version": "0.1.0",
+  "stability": "preview",
+  "abi": "proposal_only",
+  "mutation_policy": "plugins_propose_patch_plans_only",
+  "public_types": [
+    "PluginManifest",
+    "PluginProposalRequest",
+    "PluginProposal",
+    "ProposalOnlyPluginHost"
+  ],
+  "denied_by_default": [
+    "network_access",
+    "filesystem_access",
+    "direct_apply",
+    "audit_receipt_emission_by_plugin"
+  ],
+  "required_mutation_guards": [
+    "document_hash_match",
+    "patch_plan_id",
+    "policy_evaluation",
+    "approval_token_or_interactive_confirmation",
+    "audit_receipt_emission"
+  ]
+}

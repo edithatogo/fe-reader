@@ -8,7 +8,7 @@ Fe Reader should feel instant after the first open. A content-addressed cache en
 - Cache data is local-first and privacy-sensitive.
 - Cache may be disabled by enterprise policy.
 - Cache can be cleared without losing source documents.
-- Cache entries must never be trusted as a substitute for verifying the source document hash.
+- Cache entries are not authoritative; always verify the source document hash.
 
 ## Cache domains
 

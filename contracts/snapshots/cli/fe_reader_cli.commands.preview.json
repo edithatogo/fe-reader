@@ -1,0 +1,28 @@
+{
+  "contract": "fe_reader_cli.commands",
+  "version": "0.1.0",
+  "stability": "preview",
+  "mutation_policy": "operation_intent_patch_plan_review_policy_apply_verify_audit_receipt",
+  "commands": [
+    "doctor",
+    "inspect",
+    "policy",
+    "metadata-diff",
+    "metadata-scrub",
+    "lab inspect",
+    "lab text-map"
+  ],
+  "read_only_or_plan_only": [
+    "inspect",
+    "metadata-diff",
+    "metadata-scrub --plan-only",
+    "lab inspect",
+    "lab text-map"
+  ],
+  "requires_review_by_default": [
+    "policy apply",
+    "policy export",
+    "policy automation",
+    "policy plan"
+  ]
+}

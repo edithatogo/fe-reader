@@ -6,8 +6,20 @@ CHANNEL="${FE_RELEASE_CHANNEL:-dev}"
 SBOM_PATH="target/release-evidence/sbom.cdx.json"
 STATUS="advisory"
 DETAIL="cargo-cyclonedx not installed; SBOM generation skipped for dev bootstrap"
-if command -v cargo-cyclonedx >/dev/null 2>&1; then
-  cargo cyclonedx --format json --output-file "$SBOM_PATH" || exit 1
+if cargo cyclonedx --version >/dev/null 2>&1; then
+  find crates -type f \( -name '*.cdx.json' -o -name 'sbom.cdx.json' \) -delete
+  cargo cyclonedx --format json --all-features || exit 1
+  if [[ -f crates/fe_reader_cli/fe_reader_cli.cdx.json ]]; then
+    cp crates/fe_reader_cli/fe_reader_cli.cdx.json "$SBOM_PATH"
+  else
+    FIRST_SBOM="$(find crates -type f -name '*.cdx.json' | sort | head -n 1)"
+    if [[ -z "$FIRST_SBOM" ]]; then
+      echo "cargo-cyclonedx completed but no CycloneDX JSON file was found" >&2
+      exit 1
+    fi
+    cp "$FIRST_SBOM" "$SBOM_PATH"
+  fi
+  find crates -type f \( -name '*.cdx.json' -o -name 'sbom.cdx.json' \) -delete
   python3 -m json.tool "$SBOM_PATH" >/dev/null
   cp "$SBOM_PATH" target/security/sbom.cdx.json
   STATUS="pass"
@@ -19,7 +31,7 @@ else
   fi
   echo "$DETAIL"
 fi
-if command -v cargo-deny >/dev/null 2>&1; then cargo deny check; else echo "cargo-deny not installed; advisory skip"; fi
+if cargo deny --version >/dev/null 2>&1; then cargo deny check; else echo "cargo-deny not installed; advisory skip"; fi
 if command -v cargo >/dev/null 2>&1; then
   cargo metadata --locked --format-version=1 > target/release-evidence/cargo-metadata.json
 fi

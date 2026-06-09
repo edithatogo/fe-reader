@@ -1,0 +1,9 @@
+{
+  "example": "workflow-plan-only",
+  "workflow_pack": "legal.deidentify.basic",
+  "document_hash_required": true,
+  "mutation_pipeline": "OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt",
+  "approval_required": true,
+  "expected_write_mode": "full_rewrite",
+  "receipt_required": true
+}

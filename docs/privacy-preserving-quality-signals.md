@@ -1,6 +1,6 @@
 # Privacy-Preserving Quality Signals
 
-Fe Reader should become reliable without collecting private documents. Diagnostics must be opt-in, minimised and locally inspectable.
+Fe Reader should become reliable without collecting private documents. Diagnostics must be opt-in, minimised and locally inspectable. Quality signals are local-first by default and treated as privacy-sensitive release evidence.
 
 ## Local-first diagnostics
 
