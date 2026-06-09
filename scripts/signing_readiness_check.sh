@@ -5,6 +5,7 @@ CHANNEL="${FE_RELEASE_CHANNEL:-dev}"
 python3 - "$CHANNEL" <<'PY'
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -27,12 +28,12 @@ required_secrets = {
     "ios": ["FE_IOS_DISTRIBUTION_CERT", "FE_IOS_APPSTORE_CONNECT_KEY"],
 }
 provided_secret_refs = {
-    platform: [name for name in names if name in __import__("os").environ]
+    platform: [name for name in names if os.environ.get(name, "").strip()]
     for platform, names in required_secrets.items()
 }
 if channel in strict_channels:
     missing = {
-        platform: [name for name in names if name not in __import__("os").environ]
+        platform: [name for name in names if not os.environ.get(name, "").strip()]
         for platform, names in required_secrets.items()
     }
     missing = {platform: names for platform, names in missing.items() if names}
