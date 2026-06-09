@@ -96,6 +96,19 @@ for wf in workflow_dir.glob('*.yml'):
             failures.append('07-release.yml must fail when release evidence artifact files are missing')
         if 'retention-days:' not in txt:
             failures.append('07-release.yml must set release evidence retention-days')
+        for secret_name in [
+            'FE_WINDOWS_SIGNING_CERT',
+            'FE_WINDOWS_SIGNING_PASSWORD',
+            'FE_MACOS_DEVELOPER_ID_CERT',
+            'FE_MACOS_NOTARY_PROFILE',
+            'FE_LINUX_SIGNING_KEY',
+            'FE_ANDROID_UPLOAD_KEYSTORE',
+            'FE_ANDROID_UPLOAD_KEYSTORE_PASSWORD',
+            'FE_IOS_DISTRIBUTION_CERT',
+            'FE_IOS_APPSTORE_CONNECT_KEY',
+        ]:
+            if f'secrets.{secret_name}' not in txt:
+                failures.append(f'07-release.yml missing strict release secret binding: {secret_name}')
 
     for match in re.finditer(r'\bscripts/[A-Za-z0-9_.\-/]+', txt):
         script_rel = match.group(0).rstrip('",\'')
