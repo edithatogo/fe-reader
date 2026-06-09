@@ -11,6 +11,10 @@ on:
         description: Release channel.
         required: true
         default: dev
+      target_platforms:
+        description: Comma-separated release signing targets. Use all only when every platform credential is available.
+        required: true
+        default: linux,android
 
 permissions:
   contents: read
@@ -26,6 +30,7 @@ jobs:
     env:
       FE_RELEASE_ID: ${{ inputs.release_id }}
       FE_RELEASE_CHANNEL: ${{ inputs.channel }}
+      FE_RELEASE_TARGETS: ${{ inputs.target_platforms }}
       FE_WINDOWS_SIGNING_CERT: ${{ secrets.FE_WINDOWS_SIGNING_CERT }}
       FE_WINDOWS_SIGNING_PASSWORD: ${{ secrets.FE_WINDOWS_SIGNING_PASSWORD }}
       FE_MACOS_DEVELOPER_ID_CERT: ${{ secrets.FE_MACOS_DEVELOPER_ID_CERT }}

@@ -33,5 +33,12 @@ Release evidence records signing readiness without storing secrets:
 - signing, notarization or store receipt path when available;
 - blocker reason when a required credential or receipt is absent.
 
+Strict release checks are scoped by `FE_RELEASE_TARGETS`, a comma-separated
+platform list such as `linux,android`. Use `all` only when Windows, macOS,
+Linux, Android and iOS credentials are all present. Apple notarization and iOS
+distribution may remain deferred while Developer Program/App Store Connect
+verification is pending, but those platforms must not be included in a public
+release target list until their credentials and receipts exist.
+
 Real private keys, signing certificates, notarization credentials and upload
 keys must never be committed to the repository.
