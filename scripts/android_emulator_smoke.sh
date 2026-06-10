@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 API="${FE_ANDROID_API:-35}"
 TARGET="${FE_ANDROID_TARGET:-aarch64-linux-android}"
 AVD_NAME="${FE_ANDROID_AVD_NAME:-fe-reader-api-${API}}"
-TOOLCHAIN="${FE_RUST_TOOLCHAIN:-1.95.0-aarch64-apple-darwin}"
+TOOLCHAIN="${FE_RUST_TOOLCHAIN:-}"
 
 find_android_tool() {
   local name="$1"
@@ -35,9 +35,11 @@ if [[ -z "${ADB}" ]]; then
   exit 1
 fi
 
-RUSTC_BIN="$(rustup which rustc --toolchain "${TOOLCHAIN}" 2>/dev/null || true)"
-if [[ -n "${RUSTC_BIN}" ]]; then
-  export RUSTC="${RUSTC_BIN}"
+if [[ -n "${TOOLCHAIN}" ]]; then
+  RUSTC_BIN="$(rustup which rustc --toolchain "${TOOLCHAIN}" 2>/dev/null || true)"
+  if [[ -n "${RUSTC_BIN}" ]]; then
+    export RUSTC="${RUSTC_BIN}"
+  fi
 fi
 
 has_booted_device() {
