@@ -577,6 +577,10 @@ pub struct PatchPlan {
     pub write_mode: WriteMode,
     /// Risk classification inherited or raised by the planner.
     pub risk_level: RiskLevel,
+    /// Passive transformation graph id selected during planning.
+    pub transformation_graph_id: Option<String>,
+    /// Ordered transformation pass ids bound to the plan.
+    pub transformation_passes: Vec<String>,
     /// Whether the plan may be applied without further review.
     pub approved_for_apply: bool,
 }
@@ -607,8 +611,24 @@ impl PatchPlan {
             operations,
             write_mode,
             risk_level,
+            transformation_graph_id: None,
+            transformation_passes: Vec::new(),
             approved_for_apply: false,
         }
+    }
+
+    /// Attaches passive transformation graph metadata to the plan.
+    ///
+    /// This is metadata only. It does not approve the plan or change the write mode.
+    #[must_use]
+    pub fn with_transformation_graph(
+        mut self,
+        transformation_graph_id: impl Into<String>,
+        transformation_passes: Vec<impl Into<String>>,
+    ) -> Self {
+        self.transformation_graph_id = Some(transformation_graph_id.into());
+        self.transformation_passes = transformation_passes.into_iter().map(Into::into).collect();
+        self
     }
 
     /// Marks a plan as approved. The caller must already have passed policy review.
@@ -929,6 +949,8 @@ pub struct TransactionJournal {
     pub plan_id: PatchPlanId,
     /// Document id.
     pub document_id: DocumentId,
+    /// Passive transformation graph id if the plan was compiled from one.
+    pub transformation_graph_id: Option<String>,
     /// State.
     pub state: TransactionState,
     /// Human-readable recovery note.
@@ -943,6 +965,7 @@ impl TransactionJournal {
             transaction_id: TransactionId::new(),
             plan_id: plan.plan_id.clone(),
             document_id: plan.document_id.clone(),
+            transformation_graph_id: plan.transformation_graph_id.clone(),
             state: TransactionState::Planned,
             recovery_note: "no document bytes have been modified".to_string(),
         }
@@ -1218,8 +1241,45 @@ mod tests {
 
         assert_eq!(plan.write_mode, WriteMode::NoWrite);
         assert_eq!(plan.risk_level, RiskLevel::ReadOnly);
+        assert!(plan.transformation_graph_id.is_none());
+        assert!(plan.transformation_passes.is_empty());
         assert!(!plan.approved_for_apply);
         assert_eq!(plan.operations, vec![PatchOperation::Noop]);
+    }
+
+    #[test]
+    fn patch_plan_can_bind_passive_transformation_metadata() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::PlanMutation,
+            "set_metadata",
+        );
+        let plan = PatchPlan::draft(
+            &intent,
+            "set metadata",
+            vec![PatchOperation::SetMetadata {
+                key: "title".into(),
+                value: "Fe Reader".into(),
+            }],
+        )
+        .with_transformation_graph(
+            "graph:read-only-smoke",
+            vec!["InspectPageModel", "NormalizePageBoxes"],
+        );
+
+        assert_eq!(
+            plan.transformation_graph_id.as_deref(),
+            Some("graph:read-only-smoke")
+        );
+        assert_eq!(
+            plan.transformation_passes,
+            vec![
+                "InspectPageModel".to_string(),
+                "NormalizePageBoxes".to_string()
+            ]
+        );
+        assert!(!plan.approved_for_apply);
     }
 
     #[test]
@@ -1537,6 +1597,26 @@ mod tests {
         let journal =
             TransactionJournal::planned(&plan).transition(TransactionState::Journaled, "persisted");
         assert_eq!(journal.state, TransactionState::Journaled);
+        assert!(journal.transformation_graph_id.is_none());
+    }
+
+    #[test]
+    fn transaction_journal_carries_transformation_binding() {
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_patch",
+        );
+        let plan = PatchPlan::draft(&intent, "apply with graph", vec![PatchOperation::Noop])
+            .with_transformation_graph("graph:read-only-smoke", vec!["InspectPageModel"]);
+
+        let journal = TransactionJournal::planned(&plan);
+
+        assert_eq!(
+            journal.transformation_graph_id.as_deref(),
+            Some("graph:read-only-smoke")
+        );
     }
 
     #[test]

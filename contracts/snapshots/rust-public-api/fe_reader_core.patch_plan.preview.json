@@ -16,7 +16,8 @@
   ],
   "constructors": [
     "PatchPlan::draft",
-    "PatchPlan::approved"
+    "PatchPlan::approved",
+    "PatchPlan::with_transformation_graph"
   ],
   "cli_evidence": {
     "command": "cargo run -q -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json",
@@ -26,6 +27,7 @@
     "No-op plans use no_write and stay unapproved.",
     "Plans derive write mode from planned operation semantics.",
     "Mutating operations raise read-only intent risk to document_mutation.",
+    "Patch plans can carry passive transformation graph ids and pass lists for evidence binding.",
     "Approval is represented explicitly and must only be set after policy review."
   ]
 }

@@ -31,6 +31,15 @@ Phase AA1 implementation note:
 - Add release/evidence documentation.
 - Run review skill and resolve allowed auto-fixes only.
 
+## Completion Evidence
+
+- `fe_reader_core::PatchPlan` now carries passive transformation graph metadata without changing write approval or write mode.
+- `fe_reader_core::TransactionJournal` now carries the transformation graph id from a planned patch.
+- `fe_reader_uniffi::FePatchPlan` exposes the same passive transformation metadata for bindings.
+- `schemas/patch-plan.schema.json`, `contracts/rust/core_types.rs`, and `scripts/patch_plan_contract_check.py` now keep the contract visible in schema and token checks.
+- `docs/document-ir-transformation-evidence.md` records the phase evidence and `docs/engine-ir-and-transformation-pipeline.md` now documents the patch-plan binding behavior.
+- Verified with `cargo fmt --all`, `git diff --check`, `cargo test -q -p fe_reader_core`, `cargo test -q -p fe_reader_uniffi`, `cargo clippy -p fe_reader_core -p fe_reader_uniffi --all-targets --all-features -- -D warnings`, and `bash scripts/conductor_phase_gate.sh --phase AA1 --auto-fix`.
+
 ## Exit criteria
 
 - Review skill passes.

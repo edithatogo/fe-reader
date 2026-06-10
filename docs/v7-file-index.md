@@ -301,6 +301,7 @@
 - `docs/dependency-and-tool-version-policy.md`
 - `docs/deterministic-search-indexing.md`
 - `docs/developer-ecosystem-sdk.md`
+- `docs/document-ir-transformation-evidence.md`
 - `docs/differential-testing-oracles.md`
 - `docs/engine-ir-and-transformation-pipeline.md`
 - `docs/enterprise-deployment-policy.md`

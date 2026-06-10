@@ -100,6 +100,10 @@ pub struct FePatchPlan {
     pub write_mode: String,
     /// Risk classification.
     pub risk_level: FeRiskLevel,
+    /// Passive transformation graph id selected during planning.
+    pub transformation_graph_id: Option<String>,
+    /// Ordered transformation pass ids bound to the plan.
+    pub transformation_passes: Vec<String>,
     /// Whether this plan can be applied without further review.
     pub approved_for_apply: bool,
     /// Number of planned operations.
@@ -232,6 +236,8 @@ impl From<PatchPlan> for FePatchPlan {
             summary: plan.summary,
             write_mode: write_mode_name(plan.write_mode).to_owned(),
             risk_level: FeRiskLevel::from_core(plan.risk_level),
+            transformation_graph_id: plan.transformation_graph_id,
+            transformation_passes: plan.transformation_passes,
             approved_for_apply: plan.approved_for_apply,
             operation_count: plan.operations.len() as u32,
         }
@@ -319,6 +325,8 @@ mod tests {
         assert_eq!(plan.document_id, "doc-1");
         assert_eq!(plan.write_mode, "sanitizing_rewrite");
         assert_eq!(plan.risk_level, FeRiskLevel::HighRisk);
+        assert!(plan.transformation_graph_id.is_none());
+        assert!(plan.transformation_passes.is_empty());
         assert!(!plan.approved_for_apply);
         assert_eq!(plan.operation_count, 1);
     }

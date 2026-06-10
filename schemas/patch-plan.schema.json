@@ -257,6 +257,20 @@
         "high_risk"
       ]
     },
+    "transformation_graph_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "transformation_passes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "approved_for_apply": {
       "type": "boolean"
     }

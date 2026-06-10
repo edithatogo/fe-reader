@@ -71,6 +71,8 @@ pub struct FePatchPlan {
     pub summary: Vec<String>,
     pub warnings: Vec<String>,
     pub operations: Vec<FePatchOperation>,
+    pub transformation_graph_id: Option<String>,
+    pub transformation_passes: Vec<String>,
     pub requires_approval: bool,
 }
 

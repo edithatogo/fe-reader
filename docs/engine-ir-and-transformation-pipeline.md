@@ -47,6 +47,12 @@ DetectActiveContentPass
 DetectIncrementalRevisionsPass
 ```
 
+## Patch-plan binding
+
+- Passive transformation compilation can attach a graph id and ordered pass ids to a patch plan.
+- The binding metadata is optional and does not approve a plan or change its write mode.
+- Transaction journals can carry the graph id for recovery and audit correlation.
+
 ## Why not mutate directly?
 
 Direct low-level mutation is useful for small experiments but risky for a platform. A transformation pipeline makes changes testable, explainable, undoable, fuzzable and comparable across low-level writer implementations.

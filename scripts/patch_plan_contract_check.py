@@ -74,6 +74,8 @@ def require_schema_tokens() -> None:
         "full_rewrite",
         "document_mutation",
         "redact_region",
+        "transformation_graph_id",
+        "transformation_passes",
     ):
         if token not in schema_text:
             fail(f"patch plan schema missing token {token}")
