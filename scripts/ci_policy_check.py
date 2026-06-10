@@ -84,6 +84,8 @@ for wf in workflow_dir.glob('*.yml'):
             failures.append('07-release.yml must run release readiness')
         if 'target_platforms:' not in txt or 'FE_RELEASE_TARGETS: ${{ inputs.target_platforms }}' not in txt:
             failures.append('07-release.yml must expose explicit release target platform scope')
+        if 'cargo install cargo-cyclonedx --locked' not in txt:
+            failures.append('07-release.yml must install cargo-cyclonedx before public release SBOM checks')
         for command in [
             'bash scripts/sbom_audit.sh',
             'bash scripts/generate_provenance_attestation.sh',
