@@ -1,0 +1,71 @@
+version: 0.1.0-preview.1
+repository: https://github.com/edithatogo/fe-reader
+homepage: https://edithatogo.github.io/fe-reader/
+policy: registry publication requires signed artifacts, release evidence, smoke tests and maintainer approval
+registries:
+  github_releases:
+    package: fe-reader
+    status: canonical_preview_index
+    url: https://github.com/edithatogo/fe-reader/releases
+  crates_io:
+    packages:
+      - fe_reader_core
+      - fe_reader_pdf_model
+      - fe_reader_cli
+      - fe_reader_security
+      - fe_reader_uniffi
+      - fe_reader_c_abi
+      - fe_reader_mcp
+      - fe_reader_plugin_host
+    status: manifest_ready_publish_deferred
+    blocker: public crate descriptions, ownership and release evidence required before publishing
+  nuget:
+    package: FeReader.Native
+    status: manifest_ready_publish_deferred
+    manifest: packaging/nuget/FeReader.Native/FeReader.Native.csproj
+    blocker: native runtime assets and signing evidence required before publishing
+  homebrew:
+    package: fe-reader
+    status: cask_ready_publish_deferred
+    manifest: packaging/macos/homebrew/fe-reader.rb
+    blocker: signed and notarized DMG required
+  winget:
+    package: FeReader.FeReader
+    status: manifest_ready_publish_deferred
+    manifest: packaging/windows/winget/FeReader.yaml
+    blocker: signed MSI/MSIX required
+  chocolatey:
+    package: fe-reader
+    status: manifest_ready_publish_deferred
+    manifest: packaging/windows/chocolatey/fe-reader.nuspec
+    blocker: signed Windows artifact required
+  scoop:
+    package: fe-reader
+    status: manifest_ready_publish_deferred
+    manifest: packaging/windows/scoop/fe-reader.json
+    blocker: signed portable zip and checksum required
+  flatpak:
+    package: org.fereader.FeReader
+    status: manifest_ready_publish_deferred
+    manifest: packaging/linux/flatpak/org.fereader.FeReader.yml
+    blocker: desktop app artifact and Flathub review required
+  snap:
+    package: fe-reader
+    status: manifest_ready_publish_deferred
+    manifest: packaging/linux/snap/snapcraft.yaml
+    blocker: built snap and store review required
+  aur:
+    package: fe-reader
+    status: pkgbuild_ready_publish_deferred
+    manifest: packaging/linux/aur/PKGBUILD
+    blocker: source tarball and checksums required
+  google_play:
+    package: Fe Reader
+    status: checklist_ready_publish_deferred
+    manifest: packaging/android/play/play-publishing-checklist.md
+    blocker: Android app bundle and Play Console access required
+  app_store:
+    package: Fe Reader
+    status: checklist_ready_publish_deferred
+    manifest: packaging/ios/appstore/app-store-checklist.md
+    blocker: Apple Developer Program verification required

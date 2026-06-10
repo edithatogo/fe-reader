@@ -8,5 +8,5 @@ ShortDescription: Local-first cross-platform PDF workflow platform.
 Installers:
   - Architecture: x64
     InstallerType: wix
-    InstallerUrl: https://example.invalid/fe-reader-0.1.0-x64.msi
+    InstallerUrl: https://github.com/edithatogo/fe-reader/releases/download/v0.1.0-preview.1/fe-reader-0.1.0-x64.msi
     InstallerSha256: PLACEHOLDER

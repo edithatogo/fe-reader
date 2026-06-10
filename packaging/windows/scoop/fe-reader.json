@@ -1,11 +1,11 @@
 {
   "version": "0.1.0",
   "description": "Local-first cross-platform PDF workflow platform.",
-  "homepage": "https://example.invalid/fe-reader",
+  "homepage": "https://edithatogo.github.io/fe-reader/",
   "license": "Apache-2.0 OR MIT",
   "architecture": {
     "64bit": {
-      "url": "https://example.invalid/fe-reader-0.1.0-windows-x64.zip",
+      "url": "https://github.com/edithatogo/fe-reader/releases/download/v0.1.0-preview.1/fe-reader-0.1.0-windows-x64.zip",
       "hash": "PLACEHOLDER"
     }
   },

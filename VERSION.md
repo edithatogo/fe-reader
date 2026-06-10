@@ -1,13 +1,35 @@
-# Fe Reader Package Version
+# Fe Reader Versioning
 
-Current package: v8
+Current release line: `0.1.0-preview.1`
 
-v8 focus: executable Wave 0 contract implementation rather than broad scope expansion.
+## Version Layers
 
-Key additions:
-- Real Wave 0 Rust contracts for operation intent, patch planning, transaction journal, receipts, document fingerprinting, PDF sniffing, security policy evaluation, render/search/text traits, metadata planning, and job/resource contracts.
-- CLI `inspect` now produces a concrete JSON document summary for PDF-like files.
-- New implementation acceptance docs, PR queue, smoke scripts, and contract fixtures.
-- New v8 Conductor tracks for executable Wave 0, contract tests, and implementation evidence.
+Fe Reader uses separate but linked version layers:
 
-v9: strict contracts and repository CI/CD hardening layer.
+- Product and release line: SemVer with prerelease identifiers, currently
+  `0.1.0-preview.1`.
+- Rust crate API versions: SemVer per crate, currently `0.1.0`.
+- C ABI version: `0.1.0`, tracked through
+  `contracts/snapshots/c-abi/fe_reader_c_abi.facade.json`.
+- NuGet wrapper version: `0.1.0-preview.1`, matching the product preview line.
+- Package manifests: must reference the same product release line or document a
+  platform-specific version mapping.
+- Contract package generation: v9, tracked through implementation docs and
+  contract tests.
+
+## Rules
+
+1. Public Rust API changes require an API compatibility note and SemVer decision.
+2. CLI, MCP, C ABI, UniFFI, COM, AppleScript, D-Bus, Android intent, iOS App
+   Intent and plugin contract changes require a compatibility note.
+3. Release tags use `v<product-version>`, for example `v0.1.0-preview.1`.
+4. Stable releases require SBOM, provenance, signing-readiness and release
+   evidence artifacts.
+5. Registry publication is allowed only after the relevant package manifest,
+   signing evidence and smoke test pass for that platform.
+
+## Current Scope
+
+`0.1.0-preview.1` is a repository and contract preview. It validates the
+headless Rust workspace, CLI smoke path, platform contracts, release evidence
+and packaging metadata. It is not a production application release.

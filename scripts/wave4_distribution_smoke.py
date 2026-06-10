@@ -172,7 +172,7 @@ def write_update_manifest(failures):
                 "platform": "macos",
                 "arch": "arm64",
                 "installer_kind": "dmg",
-                "url": "https://example.invalid/fe-reader-0.1.0-macos-arm64.dmg",
+                "url": "https://github.com/edithatogo/fe-reader/releases/download/v0.1.0-preview.1/fe-reader-0.1.0-macos-arm64.dmg",
                 "sha256": artifact_sha,
                 "size_bytes": 42,
                 "signature": "dev-placeholder-signature",

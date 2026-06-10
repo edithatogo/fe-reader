@@ -4,9 +4,9 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="Local-first cross-platform PDF workflow platform"
 arch=('x86_64')
-url="https://example.invalid/fe-reader"
+url="https://github.com/edithatogo/fe-reader"
 license=('Apache-2.0' 'MIT')
-source=("fe-reader-${pkgver}.tar.gz")
+source=("https://github.com/edithatogo/fe-reader/archive/refs/tags/v0.1.0-preview.1.tar.gz")
 sha256sums=('PLACEHOLDER')
 package() {
   install -Dm755 "${srcdir}/fe-reader" "${pkgdir}/usr/bin/fe-reader"

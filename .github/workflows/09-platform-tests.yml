@@ -1,0 +1,70 @@
+name: Platform Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - run: bash scripts/linux_container_smoke.sh
+
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          targets: x86_64-apple-darwin
+      - run: cargo test --workspace --all-targets
+      - run: cargo run -p fe_reader_cli -- doctor
+      - run: cargo check -p fe_reader_cli --target x86_64-apple-darwin
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - run: cargo test -p fe_reader_core -p fe_reader_pdf_model -p fe_reader_security -p fe_reader_cli
+      - run: cargo run -p fe_reader_cli -- doctor
+
+  android-emulator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          targets: x86_64-linux-android
+      - uses: reactivecircus/android-emulator-runner@v2 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: FE_ANDROID_EMULATOR_MANAGED=1 FE_ANDROID_TARGET=x86_64-linux-android bash scripts/android_emulator_smoke.sh
+
+  ios-simulator:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          targets: aarch64-apple-ios-sim
+      - run: python3 scripts/mobile_smoke_bindings_check.py
+      - run: cargo check -p fe_reader_uniffi --target aarch64-apple-ios-sim

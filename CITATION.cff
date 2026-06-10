@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use Fe Reader in research, tooling comparisons, or documentation, please cite this repository."
+title: "Fe Reader"
+version: "0.1.0-preview.1"
+date-released: 2026-06-10
+url: "https://github.com/edithatogo/fe-reader"
+repository-code: "https://github.com/edithatogo/fe-reader"
+abstract: "Local-first PDF workflow platform focused on privacy, verification, metadata transparency, automation safety and cross-platform native integration."
+license: "Apache-2.0 OR MIT"
+authors:
+  - name: "Fe Reader Project"
+preferred-citation:
+  type: software
+  title: "Fe Reader"
+  version: "0.1.0-preview.1"
+  date-released: 2026-06-10
+  url: "https://github.com/edithatogo/fe-reader"
+  authors:
+    - name: "Fe Reader Project"

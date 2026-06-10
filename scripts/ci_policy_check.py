@@ -14,6 +14,7 @@ required_names = {
     '05-frontier-nightly.yml',
     '06-performance-nightly.yml',
     '07-release.yml',
+    '09-platform-tests.yml',
 }
 actual = {p.name for p in workflow_dir.glob('*.yml')} if workflow_dir.exists() else set()
 missing = required_names - actual
@@ -48,6 +49,7 @@ for wf in workflow_dir.glob('*.yml'):
         '02-security-supply-chain.yml',
         '03-cross-platform-smoke.yml',
         '04-api-compatibility.yml',
+        '09-platform-tests.yml',
     }:
         if 'continue-on-error: true' in txt:
             failures.append(f'{wf.name} is a stable lane and must not continue-on-error')
@@ -130,6 +132,7 @@ if pr_contracts.exists():
         'python3 scripts/repository_ci_cd_check.py',
         'python3 scripts/frontier_ci_check.py',
         'python3 scripts/ci_policy_check.py',
+        'python3 scripts/version_consistency_check.py',
         'python3 scripts/wave0_acceptance_check.py',
     ]:
         if command not in txt:
@@ -156,6 +159,13 @@ stable_commands = {
         'bash scripts/api_compat_check.sh',
         'bash scripts/public_api_snapshot_check.sh',
         'bash scripts/c_abi_snapshot_check.sh',
+    ],
+    '09-platform-tests.yml': [
+        'bash scripts/linux_container_smoke.sh',
+        'bash scripts/android_emulator_smoke.sh',
+        'cargo check -p fe_reader_cli --target x86_64-apple-darwin',
+        'cargo check -p fe_reader_uniffi --target aarch64-apple-ios-sim',
+        'cargo test -p fe_reader_core -p fe_reader_pdf_model -p fe_reader_security -p fe_reader_cli',
     ],
 }
 for wf_name, commands in stable_commands.items():
