@@ -350,6 +350,7 @@
 - `docs/release-readiness-v7-checklist.md`
 - `docs/reproducible-builds-provenance.md`
 - `docs/requirements-moscow.md`
+- `docs/requirements-traceability.md`
 - `docs/rfcs/README.md`
 - `docs/roadmap-waves.md`
 - `docs/sandboxing-process-isolation.md`

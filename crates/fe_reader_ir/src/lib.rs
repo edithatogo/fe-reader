@@ -39,6 +39,8 @@ pub struct DocumentIr {
     pub revisions: Vec<PdfRevisionIr>,
     /// Embedded-file records.
     pub attachments: Vec<AttachmentIr>,
+    /// Extension bag for provider-specific passive facts.
+    pub custom: BTreeMap<String, serde_json::Value>,
 }
 
 impl DocumentIr {
@@ -57,11 +59,16 @@ impl DocumentIr {
                 crop_box: None,
                 rotate_degrees: 0,
                 text_spans: Vec::new(),
+                annotations: Vec::new(),
+                images: Vec::new(),
+                form_fields: Vec::new(),
+                optional_content_refs: Vec::new(),
             }],
             metadata: MetadataIr::default(),
             active_content: Vec::new(),
             revisions: Vec::new(),
             attachments: Vec::new(),
+            custom: BTreeMap::new(),
         }
     }
 
@@ -84,6 +91,11 @@ impl DocumentIr {
         for attachment in &self.attachments {
             validate_sha256(&attachment.sha256, "attachment sha256")?;
         }
+        for key in self.custom.keys() {
+            if key.is_empty() {
+                return Err(IrError::invalid("custom keys must not be empty"));
+            }
+        }
         Ok(())
     }
 }
@@ -103,6 +115,14 @@ pub struct PageIr {
     pub rotate_degrees: i32,
     /// Text spans attached to this page.
     pub text_spans: Vec<TextSpanIr>,
+    /// Passive annotation descriptors attached to this page.
+    pub annotations: Vec<AnnotationIr>,
+    /// Passive image descriptors attached to this page.
+    pub images: Vec<ImageIr>,
+    /// Passive form field descriptors attached to this page.
+    pub form_fields: Vec<FormFieldIr>,
+    /// Optional content group references observed on this page.
+    pub optional_content_refs: Vec<String>,
 }
 
 impl PageIr {
@@ -123,6 +143,24 @@ impl PageIr {
         }
         for span in &self.text_spans {
             span.validate()?;
+        }
+        for annotation in &self.annotations {
+            annotation.validate()?;
+        }
+        for image in &self.images {
+            image.validate()?;
+        }
+        for field in &self.form_fields {
+            field.validate()?;
+        }
+        if self
+            .optional_content_refs
+            .iter()
+            .any(|reference| reference.is_empty())
+        {
+            return Err(IrError::invalid(
+                "optional_content_refs must not contain empty values",
+            ));
         }
         Ok(())
     }
@@ -169,8 +207,12 @@ pub struct TextSpanIr {
     pub text: String,
     /// Bounding box in PDF user-space points.
     pub bbox: Rect,
+    /// Font reference when available.
+    pub font_ref: Option<String>,
     /// Direction hint.
     pub direction: TextDirection,
+    /// Confidence that extracted text maps cleanly to Unicode.
+    pub unicode_confidence: Option<f32>,
 }
 
 impl TextSpanIr {
@@ -180,6 +222,94 @@ impl TextSpanIr {
         }
         if !self.bbox.is_non_empty() {
             return Err(IrError::invalid("text span bbox must be non-empty"));
+        }
+        if matches!(self.font_ref.as_deref(), Some("")) {
+            return Err(IrError::invalid("font_ref must not be empty"));
+        }
+        if let Some(confidence) = self.unicode_confidence
+            && !(0.0..=1.0).contains(&confidence)
+        {
+            return Err(IrError::invalid(
+                "unicode_confidence must be between 0.0 and 1.0",
+            ));
+        }
+        Ok(())
+    }
+}
+
+/// Passive annotation descriptor.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AnnotationIr {
+    /// Stable annotation id.
+    pub annotation_id: String,
+    /// PDF annotation subtype or normalized adapter subtype.
+    pub subtype: String,
+    /// Annotation bounding box when known.
+    pub bbox: Rect,
+}
+
+impl AnnotationIr {
+    fn validate(&self) -> Result<(), IrError> {
+        if self.annotation_id.is_empty() {
+            return Err(IrError::invalid("annotation_id must not be empty"));
+        }
+        if self.subtype.is_empty() {
+            return Err(IrError::invalid("annotation subtype must not be empty"));
+        }
+        if !self.bbox.is_non_empty() {
+            return Err(IrError::invalid("annotation bbox must be non-empty"));
+        }
+        Ok(())
+    }
+}
+
+/// Passive image descriptor.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ImageIr {
+    /// Stable image id.
+    pub image_id: String,
+    /// Image bounding box.
+    pub bbox: Rect,
+    /// Image stream hash when available.
+    pub sha256: Option<String>,
+}
+
+impl ImageIr {
+    fn validate(&self) -> Result<(), IrError> {
+        if self.image_id.is_empty() {
+            return Err(IrError::invalid("image_id must not be empty"));
+        }
+        if !self.bbox.is_non_empty() {
+            return Err(IrError::invalid("image bbox must be non-empty"));
+        }
+        if let Some(sha256) = &self.sha256 {
+            validate_sha256(sha256, "image sha256")?;
+        }
+        Ok(())
+    }
+}
+
+/// Passive form field descriptor.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FormFieldIr {
+    /// Stable form field id.
+    pub field_id: String,
+    /// User-visible field name.
+    pub name: String,
+    /// Field widget bounding box when known.
+    pub bbox: Option<Rect>,
+}
+
+impl FormFieldIr {
+    fn validate(&self) -> Result<(), IrError> {
+        if self.field_id.is_empty() {
+            return Err(IrError::invalid("field_id must not be empty"));
+        }
+        if self.name.is_empty() {
+            return Err(IrError::invalid("form field name must not be empty"));
+        }
+        if matches!(self.bbox, Some(bbox) if !bbox.is_non_empty()) {
+            return Err(IrError::invalid("form field bbox must be non-empty"));
         }
         Ok(())
     }
@@ -327,6 +457,8 @@ impl TransformationGraph {
                 pass_id: "pass:inspect-page-model".to_string(),
                 pass_type: "InspectPageModel".to_string(),
                 maturity: PassMaturity::Preview,
+                inputs: vec!["document_ir".to_string()],
+                outputs: vec!["page_model_report".to_string()],
                 policy_risk: PolicyRisk::ReadOnly,
                 parameters: serde_json::json!({}),
             }],
@@ -367,6 +499,10 @@ pub struct TransformationPassSpec {
     pub pass_type: String,
     /// Pass maturity.
     pub maturity: PassMaturity,
+    /// Named graph inputs consumed by this pass.
+    pub inputs: Vec<String>,
+    /// Named graph outputs produced by this pass.
+    pub outputs: Vec<String>,
     /// Policy risk.
     pub policy_risk: PolicyRisk,
     /// Pass parameters.
@@ -380,6 +516,16 @@ impl TransformationPassSpec {
         }
         if self.pass_type.is_empty() {
             return Err(IrError::invalid("pass_type must not be empty"));
+        }
+        if self.inputs.iter().any(|input| input.is_empty()) {
+            return Err(IrError::invalid(
+                "pass inputs must not contain empty values",
+            ));
+        }
+        if self.outputs.iter().any(|output| output.is_empty()) {
+            return Err(IrError::invalid(
+                "pass outputs must not contain empty values",
+            ));
         }
         Ok(())
     }
@@ -469,6 +615,7 @@ mod tests {
         ir.validate().unwrap();
         assert_eq!(ir.ir_version, IR_VERSION);
         assert_eq!(ir.pages.len(), 1);
+        assert!(ir.custom.is_empty());
     }
 
     #[test]
@@ -489,12 +636,75 @@ mod tests {
             graph.expected_write_mode,
             TransformationWriteMode::IncrementalAppend
         );
+        assert_eq!(graph.passes[0].inputs, vec!["document_ir"]);
+        assert_eq!(graph.passes[0].outputs, vec!["page_model_report"]);
+        assert_eq!(graph.passes[0].policy_risk, PolicyRisk::ReadOnly);
     }
 
     #[test]
     fn transformation_graph_rejects_duplicate_pass_ids() {
         let mut graph = TransformationGraph::read_only_smoke(SHA256);
         graph.passes.push(graph.passes[0].clone());
+
+        assert!(graph.validate().is_err());
+    }
+
+    #[test]
+    fn document_ir_round_trips_extended_passive_nodes() {
+        let mut ir = DocumentIr::minimal("fixture:text-search-fixture", SHA256);
+        let page = ir.pages.first_mut().unwrap();
+        page.text_spans.push(TextSpanIr {
+            span_id: "span:1".to_string(),
+            text: "Fe Reader".to_string(),
+            bbox: Rect::new(10.0, 20.0, 80.0, 12.0),
+            font_ref: Some("font:F1".to_string()),
+            direction: TextDirection::LeftToRight,
+            unicode_confidence: Some(0.99),
+        });
+        page.annotations.push(AnnotationIr {
+            annotation_id: "annot:1".to_string(),
+            subtype: "Highlight".to_string(),
+            bbox: Rect::new(10.0, 20.0, 80.0, 12.0),
+        });
+        page.images.push(ImageIr {
+            image_id: "image:1".to_string(),
+            bbox: Rect::new(0.0, 0.0, 32.0, 32.0),
+            sha256: Some(SHA256.to_string()),
+        });
+        page.form_fields.push(FormFieldIr {
+            field_id: "field:1".to_string(),
+            name: "signature".to_string(),
+            bbox: Some(Rect::new(100.0, 100.0, 120.0, 24.0)),
+        });
+        page.optional_content_refs.push("ocg:layer-1".to_string());
+        ir.custom.insert(
+            "adapter_note".to_string(),
+            serde_json::json!("passive fixture only"),
+        );
+
+        ir.validate().unwrap();
+        let serialized = serde_json::to_string(&ir).unwrap();
+        let round_trip: DocumentIr = serde_json::from_str(&serialized).unwrap();
+
+        assert_eq!(round_trip, ir);
+    }
+
+    #[test]
+    fn document_ir_rejects_invalid_nested_hashes() {
+        let mut ir = DocumentIr::minimal("fixture:text-search-fixture", SHA256);
+        ir.pages[0].images.push(ImageIr {
+            image_id: "image:bad".to_string(),
+            bbox: Rect::new(0.0, 0.0, 1.0, 1.0),
+            sha256: Some("not-a-hash".to_string()),
+        });
+
+        assert!(ir.validate().is_err());
+    }
+
+    #[test]
+    fn transformation_graph_rejects_empty_inputs_outputs() {
+        let mut graph = TransformationGraph::read_only_smoke(SHA256);
+        graph.passes[0].outputs.push(String::new());
 
         assert!(graph.validate().is_err());
     }

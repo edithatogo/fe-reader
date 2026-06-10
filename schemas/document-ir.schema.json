@@ -7,19 +7,26 @@
     "ir_version",
     "document_id",
     "source_sha256",
+    "pdf_version",
     "pages",
-    "metadata"
+    "metadata",
+    "active_content",
+    "revisions",
+    "attachments",
+    "custom"
   ],
+  "additionalProperties": false,
   "properties": {
     "ir_version": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "document_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "source_sha256": {
-      "type": "string",
-      "pattern": "^[a-fA-F0-9]{64}$"
+      "$ref": "#/$defs/sha256"
     },
     "pdf_version": {
       "type": [
@@ -28,20 +35,423 @@
       ]
     },
     "pages": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/page"
+      }
     },
     "metadata": {
-      "type": "object"
+      "$ref": "#/$defs/metadata"
     },
     "active_content": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/active_content"
+      }
     },
     "revisions": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/revision"
+      }
     },
     "attachments": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/attachment"
+      }
+    },
+    "custom": {
+      "type": "object"
     }
   },
-  "additionalProperties": true
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "rect": {
+      "type": "object",
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "page": {
+      "type": "object",
+      "required": [
+        "page_index",
+        "label",
+        "media_box",
+        "crop_box",
+        "rotate_degrees",
+        "text_spans",
+        "annotations",
+        "images",
+        "form_fields",
+        "optional_content_refs"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "page_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "media_box": {
+          "$ref": "#/$defs/rect"
+        },
+        "crop_box": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/rect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rotate_degrees": {
+          "enum": [
+            0,
+            90,
+            180,
+            270
+          ]
+        },
+        "text_spans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text_span"
+          }
+        },
+        "annotations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/annotation"
+          }
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/image"
+          }
+        },
+        "form_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/form_field"
+          }
+        },
+        "optional_content_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "text_span": {
+      "type": "object",
+      "required": [
+        "span_id",
+        "text",
+        "bbox",
+        "font_ref",
+        "direction",
+        "unicode_confidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "span_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string"
+        },
+        "bbox": {
+          "$ref": "#/$defs/rect"
+        },
+        "font_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "direction": {
+          "enum": [
+            "left_to_right",
+            "right_to_left",
+            "vertical",
+            "mixed_or_unknown"
+          ]
+        },
+        "unicode_confidence": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "annotation": {
+      "type": "object",
+      "required": [
+        "annotation_id",
+        "subtype",
+        "bbox"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "annotation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subtype": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bbox": {
+          "$ref": "#/$defs/rect"
+        }
+      }
+    },
+    "image": {
+      "type": "object",
+      "required": [
+        "image_id",
+        "bbox",
+        "sha256"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "image_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bbox": {
+          "$ref": "#/$defs/rect"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "form_field": {
+      "type": "object",
+      "required": [
+        "field_id",
+        "name",
+        "bbox"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "field_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bbox": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/rect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "document_info",
+        "xmp_packet_sha256",
+        "standards_claims"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "document_info": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "xmp_packet_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "standards_claims": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "active_content": {
+      "type": "object",
+      "required": [
+        "finding_id",
+        "kind",
+        "object_ref",
+        "risk",
+        "default_action"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "java_script_action",
+            "launch_action",
+            "remote_uri_action",
+            "rich_media",
+            "embedded_executable",
+            "submit_form",
+            "unknown_action"
+          ]
+        },
+        "object_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "risk": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "default_action": {
+          "enum": [
+            "allow_read_only",
+            "disable_by_default",
+            "require_user_approval",
+            "block"
+          ]
+        }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "required": [
+        "revision_index",
+        "byte_range_start",
+        "byte_range_end",
+        "object_count",
+        "detected_signatures"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "revision_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byte_range_start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byte_range_end": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "object_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "detected_signatures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "attachment": {
+      "type": "object",
+      "required": [
+        "attachment_id",
+        "filename",
+        "media_type",
+        "size_bytes",
+        "sha256"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "attachment_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "media_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
 }

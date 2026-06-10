@@ -15,6 +15,9 @@ matrix:
   schemas:
     command: python3 scripts/validate_schemas.py
     gate: P0
+  requirements_traceability:
+    command: python3 scripts/requirements_traceability_check.py
+    gate: P0
   operation_intent_contract:
     command: python3 scripts/operation_intent_contract_check.py
     gate: P0
@@ -32,6 +35,9 @@ matrix:
     gate: P0
   audit_receipt_contract:
     command: python3 scripts/audit_receipt_contract_check.py
+    gate: P0
+  document_ir_contract:
+    command: python3 scripts/document_ir_contract_check.py
     gate: P0
   wave0_acceptance:
     command: python3 scripts/wave0_acceptance_check.py

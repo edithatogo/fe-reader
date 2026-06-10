@@ -1,0 +1,43 @@
+{
+  "surface": "rust_crate",
+  "crate": "fe_reader_ir",
+  "version": "0.1.0",
+  "stability": "preview",
+  "phase": "AA0",
+  "contract": "document_ir_transformation_graph",
+  "mutation_policy": "passive_ir_only_no_parsing_rendering_or_apply_execution",
+  "public_types": [
+    "DocumentIr",
+    "PageIr",
+    "Rect",
+    "TextSpanIr",
+    "AnnotationIr",
+    "ImageIr",
+    "FormFieldIr",
+    "MetadataIr",
+    "ActiveContentFinding",
+    "PdfRevisionIr",
+    "AttachmentIr",
+    "TransformationGraph",
+    "TransformationPassSpec",
+    "PassMaturity",
+    "PolicyRisk",
+    "TransformationWriteMode",
+    "IrError"
+  ],
+  "public_methods": [
+    "DocumentIr::minimal",
+    "DocumentIr::validate",
+    "TransformationGraph::read_only_smoke",
+    "TransformationGraph::validate"
+  ],
+  "schemas": [
+    "schemas/document-ir.schema.json",
+    "schemas/transformation-pass.schema.json"
+  ],
+  "notes": [
+    "Document IR is pure passive data and performs no PDF parsing, rendering, IO, platform calls, plugin execution, ML or mutation.",
+    "Transformation graphs declare pass metadata, inputs and outputs but do not execute passes or compile patch plans in AA0.",
+    "The read-only smoke graph stays read-only and uses the same input document hash as its sample Document IR."
+  ]
+}

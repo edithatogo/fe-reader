@@ -35,6 +35,14 @@ surfaces:
     test: cargo test -p fe_reader_pdf_model
     snapshot: contracts/snapshots/rust-public-api/fe_reader_pdf_model.preview.json
     schema: schemas/pdf-document-summary.schema.json
+  document_ir:
+    stability: preview
+    test: cargo test -p fe_reader_ir
+    snapshot: contracts/snapshots/rust-public-api/fe_reader_ir.document_ir.preview.json
+    schemas:
+      - schemas/document-ir.schema.json
+      - schemas/transformation-pass.schema.json
+    mutation_policy: passive_ir_only_no_parsing_rendering_or_apply_execution
   uniffi:
     stability: preview
     snapshot: contracts/snapshots/uniffi/fe_reader_uniffi.facade.json

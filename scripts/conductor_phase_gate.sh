@@ -26,12 +26,14 @@ python3 scripts/frontier_ci_check.py
 python3 scripts/ci_policy_check.py
 python3 scripts/version_consistency_check.py
 python3 scripts/validate_schemas.py
+python3 scripts/requirements_traceability_check.py
 python3 scripts/operation_intent_contract_check.py
 python3 scripts/patch_plan_contract_check.py
 python3 scripts/pdf_model_contract_check.py
 python3 scripts/page_ops_contract_check.py
 python3 scripts/write_modes_contract_check.py
 python3 scripts/audit_receipt_contract_check.py
+python3 scripts/document_ir_contract_check.py
 python3 scripts/v8_static_contract_check.py
 bash scripts/v8_cli_smoke.sh
 python3 scripts/wave0_acceptance_check.py
