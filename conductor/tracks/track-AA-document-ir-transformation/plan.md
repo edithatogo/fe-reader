@@ -15,9 +15,15 @@ Phase AA0 implementation note:
 
 ## Phase 1
 
-- Implement minimal compile-ready crate or module.
-- Add CLI/xtask smoke exposure.
-- Add at least one unit/property/golden test.
+- [x] Implement minimal compile-ready crate or module.
+- [x] Add CLI/xtask smoke exposure.
+- [x] Add at least one unit/property/golden test.
+
+Phase AA1 implementation note:
+
+- Added a passive transformation pass registry and graph compiler in `fe_reader_ir`.
+- Added `xtask ir-compile-smoke` and `scripts/ir_compile_smoke.py` to emit and validate compile reports.
+- Added a compile-report schema and extended the IR public API snapshot/checker so AA1 drift is gate-visible.
 
 ## Phase 2
 

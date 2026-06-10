@@ -1,6 +1,7 @@
 //! Fe Reader transformation pass contract.
 
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransformationGraph {
@@ -19,6 +20,41 @@ pub struct TransformationPassSpec {
     pub outputs: Vec<String>,
     pub policy_risk: PolicyRisk,
     pub parameters: serde_json::Value,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TransformationPassRegistry {
+    pub definitions: BTreeMap<String, TransformationPassDefinition>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TransformationPassDefinition {
+    pub pass_type: String,
+    pub version: String,
+    pub maturity: PassMaturity,
+    pub allowed_policy_risks: Vec<PolicyRisk>,
+    pub required_inputs: Vec<String>,
+    pub produced_outputs: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompilationReport {
+    pub graph_id: String,
+    pub input_document_sha256: String,
+    pub accepted_passes: Vec<CompiledPass>,
+    pub expected_write_mode: WriteMode,
+    pub mutation_policy: String,
+    pub diagnostics: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompiledPass {
+    pub pass_id: String,
+    pub pass_type: String,
+    pub definition_version: String,
+    pub policy_risk: PolicyRisk,
+    pub inputs: Vec<String>,
+    pub outputs: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -488,6 +488,52 @@ impl TransformationGraph {
         }
         Ok(())
     }
+
+    /// Compiles this graph against a passive pass registry.
+    ///
+    /// Compilation only validates and binds pass metadata. It does not execute transformation
+    /// passes, read document bytes, render pages, create patch plans, or mutate a document.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the graph is invalid or references an unknown or incompatible pass.
+    pub fn compile(
+        &self,
+        registry: &TransformationPassRegistry,
+    ) -> Result<CompilationReport, IrError> {
+        self.validate()?;
+        registry.validate()?;
+        let mut accepted_passes = Vec::with_capacity(self.passes.len());
+        let mut diagnostics = Vec::new();
+
+        for pass in &self.passes {
+            let definition = registry.get(&pass.pass_type).ok_or_else(|| {
+                IrError::invalid(format!("unknown pass_type: {}", pass.pass_type))
+            })?;
+            definition.accept(pass)?;
+            accepted_passes.push(CompiledPass {
+                pass_id: pass.pass_id.clone(),
+                pass_type: pass.pass_type.clone(),
+                definition_version: definition.version.clone(),
+                policy_risk: pass.policy_risk,
+                inputs: pass.inputs.clone(),
+                outputs: pass.outputs.clone(),
+            });
+            diagnostics.push(format!(
+                "bound {} to registry definition {}@{}",
+                pass.pass_id, definition.pass_type, definition.version
+            ));
+        }
+
+        Ok(CompilationReport {
+            graph_id: self.graph_id.clone(),
+            input_document_sha256: self.input_document_sha256.clone(),
+            accepted_passes,
+            expected_write_mode: self.expected_write_mode,
+            mutation_policy: "passive_compile_only_no_execution_or_patch_plan".to_string(),
+            diagnostics,
+        })
+    }
 }
 
 /// Transformation pass specification.
@@ -529,6 +575,162 @@ impl TransformationPassSpec {
         }
         Ok(())
     }
+}
+
+/// Passive transformation pass registry.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransformationPassRegistry {
+    /// Registered pass definitions keyed by pass type.
+    pub definitions: BTreeMap<String, TransformationPassDefinition>,
+}
+
+impl TransformationPassRegistry {
+    /// Builds the default preview registry for Wave 0/AA Phase 1 smoke tests.
+    #[must_use]
+    pub fn preview() -> Self {
+        let mut definitions = BTreeMap::new();
+        let definition = TransformationPassDefinition {
+            pass_type: "InspectPageModel".to_string(),
+            version: IR_VERSION.to_string(),
+            maturity: PassMaturity::Preview,
+            allowed_policy_risks: vec![PolicyRisk::ReadOnly],
+            required_inputs: vec!["document_ir".to_string()],
+            produced_outputs: vec!["page_model_report".to_string()],
+        };
+        definitions.insert(definition.pass_type.clone(), definition);
+        Self { definitions }
+    }
+
+    /// Returns a pass definition by pass type.
+    #[must_use]
+    pub fn get(&self, pass_type: &str) -> Option<&TransformationPassDefinition> {
+        self.definitions.get(pass_type)
+    }
+
+    /// Validates registry shape.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when a pass definition is malformed.
+    pub fn validate(&self) -> Result<(), IrError> {
+        for (pass_type, definition) in &self.definitions {
+            if pass_type != &definition.pass_type {
+                return Err(IrError::invalid(format!(
+                    "registry key {pass_type} does not match definition {}",
+                    definition.pass_type
+                )));
+            }
+            definition.validate()?;
+        }
+        Ok(())
+    }
+}
+
+/// Passive transformation pass definition.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransformationPassDefinition {
+    /// Pass type accepted by this definition.
+    pub pass_type: String,
+    /// Definition version.
+    pub version: String,
+    /// Definition maturity.
+    pub maturity: PassMaturity,
+    /// Policy risks accepted for this pass.
+    pub allowed_policy_risks: Vec<PolicyRisk>,
+    /// Required named inputs.
+    pub required_inputs: Vec<String>,
+    /// Outputs produced by this pass.
+    pub produced_outputs: Vec<String>,
+}
+
+impl TransformationPassDefinition {
+    fn validate(&self) -> Result<(), IrError> {
+        if self.pass_type.is_empty() {
+            return Err(IrError::invalid(
+                "pass definition pass_type must not be empty",
+            ));
+        }
+        if self.version.is_empty() {
+            return Err(IrError::invalid(
+                "pass definition version must not be empty",
+            ));
+        }
+        if self.allowed_policy_risks.is_empty() {
+            return Err(IrError::invalid(
+                "pass definition allowed_policy_risks must not be empty",
+            ));
+        }
+        validate_non_empty_strings(&self.required_inputs, "pass definition required_inputs")?;
+        validate_non_empty_strings(&self.produced_outputs, "pass definition produced_outputs")?;
+        Ok(())
+    }
+
+    fn accept(&self, pass: &TransformationPassSpec) -> Result<(), IrError> {
+        self.validate()?;
+        if pass.pass_type != self.pass_type {
+            return Err(IrError::invalid(format!(
+                "pass {} has type {}, expected {}",
+                pass.pass_id, pass.pass_type, self.pass_type
+            )));
+        }
+        if !self.allowed_policy_risks.contains(&pass.policy_risk) {
+            return Err(IrError::invalid(format!(
+                "pass {} policy risk is not allowed by registry",
+                pass.pass_id
+            )));
+        }
+        for required_input in &self.required_inputs {
+            if !pass.inputs.contains(required_input) {
+                return Err(IrError::invalid(format!(
+                    "pass {} missing required input {required_input}",
+                    pass.pass_id
+                )));
+            }
+        }
+        for produced_output in &self.produced_outputs {
+            if !pass.outputs.contains(produced_output) {
+                return Err(IrError::invalid(format!(
+                    "pass {} missing produced output {produced_output}",
+                    pass.pass_id
+                )));
+            }
+        }
+        Ok(())
+    }
+}
+
+/// Passive compilation report for a transformation graph.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CompilationReport {
+    /// Compiled graph id.
+    pub graph_id: String,
+    /// SHA-256 of the input document.
+    pub input_document_sha256: String,
+    /// Passes accepted by the registry.
+    pub accepted_passes: Vec<CompiledPass>,
+    /// Expected write mode declared by the graph.
+    pub expected_write_mode: TransformationWriteMode,
+    /// Compile-only mutation policy.
+    pub mutation_policy: String,
+    /// Human-readable compile diagnostics.
+    pub diagnostics: Vec<String>,
+}
+
+/// One pass accepted during passive compilation.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CompiledPass {
+    /// Stable pass id from the graph.
+    pub pass_id: String,
+    /// Pass type from the graph and registry.
+    pub pass_type: String,
+    /// Registry definition version.
+    pub definition_version: String,
+    /// Policy risk accepted for this pass.
+    pub policy_risk: PolicyRisk,
+    /// Bound graph inputs.
+    pub inputs: Vec<String>,
+    /// Bound graph outputs.
+    pub outputs: Vec<String>,
 }
 
 /// Transformation pass maturity.
@@ -592,6 +794,18 @@ fn validate_sha256(value: &str, label: &str) -> Result<(), IrError> {
     if value.len() != 64 || !value.bytes().all(|byte| byte.is_ascii_hexdigit()) {
         return Err(IrError::invalid(format!(
             "{label} must be a 64-character hex SHA-256"
+        )));
+    }
+    Ok(())
+}
+
+fn validate_non_empty_strings(values: &[String], label: &str) -> Result<(), IrError> {
+    if values.is_empty() {
+        return Err(IrError::invalid(format!("{label} must not be empty")));
+    }
+    if values.iter().any(|value| value.is_empty()) {
+        return Err(IrError::invalid(format!(
+            "{label} must not contain empty values"
         )));
     }
     Ok(())
@@ -707,5 +921,39 @@ mod tests {
         graph.passes[0].outputs.push(String::new());
 
         assert!(graph.validate().is_err());
+    }
+
+    #[test]
+    fn preview_registry_compiles_read_only_smoke_graph() {
+        let graph = TransformationGraph::read_only_smoke(SHA256);
+        let registry = TransformationPassRegistry::preview();
+
+        registry.validate().unwrap();
+        let report = graph.compile(&registry).unwrap();
+
+        assert_eq!(report.graph_id, graph.graph_id);
+        assert_eq!(report.accepted_passes.len(), 1);
+        assert_eq!(report.accepted_passes[0].pass_type, "InspectPageModel");
+        assert_eq!(report.accepted_passes[0].policy_risk, PolicyRisk::ReadOnly);
+        assert_eq!(
+            report.mutation_policy,
+            "passive_compile_only_no_execution_or_patch_plan"
+        );
+    }
+
+    #[test]
+    fn compiler_rejects_unknown_or_incompatible_passes() {
+        let registry = TransformationPassRegistry::preview();
+        let mut graph = TransformationGraph::read_only_smoke(SHA256);
+        graph.passes[0].pass_type = "UnknownPass".to_string();
+        assert!(graph.compile(&registry).is_err());
+
+        let mut graph = TransformationGraph::read_only_smoke(SHA256);
+        graph.passes[0].policy_risk = PolicyRisk::HighRiskMutation;
+        assert!(graph.compile(&registry).is_err());
+
+        let mut graph = TransformationGraph::read_only_smoke(SHA256);
+        graph.passes[0].inputs.clear();
+        assert!(graph.compile(&registry).is_err());
     }
 }

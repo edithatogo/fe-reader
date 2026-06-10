@@ -451,6 +451,7 @@
 - `schemas/source-linked-project.schema.json`
 - `schemas/test-fixture.schema.json`
 - `schemas/toolchain-experiment.schema.json`
+- `schemas/transformation-compile-report.schema.json`
 - `schemas/transformation-pass.schema.json`
 - `schemas/update-manifest.schema.json`
 - `schemas/visual-regression-report.schema.json`
@@ -470,6 +471,7 @@
 - `scripts/implementation_stop_rule_check.py`
 - `scripts/install_local.sh`
 - `scripts/install_windows.ps1`
+- `scripts/ir_compile_smoke.py`
 - `scripts/ir_schema_smoke.py`
 - `scripts/job_contract_smoke.py`
 - `scripts/optimization_oracle_smoke.sh`

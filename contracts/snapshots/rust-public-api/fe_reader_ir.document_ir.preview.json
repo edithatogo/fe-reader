@@ -3,7 +3,7 @@
   "crate": "fe_reader_ir",
   "version": "0.1.0",
   "stability": "preview",
-  "phase": "AA0",
+  "phase": "AA1",
   "contract": "document_ir_transformation_graph",
   "mutation_policy": "passive_ir_only_no_parsing_rendering_or_apply_execution",
   "public_types": [
@@ -20,6 +20,10 @@
     "AttachmentIr",
     "TransformationGraph",
     "TransformationPassSpec",
+    "TransformationPassRegistry",
+    "TransformationPassDefinition",
+    "CompilationReport",
+    "CompiledPass",
     "PassMaturity",
     "PolicyRisk",
     "TransformationWriteMode",
@@ -29,15 +33,21 @@
     "DocumentIr::minimal",
     "DocumentIr::validate",
     "TransformationGraph::read_only_smoke",
-    "TransformationGraph::validate"
+    "TransformationGraph::validate",
+    "TransformationGraph::compile",
+    "TransformationPassRegistry::preview",
+    "TransformationPassRegistry::get",
+    "TransformationPassRegistry::validate"
   ],
   "schemas": [
     "schemas/document-ir.schema.json",
-    "schemas/transformation-pass.schema.json"
+    "schemas/transformation-pass.schema.json",
+    "schemas/transformation-compile-report.schema.json"
   ],
   "notes": [
     "Document IR is pure passive data and performs no PDF parsing, rendering, IO, platform calls, plugin execution, ML or mutation.",
-    "Transformation graphs declare pass metadata, inputs and outputs but do not execute passes or compile patch plans in AA0.",
+    "Transformation graphs declare pass metadata, inputs and outputs but do not execute passes or compile patch plans.",
+    "AA1 passive compilation validates and binds graph passes to registry definitions but still does not execute passes or emit patch plans.",
     "The read-only smoke graph stays read-only and uses the same input document hash as its sample Document IR."
   ]
 }

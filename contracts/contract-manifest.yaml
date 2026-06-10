@@ -42,6 +42,7 @@ surfaces:
     schemas:
       - schemas/document-ir.schema.json
       - schemas/transformation-pass.schema.json
+      - schemas/transformation-compile-report.schema.json
     mutation_policy: passive_ir_only_no_parsing_rendering_or_apply_execution
   uniffi:
     stability: preview

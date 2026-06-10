@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/transformation-compile-report.schema.json",
+  "title": "Fe Reader Transformation Compile Report",
+  "type": "object",
+  "required": [
+    "graph_id",
+    "input_document_sha256",
+    "accepted_passes",
+    "expected_write_mode",
+    "mutation_policy",
+    "diagnostics"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "graph_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_document_sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "accepted_passes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/compiled_pass"
+      }
+    },
+    "expected_write_mode": {
+      "enum": [
+        "IncrementalAppend",
+        "FullRewrite",
+        "FullSanitizingRewrite"
+      ]
+    },
+    "mutation_policy": {
+      "const": "passive_compile_only_no_execution_or_patch_plan"
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$defs": {
+    "compiled_pass": {
+      "type": "object",
+      "required": [
+        "pass_id",
+        "pass_type",
+        "definition_version",
+        "policy_risk",
+        "inputs",
+        "outputs"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "pass_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pass_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "definition_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policy_risk": {
+          "enum": [
+            "ReadOnly",
+            "LowMutation",
+            "HighRiskMutation",
+            "SecurityCritical"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

@@ -22,6 +22,8 @@ enum Task {
     ValidateSchemas,
     /// Emit sample Document IR and transformation graph JSON.
     IrSmoke,
+    /// Emit a passive transformation graph compile report.
+    IrCompileSmoke,
     /// Emit deterministic render smoke metadata.
     RenderSmoke,
 }
@@ -33,6 +35,7 @@ fn main() -> Result<()> {
         Task::Review => run_script("scripts/conductor_phase_gate.sh"),
         Task::ValidateSchemas => run_script("scripts/validate_schemas.py"),
         Task::IrSmoke => run_ir_smoke(),
+        Task::IrCompileSmoke => run_ir_compile_smoke(),
         Task::RenderSmoke => run_render_smoke(),
     }
 }
@@ -46,6 +49,21 @@ fn run_ir_smoke() -> Result<()> {
     let payload = serde_json::json!({
         "document_ir": document_ir,
         "transformation_graph": graph,
+    });
+    println!("{}", serde_json::to_string_pretty(&payload)?);
+    Ok(())
+}
+
+fn run_ir_compile_smoke() -> Result<()> {
+    let sha256 = "f7e2b4436614640779c890a882537d543cf4579ae6cc43ad5f43f193afa6cd7f";
+    let graph = fe_reader_ir::TransformationGraph::read_only_smoke(sha256);
+    let registry = fe_reader_ir::TransformationPassRegistry::preview();
+    registry.validate()?;
+    let report = graph.compile(&registry)?;
+    let payload = serde_json::json!({
+        "transformation_graph": graph,
+        "pass_registry": registry,
+        "compilation_report": report,
     });
     println!("{}", serde_json::to_string_pretty(&payload)?);
     Ok(())

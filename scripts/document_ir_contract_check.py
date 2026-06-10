@@ -12,7 +12,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DOC_SCHEMA = ROOT / "schemas/document-ir.schema.json"
 PASS_SCHEMA = ROOT / "schemas/transformation-pass.schema.json"
+COMPILE_REPORT_SCHEMA = ROOT / "schemas/transformation-compile-report.schema.json"
 SNAPSHOT = ROOT / "contracts/snapshots/rust-public-api/fe_reader_ir.document_ir.preview.json"
+DOC_CONTRACT = ROOT / "contracts/rust/document_ir.rs"
+PASS_CONTRACT = ROOT / "contracts/rust/transformation_pass.rs"
 
 
 def fail(message: str) -> None:
@@ -46,6 +49,16 @@ def require_schema_tokens() -> None:
         if token not in pass_text:
             fail(f"transformation graph schema missing token {token}")
 
+    report_text = COMPILE_REPORT_SCHEMA.read_text(encoding="utf-8")
+    for token in (
+        '"accepted_passes"',
+        '"definition_version"',
+        '"passive_compile_only_no_execution_or_patch_plan"',
+        '"additionalProperties": false',
+    ):
+        if token not in report_text:
+            fail(f"compile report schema missing token {token}")
+
 
 def require_snapshot() -> None:
     try:
@@ -57,7 +70,7 @@ def require_snapshot() -> None:
         "surface": "rust_crate",
         "crate": "fe_reader_ir",
         "stability": "preview",
-        "phase": "AA0",
+        "phase": "AA1",
         "contract": "document_ir_transformation_graph",
         "mutation_policy": "passive_ir_only_no_parsing_rendering_or_apply_execution",
     }
@@ -75,6 +88,10 @@ def require_snapshot() -> None:
         "FormFieldIr",
         "TransformationGraph",
         "TransformationPassSpec",
+        "TransformationPassRegistry",
+        "TransformationPassDefinition",
+        "CompilationReport",
+        "CompiledPass",
         "PassMaturity",
         "PolicyRisk",
         "TransformationWriteMode",
@@ -83,9 +100,31 @@ def require_snapshot() -> None:
             fail(f"snapshot missing public type {token}")
 
 
+def require_rust_contract_sketches() -> None:
+    doc_contract = DOC_CONTRACT.read_text(encoding="utf-8")
+    for token in ("LeftToRight", "RightToLeft", "MixedOrUnknown"):
+        if token not in doc_contract:
+            fail(f"document IR Rust contract missing token {token}")
+
+    pass_contract = PASS_CONTRACT.read_text(encoding="utf-8")
+    for token in (
+        "TransformationPassRegistry",
+        "TransformationPassDefinition",
+        "CompilationReport",
+        "CompiledPass",
+    ):
+        if token not in pass_contract:
+            fail(f"transformation pass Rust contract missing token {token}")
+
+
 def require_schema_smoke() -> None:
     subprocess.run(
         ["python3", "scripts/ir_schema_smoke.py"],
+        cwd=ROOT,
+        check=True,
+    )
+    subprocess.run(
+        ["python3", "scripts/ir_compile_smoke.py"],
         cwd=ROOT,
         check=True,
     )
@@ -102,6 +141,7 @@ def require_core_tests() -> None:
 def main() -> int:
     require_schema_tokens()
     require_snapshot()
+    require_rust_contract_sketches()
     require_schema_smoke()
     require_core_tests()
     print("document IR contract check passed")

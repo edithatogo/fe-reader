@@ -54,10 +54,10 @@ pub struct TextSpanIr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum TextDirection {
-    Ltr,
-    Rtl,
+    LeftToRight,
+    RightToLeft,
     Vertical,
-    Unknown,
+    MixedOrUnknown,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
