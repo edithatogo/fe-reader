@@ -1,8 +1,13 @@
 flowchart LR
   Input[PDF or Source Project] --> Detect[Detect Type]
   Detect --> PDF[PDF Extraction]
+  Detect --> OCR[OCR Provider]
   Detect --> Source[Source Build Provider]
   PDF --> Structured[Structured Blocks]
+  PDF --> OCRLayer[OCR Text Layer]
+  OCR --> Searchable[Searchable PDF]
+  OCRLayer --> Searchable
+  Searchable --> PDF
   Source --> Build[Quarto/Typst/LaTeX/Pandoc Build]
   Build --> PDF
   Structured --> MD[Markdown]

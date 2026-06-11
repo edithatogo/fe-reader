@@ -31,3 +31,5 @@ Scanning/OCR is not the first engine milestone, but it is an important workflow 
 - OCR results must carry confidence and bounding boxes.
 - OCR-derived text must be clearly distinguishable from native PDF text.
 - Redaction verification may optionally OCR rendered pages to detect visual residual text.
+- Searchable PDF generation is a provider contract: `image_set -> pdf` and `pdf -> pdf` conversion jobs must produce source-map evidence and must not overwrite native text silently.
+- OCR execution requires provider capability discovery, an operation/conversion plan, policy evaluation and explicit user approval before any file mutation.
