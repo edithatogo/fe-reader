@@ -24,6 +24,8 @@ Fe Reader should eventually support print, publishing and engineering workflows 
 - Use external validators and oracles for PDF/X and print workflows.
 - Preserve unknown colour/font structures where safe.
 - Never silently convert CMYK/spot-colour PDFs into RGB-only outputs in workflow operations that claim preservation.
+- Wave 2/3 smoke evidence is the generated report at `target/prepress-reports/text-search-fixture.prepress.json`; it records placeholder colour findings, font fallback risk and conservative page-box handling without claiming output-intent authoring.
+- Advanced print-production tooling remains contract-driven until a dedicated authoring provider, fixture corpus and print-oracle coverage exist.
 
 ## Possible libraries/tools
 
