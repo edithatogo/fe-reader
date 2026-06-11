@@ -17,6 +17,10 @@ required = ("document_id", "output_intents", "colour_findings", "font_findings",
 missing = [key for key in required if key not in baseline]
 if missing:
     raise SystemExit(f"prepress smoke failure: missing keys {missing}")
+if baseline["output_intents"] != []:
+    raise SystemExit("prepress smoke failure: Wave2 baseline must not claim output intent support")
+if not any(finding.get("category") == "device_rgb_placeholder" for finding in baseline["colour_findings"]):
+    raise SystemExit("prepress smoke failure: expected explicit placeholder colour finding")
 if not baseline["font_findings"]:
     raise SystemExit("prepress smoke failure: expected at least one font finding")
 if not baseline["page_box_findings"]:
@@ -29,6 +33,8 @@ for key in ("x0", "y0", "x1", "y1"):
         raise SystemExit(f"prepress smoke failure: media_box.{key} must be numeric")
 if media_box["x1"] <= media_box["x0"] or media_box["y1"] <= media_box["y0"]:
     raise SystemExit("prepress smoke failure: media box must be non-empty")
+if page_box.get("crop_box", {}).get("source") != "defaults_to_media_box":
+    raise SystemExit("prepress smoke failure: expected conservative crop box fallback")
 
 try:
     import jsonschema  # type: ignore
