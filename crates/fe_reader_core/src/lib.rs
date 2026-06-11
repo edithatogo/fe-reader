@@ -329,6 +329,18 @@ pub enum PatchOperation {
         /// User-visible note contents.
         contents: String,
     },
+    /// Plan-only AcroForm field fill.
+    FillFormField {
+        /// Fully qualified field name.
+        field_name: String,
+        /// Serialized field value selected by the forms adapter.
+        value: String,
+    },
+    /// Plan-only form flattening for selected or all fields.
+    FlattenFormFields {
+        /// Fully qualified field names. Empty means all form fields.
+        field_names: Vec<String>,
+    },
 }
 
 impl PatchOperation {
@@ -353,7 +365,9 @@ impl PatchOperation {
             Self::RedactRegion { .. } => WriteMode::SanitizingRewrite,
             Self::PlaceStamp { .. }
             | Self::AddHighlightAnnotation { .. }
-            | Self::AddNoteAnnotation { .. } => WriteMode::IncrementalAppend,
+            | Self::AddNoteAnnotation { .. }
+            | Self::FillFormField { .. } => WriteMode::IncrementalAppend,
+            Self::FlattenFormFields { .. } => WriteMode::FullRewrite,
         }
     }
 

@@ -41,6 +41,7 @@ Web postMessage and browser-extension contracts
 - The Wave 0 C ABI fallback is `preview`, `extern "C"`, P/Invoke-oriented, and limited to static identity/capability and no-write plan probes until a reviewed mutation boundary exists.
 - The Wave 0 .NET/NuGet wrapper is `preview`, P/Invoke-oriented, and may package managed contract metadata before native runtime assets are ready.
 - The Wave 0 mobile smoke binding contracts are `preview`, inherit the UniFFI read-only/plan-only boundary, and do not create a stable mobile SDK, store-publishing target or mutation-capable mobile API.
+- The Wave 3 forms contract is `preview` and plan-only. `fill_form_field` and `flatten_form_fields` may appear in patch plans, but no public apply path is stable until form appearance generation, flatten verification, policy review, transaction journaling and audit receipts are wired end to end.
 
 ## Tools
 

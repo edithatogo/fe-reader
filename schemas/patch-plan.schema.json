@@ -236,6 +236,49 @@
                 "pattern": "\\S"
               }
             }
+          },
+          {
+            "type": "object",
+            "required": [
+              "op",
+              "field_name",
+              "value"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "const": "fill_form_field"
+              },
+              "field_name": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "op",
+              "field_names"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "const": "flatten_form_fields"
+              },
+              "field_names": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                }
+              }
+            }
           }
         ]
       },
