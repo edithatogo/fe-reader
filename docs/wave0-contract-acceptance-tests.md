@@ -17,6 +17,7 @@ Wave 0 is accepted when the following are true.
 - `fe-reader policy external-tool` denies external tools by default.
 - `fe-reader policy network` denies network access by default.
 - `fe-reader policy apply`, `export`, `automation`, and `plan` require review by default.
+- Policy source aliases for MCP, COM, AppleScript, D-Bus, Android intents, iOS App Intents, browser extension, local API and plugins preserve default review/deny behavior.
 - `python3 scripts/wave0_acceptance_check.py` validates the emitted `inspect --json` summary against `schemas/pdf-document-summary.schema.json` and checks the Wave 0 policy decision matrix.
 - `fe-reader journal plan`, `fe-reader journal inspect`, and `fe-reader journal recoveries` persist, reload, and scan transaction sidecars without applying document mutations.
 

@@ -120,7 +120,8 @@ enum Command {
     Policy {
         /// Action to evaluate: read, plan, apply, export, external-tool, automation, plugin, network.
         action: String,
-        /// Source surface: ui, cli, mcp, automation, web, plugin.
+        /// Source surface: ui, cli, mcp, automation, com, applescript, dbus,
+        /// android-intent, ios-app-intent, web, browser-extension, local-api, plugin.
         #[arg(long, default_value = "cli")]
         source: String,
     },
@@ -688,9 +689,44 @@ fn parse_operation_source(source: &str) -> Result<OperationSource> {
         "ui" => Ok(OperationSource::Ui),
         "cli" => Ok(OperationSource::Cli),
         "mcp" => Ok(OperationSource::Mcp),
-        "automation" => Ok(OperationSource::Automation),
-        "web" => Ok(OperationSource::Web),
+        "automation" | "com" | "windows-com" | "applescript" | "apple-script" | "dbus"
+        | "d-bus" | "android-intent" | "android-intents" | "ios-app-intent" | "ios-app-intents" => {
+            Ok(OperationSource::Automation)
+        }
+        "web" | "browser-extension" | "local-api" => Ok(OperationSource::Web),
         "plugin" => Ok(OperationSource::Plugin),
         _ => bail!("unknown operation source: {source}"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn policy_source_aliases_cover_integration_surfaces() {
+        for source in [
+            "com",
+            "windows-com",
+            "applescript",
+            "dbus",
+            "d-bus",
+            "android-intent",
+            "android-intents",
+            "ios-app-intent",
+            "ios-app-intents",
+        ] {
+            assert_eq!(
+                parse_operation_source(source).unwrap(),
+                OperationSource::Automation
+            );
+        }
+
+        for source in ["web", "browser-extension", "local-api"] {
+            assert_eq!(
+                parse_operation_source(source).unwrap(),
+                OperationSource::Web
+            );
+        }
     }
 }

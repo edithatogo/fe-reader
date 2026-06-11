@@ -18,4 +18,4 @@ Implemented in Track B Wave 0 scaffolding. `NullRenderBackend` remains determini
 
 ## Slice 5: Policy matrix tests
 
-Add table-driven tests for CLI, UI, MCP, COM, AppleScript, D-Bus, Android intents, iOS App Intents, browser extension, plugins and local API.
+Implemented baseline: Wave 0 policy checks cover CLI, UI, MCP, automation aliases for COM, AppleScript, D-Bus, Android intents and iOS App Intents, web/browser-extension/local-API aliases, plugins, external tools and network access. Named integration surfaces map into the coarse `OperationSource` contract while preserving default review/deny behavior.
