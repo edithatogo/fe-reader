@@ -113,6 +113,13 @@ matrix:
   release_provenance_policy:
     command: python3 scripts/release_provenance_check.py
     gate: P0_for_release
+  content_credentials_provenance:
+    command: python3 scripts/content_credentials_provenance_smoke.py
+    gate: advisory_until_c2pa_baseline
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: target/release-evidence/content-credentials-provenance-smoke.json
   supply_chain:
     command: scripts/supply_chain_gate.sh
     gate: P0_for_release_P1_for_pr
