@@ -18,6 +18,9 @@ matrix:
   requirements_traceability:
     command: python3 scripts/requirements_traceability_check.py
     gate: P0
+  policy_engine:
+    command: python3 scripts/policy_engine_smoke.py
+    gate: P0
   ocr_searchable_pdf_contract:
     command: python3 scripts/ocr_searchable_pdf_contract_smoke.py
     gate: advisory_until_ocr_provider_baseline
