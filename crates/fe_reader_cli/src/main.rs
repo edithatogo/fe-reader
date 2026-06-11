@@ -5,6 +5,7 @@ use clap::{Parser, Subcommand};
 use fe_reader_core::{
     OperationIntent, OperationKind, OperationSource, PatchOperation, PatchPlan, RiskLevel,
     TransactionId, TransactionJournalEntry, TransactionJournalSidecar, TransactionPhase,
+    list_recovery_required_transaction_sidecars, read_transaction_sidecar,
     write_transaction_sidecar,
 };
 use fe_reader_metadata::{MetadataOperation, MetadataScrubMode};
@@ -134,6 +135,22 @@ enum JournalCommand {
         /// Output journal sidecar path.
         #[arg(long)]
         out: String,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Inspect a persisted journal sidecar without mutating it.
+    Inspect {
+        /// Journal sidecar path.
+        path: String,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// List journal sidecars in a directory that require recovery inspection.
+    Recoveries {
+        /// Directory containing journal sidecars.
+        dir: String,
         /// Emit JSON output.
         #[arg(long)]
         json: bool,
@@ -379,6 +396,51 @@ fn main() -> Result<()> {
                     println!("journal_path={out}");
                     println!("transaction_id={}", transaction_id.0);
                     println!("plan_id={}", plan.plan_id.0);
+                }
+            }
+            JournalCommand::Inspect { path, json } => {
+                let sidecar = read_transaction_sidecar(&path)?;
+                let latest = sidecar.latest().cloned();
+                let recovery_required = sidecar.recovery_required();
+                if json {
+                    let value = serde_json::json!({
+                        "journal": sidecar,
+                        "latest": latest,
+                        "recovery_required": recovery_required,
+                        "journal_path": path,
+                    });
+                    println!("{}", serde_json::to_string_pretty(&value)?);
+                } else {
+                    println!("journal_path={path}");
+                    println!("recovery_required={recovery_required}");
+                    if let Some(entry) = latest {
+                        println!("transaction_id={}", entry.transaction_id);
+                        println!("phase={:?}", entry.phase);
+                        println!("sequence={}", entry.sequence);
+                    }
+                }
+            }
+            JournalCommand::Recoveries { dir, json } => {
+                let sidecars = list_recovery_required_transaction_sidecars(&dir)?;
+                let recovery_count = sidecars.len();
+                if json {
+                    let value = serde_json::json!({
+                        "directory": dir,
+                        "recovery_required_count": recovery_count,
+                        "journals": sidecars,
+                    });
+                    println!("{}", serde_json::to_string_pretty(&value)?);
+                } else {
+                    println!("directory={dir}");
+                    println!("recovery_required_count={recovery_count}");
+                    for sidecar in sidecars {
+                        if let Some(entry) = sidecar.latest() {
+                            println!(
+                                "transaction_id={} phase={:?} sequence={}",
+                                entry.transaction_id, entry.phase, entry.sequence
+                            );
+                        }
+                    }
                 }
             }
         },

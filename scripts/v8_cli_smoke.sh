@@ -115,16 +115,20 @@ if "snapshot" in payload:
     assert payload["snapshot"]["summary"] == payload["metadata"]
 PY
 
-journal_path="$(mktemp "${TMPDIR:-/tmp}/fe-reader-journal.XXXXXX")"
-rm -f "$journal_path"
+journal_dir="$(mktemp -d "${TMPDIR:-/tmp}/fe-reader-journal.XXXXXX")"
+journal_path="$journal_dir/journal.json"
 journal_json="$(cargo run -q -p fe_reader_cli -- journal plan fixtures/minimal/minimal.pdf --out "$journal_path" --json)"
+journal_inspect_json="$(cargo run -q -p fe_reader_cli -- journal inspect "$journal_path" --json)"
+journal_recoveries_json="$(cargo run -q -p fe_reader_cli -- journal recoveries "$journal_dir" --json)"
 printf '%s\n' "$journal_json"
-JOURNAL_JSON="$journal_json" JOURNAL_PATH="$journal_path" python3 - <<'PY'
+JOURNAL_JSON="$journal_json" JOURNAL_INSPECT_JSON="$journal_inspect_json" JOURNAL_RECOVERIES_JSON="$journal_recoveries_json" JOURNAL_PATH="$journal_path" python3 - <<'PY'
 import json
 import os
 from pathlib import Path
 
 payload = json.loads(os.environ["JOURNAL_JSON"])
+inspect_payload = json.loads(os.environ["JOURNAL_INSPECT_JSON"])
+recoveries_payload = json.loads(os.environ["JOURNAL_RECOVERIES_JSON"])
 path = Path(os.environ["JOURNAL_PATH"])
 assert path.is_file()
 assert set(payload) == {"intent", "plan", "summary", "journal", "journal_path"}
@@ -140,8 +144,12 @@ assert entries[0]["phase"] == "intent_received"
 assert entries[1]["phase"] == "plan_generated"
 assert entries[1]["plan_id"] == payload["plan"]["plan_id"]
 assert json.loads(path.read_text()) == payload["journal"]
+assert inspect_payload["journal"] == payload["journal"]
+assert inspect_payload["latest"]["phase"] == "plan_generated"
+assert inspect_payload["recovery_required"] is False
+assert recoveries_payload["recovery_required_count"] == 0
 PY
-rm -f "$journal_path"
+rm -rf "$journal_dir"
 
 search_json="$(cargo run -q -p fe_reader_cli -- search fixtures/corpus/basic/text-search-fixture.pdf Reader --json)"
 printf '%s\n' "$search_json"

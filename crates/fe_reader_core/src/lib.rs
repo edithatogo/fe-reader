@@ -927,6 +927,20 @@ pub fn list_transaction_sidecars(
     Ok(sidecars)
 }
 
+/// Lists valid transaction sidecars whose latest phase requires crash recovery inspection.
+///
+/// # Errors
+///
+/// Returns an error when the directory cannot be read or a discovered sidecar is invalid.
+pub fn list_recovery_required_transaction_sidecars(
+    dir: impl AsRef<Path>,
+) -> Result<Vec<TransactionJournalSidecar>, FeError> {
+    Ok(list_transaction_sidecars(dir)?
+        .into_iter()
+        .filter(TransactionJournalSidecar::recovery_required)
+        .collect())
+}
+
 /// Returns whether a transaction sidecar path exists.
 ///
 /// # Errors
@@ -1689,6 +1703,69 @@ mod tests {
             .unwrap();
 
         assert!(sidecar.recovery_required());
+    }
+
+    #[test]
+    fn transaction_sidecar_directory_scan_returns_only_recovery_required_sidecars() {
+        let dir = unique_temp_path("transaction-sidecar-scan");
+        fs::create_dir_all(&dir).unwrap();
+
+        let intent = OperationIntent::mutation(
+            OperationSource::Cli,
+            DocumentId::new(),
+            OperationKind::ApplyPatch,
+            "apply_patch",
+        );
+        let plan = PatchPlan::draft(&intent, "noop", vec![PatchOperation::Noop]);
+
+        let complete_transaction_id = TransactionId::new();
+        let mut complete = TransactionJournalSidecar::new();
+        complete
+            .append(TransactionJournalEntry::intent_received(
+                &complete_transaction_id,
+                &intent,
+                "intent received",
+            ))
+            .unwrap();
+        complete
+            .append(TransactionJournalEntry::for_plan(
+                &complete_transaction_id,
+                &intent,
+                &plan,
+                TransactionPhase::Committed,
+                1,
+                "committed",
+            ))
+            .unwrap();
+
+        let incomplete_transaction_id = TransactionId::new();
+        let mut incomplete = TransactionJournalSidecar::new();
+        incomplete
+            .append(TransactionJournalEntry::intent_received(
+                &incomplete_transaction_id,
+                &intent,
+                "intent received",
+            ))
+            .unwrap();
+        incomplete
+            .append(TransactionJournalEntry::for_plan(
+                &incomplete_transaction_id,
+                &intent,
+                &plan,
+                TransactionPhase::Applying,
+                1,
+                "apply interrupted",
+            ))
+            .unwrap();
+
+        write_transaction_sidecar(dir.join("complete.json"), &complete).unwrap();
+        write_transaction_sidecar(dir.join("incomplete.json"), &incomplete).unwrap();
+        fs::write(dir.join("note.txt"), b"ignored").unwrap();
+
+        let recovery_sidecars = list_recovery_required_transaction_sidecars(&dir).unwrap();
+        let _ = fs::remove_dir_all(&dir);
+
+        assert_eq!(recovery_sidecars, vec![incomplete]);
     }
 
     #[test]

@@ -6,7 +6,7 @@ Use `lopdf` in a parser adapter crate or `fe_reader_pdf_model` feature lane to i
 
 ## Slice 2: Transaction journal persistence
 
-Add JSON sidecar journaling for patch plans. Include crash recovery tests using temporary directories.
+Implemented baseline: JSON sidecar journaling persists patch plans, `journal inspect` reads persisted sidecars, `journal recoveries` lists sidecars requiring crash-recovery inspection, and temporary-directory tests cover incomplete apply recovery detection.
 
 ## Slice 3: Metadata read-only inspection
 

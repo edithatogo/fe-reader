@@ -252,6 +252,46 @@ def check_additive_cli_contracts() -> None:
         )
         persisted = json.loads(journal_path.read_text(encoding="utf-8"))
         expect(persisted == journal["journal"], "persisted sidecar must match CLI JSON")
+        inspected = run_json(
+            "cargo",
+            "run",
+            "-q",
+            "-p",
+            "fe_reader_cli",
+            "--",
+            "journal",
+            "inspect",
+            str(journal_path),
+            "--json",
+        )
+        expect(
+            inspected["journal"] == journal["journal"],
+            "journal inspect must read the persisted sidecar",
+        )
+        expect(
+            inspected["recovery_required"] is False,
+            "planned journal sidecar must not require recovery",
+        )
+        expect(
+            inspected["latest"]["phase"] == "plan_generated",
+            "journal inspect must report the latest phase",
+        )
+        recoveries = run_json(
+            "cargo",
+            "run",
+            "-q",
+            "-p",
+            "fe_reader_cli",
+            "--",
+            "journal",
+            "recoveries",
+            tmpdir,
+            "--json",
+        )
+        expect(
+            recoveries["recovery_required_count"] == 0,
+            "planned journal directory must not report recovery work",
+        )
 
 
 def check_ir_schema_smoke() -> None:
