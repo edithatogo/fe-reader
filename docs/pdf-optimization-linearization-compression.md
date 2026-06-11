@@ -60,6 +60,11 @@ fe-reader optimize input.pdf --linearize --out output.linearized.pdf
 fe-reader optimize input.pdf --level aggressive --image-quality 85 --out output.small.pdf
 ```
 
+## Evidence
+
+- `scripts/optimization_oracle_smoke.sh` validates the optimisation contract, schema and receipt shape.
+- Optimisation claims must remain receipt-backed and preserve signature warnings.
+
 ## Never do silently
 
 - Never invalidate a signature without a warning and receipt.
