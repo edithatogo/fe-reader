@@ -5,7 +5,7 @@
 | Theme | Tracks | Purpose |
 |---|---|---|
 | Foundation | A, K, O, P, N | Core contracts, CLI, fixtures, threat model, corpus, testing, security gates, performance budgets |
-| Reader & Native Shell | B, C, D, E, Q | Rendering, UI, bindings, OS integration, deterministic search, text/i18n |
+| Reader & Native Shell | B, C, D, E, Q, AP, AQ, AR | Rendering, UI, bindings, OS integration, deterministic search, text/i18n, native macOS UX maturity |
 | Editing & Workflows | F, G | Page ops, annotations, metadata, workflow packs, secure redaction |
 | Conversion & Publishing | H, J, R | DOCX/Markdown/HTML/image conversion, installers, registries, signed updates |
 | Integrations & Automation | I, L, S | App integrations, web/PWA/browser extension, automation APIs, SDK/devkit |
@@ -37,6 +37,8 @@
 - Recent documents on each OS.
 - File association/open-with plan.
 - Basic Tauri shell.
+- Native macOS shell UX discovery through Track AP, using the Figma wireframe as the design source of truth.
+- Native macOS shell implementation through Track AQ, with each shell region traced to the AP Figma roadmap.
 
 ### Wave 2 — Annotation, metadata, page operations, i18n and visual regression
 
@@ -46,6 +48,7 @@
 - Attachments and embedded files inspection.
 - Visual regression runner.
 - CJK, RTL, vertical text and font diagnostics fixtures.
+- Native macOS accessibility, keyboard parity, resize behavior and Figma-to-runtime validation through Track AR.
 
 ### Wave 3 — Workflow packs and verified high-risk operations
 
@@ -103,3 +106,7 @@
 ## Deferral of ML/RAG
 
 Wave 0-5 must be valuable without ML, local LLMs, or RAG. Contracts may reserve extension points, but no early milestone may depend on model inference.
+
+## Native UX Roadmap Rule
+
+The Track AP Figma artifact is the native macOS design source of truth for Tracks AQ and AR until an approved replacement exists. Roadmap changes that alter the native shell layout, state model, command hierarchy or primary user flows must update the AP Figma UX roadmap and record implementation or validation impacts before closing the relevant phase.

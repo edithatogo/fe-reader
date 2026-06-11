@@ -1,0 +1,11 @@
+{
+  "adr_id": "0011-native-macos-shell-framework",
+  "title": "Native macOS shell framework",
+  "status": "accepted",
+  "decision": "The native macOS shell uses SwiftUI first, with narrow AppKit interop only for platform behavior SwiftUI cannot cover cleanly.",
+  "consequences": [
+    "Native UI implementation must trace major shell regions to the Track AP Figma artifact.",
+    "AppKit-only code paths are allowed for window, menu, file, drag-and-drop or platform integration behavior when they are isolated behind the native adapter boundary.",
+    "The Rust core remains free of UI, platform and renderer dependencies."
+  ]
+}

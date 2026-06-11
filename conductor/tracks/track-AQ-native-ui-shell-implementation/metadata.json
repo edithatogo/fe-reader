@@ -1,0 +1,14 @@
+{
+  "track_id": "track-AQ-native-ui-shell-implementation",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-11T04:35:26Z",
+  "updated_at": "2026-06-11T16:15:00Z",
+  "description": "Implement the native macOS shell so the app matches the wireframe and behaves like a real desktop application.",
+  "deliverables": [
+    "native/macos/FeReaderNativeApp.swift (SwiftUI shell replacement)",
+    "docs/native-macos-architecture.md",
+    "artifacts/screenshots/fe-reader-native-preview.png (empty-state screenshot)",
+    "script/build_and_run.sh (updated for SwiftUI shell)"
+  ]
+}

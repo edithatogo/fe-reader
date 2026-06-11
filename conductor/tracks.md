@@ -119,3 +119,19 @@ v9 parallelisation rules:
 - AL0 and AM0 are Wave 0 hardening tasks and should run before expanding product features.
 - AN can run immediately as a non-blocking scheduled/manual lane.
 - AO starts during Wave 4, but provenance and SBOM scripts can be scaffolded in Wave 0.
+
+## Native macOS UX refinement tracks
+
+| Track | Theme | Main wave(s) | Status | Summary |
+|---|---|---:|---|---|
+| AP | Native UI Wireframe Discovery | 1 | complete | Figma wireframe, shell state model, and interaction handoff for the native macOS UX are documented. |
+| AQ | Native UI Shell Implementation | 1-2 | complete | Placeholder shell replaced with a native SwiftUI desktop layout, document intake, recents, metadata, status bar, and command surfaces. |
+| AR | Native UI Accessibility & Polish | 2-3 | complete | Keyboard labels, accessibility names, visual polish, screenshot evidence, and native preview regression guard are in place. |
+
+Native UX refinement rules:
+
+- AP and its Figma file should be used as the design source of truth for AQ, AR and roadmap decisions until superseded by an approved design artifact.
+- AQ must trace each implemented shell region/state back to the AP Figma roadmap and record any deviation before closing a phase.
+- AQ should use a SwiftUI-first shell with AppKit interop only for platform affordances that require it.
+- AQ should not continue any placeholder drawing path once the native shell is landed.
+- AR should begin once AQ has a stable shell and command surface, then verify Figma-to-runtime conformance, keyboard access, accessibility and responsive behavior.

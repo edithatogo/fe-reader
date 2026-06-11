@@ -8,6 +8,9 @@
 /docs-site/dist/
 /docs-site/node_modules/
 
+# Local macOS preview bundle output
+/dist/
+
 # .NET build output
 **/bin/
 **/obj/
@@ -29,7 +32,9 @@
 *.temp
 
 # Local benchmark and profiling output
-/artifacts/
+/artifacts/*
+!/artifacts/screenshots/
+!/artifacts/screenshots/*.png
 /criterion/
 /perf.data
 /flamegraph.svg

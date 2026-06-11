@@ -1,0 +1,13 @@
+{
+  "track_id": "track-AR-native-ui-accessibility-polish",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-11T04:35:26Z",
+  "updated_at": "2026-06-11T16:15:00Z",
+  "description": "Add keyboard parity, accessibility, responsive behavior, visual polish, and regression coverage for the native macOS shell.",
+  "deliverables": [
+    "native/macos/FeReaderNativeApp.swift (accessibility labels, keyboard shortcuts, focus management)",
+    "docs/native-macos-interaction-model.md (keyboard map and focus order)",
+    "artifacts/screenshots/fe-reader-native-preview.png (visual regression evidence)"
+  ]
+}

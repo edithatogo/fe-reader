@@ -49,6 +49,10 @@ audit evidence.
 - `fe-reader doctor` reports core/pdf/security identities.
 - `fe-reader inspect fixtures/minimal/minimal.pdf --json` emits a read-only
   intent, patch plan and PDF summary.
+- An unsigned local macOS preview bundle can be built and launched with
+  `./script/build_and_run.sh`.
+- The launcher also writes a local preview snapshot to
+  `/tmp/fe-reader-native-preview.png` when verification mode is used.
 - Core mutation contracts, transaction journaling and audit receipts have tests.
 - Platform/mobile automation contracts are checked for read-only or plan-only
   behavior.

@@ -1,0 +1,16 @@
+{
+  "track_id": "track-AP-native-ui-wireframe-discovery",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-11T04:35:26Z",
+  "updated_at": "2026-06-11T16:15:00Z",
+  "description": "Create the native UI wireframe, interaction model, and UX direction for the macOS shell in Figma before implementation.",
+  "deliverables": [
+    "docs/native-macos-ux-brief.md",
+    "docs/native-macos-design-tokens.md",
+    "docs/native-macos-interaction-model.md",
+    "docs/native-macos-handoff-notes.md",
+    "docs/native-macos-architecture.md",
+    "conductor/tracks/track-AP-native-ui-wireframe-discovery/figma-ux-roadmap.md"
+  ]
+}
