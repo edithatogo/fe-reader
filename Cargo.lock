@@ -1089,6 +1089,7 @@ dependencies = [
  "fe_reader_core",
  "fe_reader_metadata",
  "fe_reader_pdf_model",
+ "fe_reader_platform",
  "fe_reader_render",
  "fe_reader_search",
  "fe_reader_security",

@@ -7,3 +7,5 @@ if ! command -v cargo >/dev/null 2>&1; then
 fi
 
 cargo test -q -p fe_reader_platform
+cargo run -q -p fe_reader_cli -- platform recent-smoke --json >/dev/null
+cargo run -q -p fe_reader_cli -- platform automation-smoke --json >/dev/null

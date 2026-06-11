@@ -70,6 +70,11 @@ enum Command {
         #[command(subcommand)]
         command: JournalCommand,
     },
+    /// Inspect platform adapter contracts without calling native platform APIs.
+    Platform {
+        #[command(subcommand)]
+        command: PlatformCommand,
+    },
     /// Inspect PDF internals without mutating or executing active content.
     Lab {
         #[command(subcommand)]
@@ -152,6 +157,22 @@ enum JournalCommand {
     Recoveries {
         /// Directory containing journal sidecars.
         dir: String,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+enum PlatformCommand {
+    /// Run the recent-document default-deny smoke contract for all target platforms.
+    RecentSmoke {
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Run the native automation read-only/default-deny smoke contract.
+    AutomationSmoke {
         /// Emit JSON output.
         #[arg(long)]
         json: bool,
@@ -443,6 +464,50 @@ fn main() -> Result<()> {
                             );
                         }
                     }
+                }
+            }
+        },
+        Command::Platform { command } => match command {
+            PlatformCommand::RecentSmoke { json } => {
+                let receipts = fe_reader_platform::wave1_recent_document_smoke()?;
+                if json {
+                    let value = serde_json::json!({
+                        "contract": "platform_recent_document",
+                        "status": "pass",
+                        "mutation_applied": receipts.iter().any(|receipt| receipt.applied),
+                        "receipt_count": receipts.len(),
+                        "receipts": receipts,
+                    });
+                    println!("{}", serde_json::to_string_pretty(&value)?);
+                } else {
+                    println!("contract=platform_recent_document");
+                    println!("status=pass");
+                    println!("receipt_count={}", receipts.len());
+                    println!(
+                        "mutation_applied={}",
+                        receipts.iter().any(|receipt| receipt.applied)
+                    );
+                }
+            }
+            PlatformCommand::AutomationSmoke { json } => {
+                let receipts = fe_reader_platform::wave5_native_automation_smoke()?;
+                if json {
+                    let value = serde_json::json!({
+                        "contract": "native_automation",
+                        "status": "pass",
+                        "mutation_applied": receipts.iter().any(|receipt| receipt.applied),
+                        "receipt_count": receipts.len(),
+                        "receipts": receipts,
+                    });
+                    println!("{}", serde_json::to_string_pretty(&value)?);
+                } else {
+                    println!("contract=native_automation");
+                    println!("status=pass");
+                    println!("receipt_count={}", receipts.len());
+                    println!(
+                        "mutation_applied={}",
+                        receipts.iter().any(|receipt| receipt.applied)
+                    );
                 }
             }
         },

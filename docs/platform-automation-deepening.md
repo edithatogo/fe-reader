@@ -39,3 +39,14 @@ Fe Reader supports native automation, but automation must be constrained by the 
 ## Contract rule
 
 All automation surfaces translate into `OperationIntent`; no automation surface may directly call PDF mutation functions.
+
+## Executable smoke evidence
+
+The CLI exposes local, non-mutating platform contract smoke commands:
+
+```bash
+cargo run -q -p fe_reader_cli -- platform recent-smoke --json
+cargo run -q -p fe_reader_cli -- platform automation-smoke --json
+```
+
+These commands call the adapter contract stubs only. They do not invoke COM, AppleScript, D-Bus, mobile intents or host platform APIs.
