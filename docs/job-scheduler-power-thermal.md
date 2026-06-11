@@ -66,3 +66,8 @@ contracts/rust/power_budget.rs
 schemas/job-run.schema.json
 schemas/power-budget.schema.json
 ```
+
+## Evidence
+
+- `scripts/job_contract_smoke.py` validates the scheduler contract, the job run schema and the power budget schema.
+- Power and thermal policy must stay explicit so long-running work can be scheduled without hiding resource limits.

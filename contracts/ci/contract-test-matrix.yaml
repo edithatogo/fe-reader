@@ -21,6 +21,9 @@ matrix:
   policy_engine:
     command: python3 scripts/policy_engine_smoke.py
     gate: P0
+  job_contract:
+    command: python3 scripts/job_contract_smoke.py
+    gate: P0
   ocr_searchable_pdf_contract:
     command: python3 scripts/ocr_searchable_pdf_contract_smoke.py
     gate: advisory_until_ocr_provider_baseline
