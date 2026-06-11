@@ -47,3 +47,9 @@ An RFC is required for:
 - bundled dependency with significant licence/security impact
 - new workflow pack that claims domain-specific compliance
 - enabling a frontier feature by default
+
+## Review evidence
+
+- Pull requests should cite the relevant smoke report, fixture or contract check when changing docs or contributor guidance.
+- Governance changes should note whether they alter `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `GOVERNANCE.md` or `MAINTAINERS.md`.
+- Documentation-only edits should still preserve the contract boundary and avoid promising unsupported product behaviour.

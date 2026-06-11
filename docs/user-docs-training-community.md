@@ -66,3 +66,9 @@ performance budget regressions
 corpus coverage
 accessibility audit pass rate
 ```
+
+## Evidence and release notes
+
+- The current adoption smoke evidence is `target/release-evidence/wave8-adoption-ecosystem.json`.
+- User, admin and developer guides should be updated in lockstep when a contract or workflow changes.
+- Training examples should stay small, runnable and directly tied to the supported contracts instead of drifting into tutorial fiction.
