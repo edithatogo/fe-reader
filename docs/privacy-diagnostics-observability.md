@@ -32,3 +32,8 @@ Users may explicitly generate a support bundle. It must show a preview of what w
 ## Observability contract
 
 Use `tracing` internally, with a policy-controlled export layer. Logs are local by default. Remote upload requires explicit user action or managed enterprise policy.
+
+## Evidence
+
+- `scripts/quality_dashboard_smoke.py` confirms the dashboard and privacy docs remain aligned with local-first observability.
+- No document text, rendered page images or search index contents should enter the default diagnostic path.

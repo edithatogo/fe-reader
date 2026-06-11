@@ -32,3 +32,8 @@ target/fe-quality/dashboard.html
 ## Rule
 
 No headline feature claim is accepted unless it links to a fixture, test, benchmark, compatibility report, or release note.
+
+## Evidence
+
+- `scripts/quality_dashboard_smoke.py` validates the public dashboard contract and privacy-preserving documentation.
+- Dashboard output stays local-first and uses local artifacts only.

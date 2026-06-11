@@ -53,3 +53,8 @@ Enterprise policy can:
 ## Implementation rule
 
 No analytics SDK in core. If telemetry exists later, it must be an adapter behind `TelemetrySink` and disabled by default.
+
+## Evidence
+
+- `scripts/quality_dashboard_smoke.py` must pass before any public quality signal claim is treated as contract-backed.
+- Support bundles remain optional and user-visible, with path redaction and local-only defaults.
