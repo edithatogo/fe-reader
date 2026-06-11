@@ -50,3 +50,8 @@ intelligence.local_embeddings
 The UI, CLI, MCP server, plugins and native wrappers should all query the same capability registry. A disabled feature should produce a structured explanation rather than hiding silently.
 
 See `contracts/rust/feature_flags.rs` and `schemas/feature-flag.schema.json`.
+
+## Evidence
+
+- `scripts/policy_engine_smoke.py` checks the runtime policy and feature-flag contract surface.
+- `docs/config-policy-engine.md` defines the policy precedence and the security-sensitive controls the engine must preserve.

@@ -39,3 +39,8 @@ contracts/rust/config_policy_engine.rs
 schemas/config-policy.schema.json
 schemas/feature-flag.schema.json
 ```
+
+## Evidence
+
+- `scripts/policy_engine_smoke.py` validates the contract, schemas and `fe_reader_config` crate tests.
+- Policy decisions must remain structured and explainable so disabled capabilities do not fail silently.
