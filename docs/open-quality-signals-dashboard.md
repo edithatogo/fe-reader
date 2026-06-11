@@ -35,5 +35,5 @@ No headline feature claim is accepted unless it links to a fixture, test, benchm
 
 ## Evidence
 
-- `scripts/quality_dashboard_smoke.py` validates the public dashboard contract and privacy-preserving documentation.
+- `scripts/quality_dashboard_smoke.py` validates the public dashboard contract, schema, crate and privacy-preserving documentation.
 - Dashboard output stays local-first and uses local artifacts only.
