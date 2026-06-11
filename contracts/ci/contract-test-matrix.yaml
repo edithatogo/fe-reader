@@ -25,6 +25,13 @@ matrix:
     promotion_requires_adr: true
     baseline_required: true
     baseline_artifact: target/conversion-reports/ocr-searchable-pdf-contract-smoke.json
+  portfolio_authoring_contract:
+    command: python3 scripts/portfolio_authoring_contract_smoke.py
+    gate: advisory_until_portfolio_baseline
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: target/feature-reports/portfolio-authoring-contract-smoke.json
   operation_intent_contract:
     command: python3 scripts/operation_intent_contract_check.py
     gate: P0

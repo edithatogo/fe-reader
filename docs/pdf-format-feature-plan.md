@@ -10,7 +10,7 @@
 | Digital signatures | Inspect and warn on invalidation | Standards-aware signing later |
 | Tagged PDFs | Inspect structure tree | Accessibility repair/authoring |
 | Optional Content Groups | View layer list | Toggle/export layer states |
-| Portfolios/collections | Inspect and extract | Author simple portfolios |
+| Portfolios/collections | Inspect and extract | Author simple portfolios via provider workflow and associated-file metadata |
 | Embedded files | Inspect/extract/add | Associated-file workflows |
 | RichMedia | Recognise and sandbox/disable | Policy-gated preview only |
 | Output intents | Inspect | Author/repair for print workflows |
@@ -24,3 +24,4 @@
 - Preserve unknown objects where safe.
 - Warn on downgrade or feature loss.
 - Store Fe receipts in XMP extension schemas and/or associated files, not arbitrary undocumented blobs.
+- Portfolio authoring, when it arrives, should be treated as a provider workflow that preserves embedded-file metadata, collection structure and associated-file relationships rather than a core mutation primitive.
