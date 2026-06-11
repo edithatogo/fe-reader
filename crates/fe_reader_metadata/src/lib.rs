@@ -8,6 +8,7 @@
 use fe_reader_core::{FeError, FeErrorKind, OperationIntent, PatchOperation, PatchPlan};
 use lopdf::{Dictionary, Document, Object};
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::{fs, path::Path};
 
 /// Crate name exposed for smoke tests and workspace health checks.
@@ -40,10 +41,27 @@ pub struct MetadataSummary {
     pub document_info: DocumentInfo,
     /// Whether the document catalog appears to point at an XMP metadata stream.
     pub xmp_metadata_present: bool,
+    /// Read-only diagnostics for discovered XMP metadata streams.
+    pub xmp_streams: Vec<XmpMetadataStream>,
     /// Root trailer dictionary keys visible to the parser.
     pub trailer_keys: Vec<String>,
     /// Non-fatal parser error, if the PDF could not be opened for metadata inspection.
     pub parser_error: Option<String>,
+}
+
+/// Read-only diagnostics for one XMP metadata stream.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct XmpMetadataStream {
+    /// Indirect object id when known.
+    pub object_id: String,
+    /// Decoded or raw byte length of the XMP packet.
+    pub byte_len: usize,
+    /// SHA-256 of the decoded or raw XMP packet bytes.
+    pub sha256_hex: String,
+    /// UTF-8 lossy preview of the first bytes of the packet.
+    pub preview: String,
+    /// Non-fatal decode error, if the stream could not be decoded.
+    pub decode_error: Option<String>,
 }
 
 /// Stable Wave 2 metadata snapshot payload.
@@ -231,6 +249,12 @@ pub fn diff_metadata_snapshots(before: MetadataSnapshot, after: MetadataSnapshot
     );
     push_diff(
         &mut changes,
+        "xmp_streams",
+        &before.summary.xmp_streams,
+        &after.summary.xmp_streams,
+    );
+    push_diff(
+        &mut changes,
         "trailer_keys",
         &before.summary.trailer_keys,
         &after.summary.trailer_keys,
@@ -298,6 +322,7 @@ fn inspect_lopdf_document(document: &Document) -> MetadataSummary {
     MetadataSummary {
         document_info: inspect_document_info(document),
         xmp_metadata_present: has_xmp_metadata(document),
+        xmp_streams: inspect_xmp_streams(document),
         trailer_keys: sorted_dictionary_keys(&document.trailer),
         parser_error: None,
     }
@@ -371,6 +396,55 @@ fn is_xmp_metadata_stream(object: &Object) -> bool {
         .and_then(Object::as_name)
         .is_ok_and(|name| name == b"XML");
     is_metadata_type && is_xml_subtype
+}
+
+fn inspect_xmp_streams(document: &Document) -> Vec<XmpMetadataStream> {
+    let mut streams = document
+        .objects
+        .iter()
+        .filter_map(|(object_id, object)| {
+            if !is_xmp_metadata_stream(object) {
+                return None;
+            }
+            let stream = object.as_stream().ok()?;
+            let object_id = format!("{} {}", object_id.0, object_id.1);
+            Some(inspect_xmp_stream(object_id, stream))
+        })
+        .collect::<Vec<_>>();
+    streams.sort_by(|left, right| left.object_id.cmp(&right.object_id));
+    streams
+}
+
+fn inspect_xmp_stream(object_id: String, stream: &lopdf::Stream) -> XmpMetadataStream {
+    let (bytes, decode_error) = match stream.get_plain_content() {
+        Ok(bytes) => (bytes, None),
+        Err(error) => (stream.content.clone(), Some(error.to_string())),
+    };
+    XmpMetadataStream {
+        object_id,
+        byte_len: bytes.len(),
+        sha256_hex: sha256_hex(&bytes),
+        preview: preview_utf8(&bytes),
+        decode_error,
+    }
+}
+
+fn preview_utf8(bytes: &[u8]) -> String {
+    let max = bytes.len().min(160);
+    String::from_utf8_lossy(&bytes[..max])
+        .chars()
+        .map(|ch| if ch.is_control() { ' ' } else { ch })
+        .collect::<String>()
+}
+
+fn sha256_hex(bytes: &[u8]) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(bytes);
+    hasher
+        .finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
 }
 
 fn sorted_dictionary_keys(dictionary: &Dictionary) -> Vec<String> {
@@ -516,6 +590,7 @@ mod tests {
 
         assert_eq!(summary.document_info, DocumentInfo::default());
         assert!(!summary.xmp_metadata_present);
+        assert!(summary.xmp_streams.is_empty());
         assert!(summary.parser_error.is_none());
         assert!(summary.trailer_keys.contains(&"Root".to_string()));
         assert!(!summary.trailer_keys.contains(&"Info".to_string()));
@@ -556,8 +631,22 @@ mod tests {
 
         assert_eq!(summary.document_info, DocumentInfo::default());
         assert!(!summary.xmp_metadata_present);
+        assert!(summary.xmp_streams.is_empty());
         assert!(summary.trailer_keys.is_empty());
         assert!(summary.parser_error.is_some());
+    }
+
+    #[test]
+    fn inspect_xmp_metadata_streams_without_mutating_bytes() {
+        let xmp = br#"<?xpacket begin=""?><rdf:RDF><rdf:Description dc:title="Fe Reader"/></rdf:RDF><?xpacket end="w"?>"#;
+        let summary = inspect_metadata_bytes(&minimal_pdf_bytes_with_xmp(xmp));
+
+        assert!(summary.xmp_metadata_present);
+        assert_eq!(summary.xmp_streams.len(), 1);
+        assert_eq!(summary.xmp_streams[0].byte_len, xmp.len());
+        assert_eq!(summary.xmp_streams[0].sha256_hex, sha256_hex(xmp));
+        assert!(summary.xmp_streams[0].preview.contains("rdf:RDF"));
+        assert!(summary.xmp_streams[0].decode_error.is_none());
     }
 
     fn minimal_pdf_bytes(info: Option<Dictionary>) -> Vec<u8> {
@@ -571,6 +660,26 @@ mod tests {
             let info_id = document.add_object(info);
             document.trailer.set("Info", info_id);
         }
+
+        let mut bytes = Vec::new();
+        document.save_to(&mut bytes).unwrap();
+        bytes
+    }
+
+    fn minimal_pdf_bytes_with_xmp(xmp: &[u8]) -> Vec<u8> {
+        let mut document = Document::with_version("1.7");
+        let metadata_id = document.add_object(lopdf::Stream::new(
+            dictionary! {
+                "Type" => "Metadata",
+                "Subtype" => "XML",
+            },
+            xmp.to_vec(),
+        ));
+        let catalog_id = document.add_object(dictionary! {
+            "Type" => "Catalog",
+            "Metadata" => metadata_id,
+        });
+        document.trailer.set("Root", catalog_id);
 
         let mut bytes = Vec::new();
         document.save_to(&mut bytes).unwrap();

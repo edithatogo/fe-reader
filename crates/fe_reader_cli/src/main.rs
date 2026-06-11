@@ -269,6 +269,7 @@ fn main() -> Result<()> {
                     "xmp_metadata_present={}",
                     metadata.summary.xmp_metadata_present
                 );
+                println!("xmp_stream_count={}", metadata.summary.xmp_streams.len());
                 println!(
                     "parser_error={}",
                     metadata.summary.parser_error.as_deref().unwrap_or("")

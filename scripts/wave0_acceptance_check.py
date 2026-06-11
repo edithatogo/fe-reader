@@ -182,6 +182,10 @@ def check_additive_cli_contracts() -> None:
         metadata["metadata"]["parser_error"] is None,
         "minimal metadata inspection must parse without error",
     )
+    expect(
+        metadata["metadata"]["xmp_streams"] == [],
+        "minimal metadata fixture must report an empty XMP stream list",
+    )
 
     search = run_json(
         "cargo",

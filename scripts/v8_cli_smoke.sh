@@ -109,6 +109,7 @@ assert payload["plan"]["write_mode"] == "no_write"
 assert payload["plan"]["approved_for_apply"] is False
 assert payload["metadata"]["parser_error"] is None
 assert payload["metadata"]["xmp_metadata_present"] is False
+assert payload["metadata"]["xmp_streams"] == []
 assert "Root" in payload["metadata"]["trailer_keys"]
 if "snapshot" in payload:
     assert payload["snapshot"]["snapshot_version"] == 1

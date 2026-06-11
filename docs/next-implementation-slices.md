@@ -10,7 +10,7 @@ Implemented baseline: JSON sidecar journaling persists patch plans, `journal ins
 
 ## Slice 3: Metadata read-only inspection
 
-Read document info and XMP metadata. Do not mutate bytes yet.
+Implemented baseline: read-only metadata inspection reports document-info fields, trailer keys, XMP presence, XMP stream byte length, SHA-256, safe preview text and non-fatal decode errors. It does not mutate bytes.
 
 ## Slice 4: Render adapter contract test
 
