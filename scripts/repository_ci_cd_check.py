@@ -129,8 +129,25 @@ for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
     if "uses: " in text:
         for line in text.splitlines():
             stripped = line.strip()
-            if stripped.startswith("- uses:") and "ALLOW_VERSION_TAGS_DURING_BOOTSTRAP" not in stripped:
+            if (
+                (stripped.startswith("- uses:") or stripped.startswith("uses:"))
+                and "ALLOW_VERSION_TAGS_DURING_BOOTSTRAP" not in stripped
+            ):
                 failures.append(f"{rel} action use missing bootstrap/pinning marker: {stripped}")
+
+    if path.name == "08-docs-site.yml":
+        for token in [
+            "npm ci",
+            "npm run build",
+            "docs-site/package-lock.json",
+            "actions/configure-pages",
+            "actions/upload-pages-artifact",
+            "actions/deploy-pages",
+            "pages: write",
+            "id-token: write",
+        ]:
+            if token not in text:
+                failures.append(f"{rel} missing docs site deployment token: {token}")
 
 release_workflow = read(".github/workflows/07-release.yml")
 if release_workflow:

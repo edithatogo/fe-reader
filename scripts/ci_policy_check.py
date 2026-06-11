@@ -14,6 +14,7 @@ required_names = {
     '05-frontier-nightly.yml',
     '06-performance-nightly.yml',
     '07-release.yml',
+    '08-docs-site.yml',
     '09-platform-tests.yml',
 }
 actual = {p.name for p in workflow_dir.glob('*.yml')} if workflow_dir.exists() else set()
@@ -30,9 +31,9 @@ for wf in workflow_dir.glob('*.yml'):
         failures.append(f'{wf.name} must use read-only contents permission by default')
     for line in txt.splitlines():
         stripped = line.strip()
-        if not stripped.startswith('- uses:'):
+        if not (stripped.startswith('- uses:') or stripped.startswith('uses:')):
             continue
-        uses_ref = stripped.removeprefix('- uses:').split('#', 1)[0].strip()
+        uses_ref = stripped.removeprefix('- uses:').removeprefix('uses:').split('#', 1)[0].strip()
         if not re.search(r'@[0-9a-f]{40}$', uses_ref) and 'ALLOW_VERSION_TAGS_DURING_BOOTSTRAP' not in stripped:
             failures.append(f'{wf.name} action use must be SHA pinned or carry bootstrap marker: {uses_ref}')
     if 'id-token: write' in txt and 'attest' not in txt and 'release' in wf.name:
@@ -116,6 +117,22 @@ for wf in workflow_dir.glob('*.yml'):
             if f'secrets.{secret_name}' not in txt:
                 failures.append(f'07-release.yml missing strict release secret binding: {secret_name}')
 
+    if wf.name == '08-docs-site.yml':
+        for token in [
+            'name: Docs Site',
+            'npm ci',
+            'npm run build',
+            'docs-site/package-lock.json',
+            'actions/configure-pages',
+            'actions/upload-pages-artifact',
+            'actions/deploy-pages',
+            'pages: write',
+            'id-token: write',
+            'github-pages',
+        ]:
+            if token not in txt:
+                failures.append(f'08-docs-site.yml missing docs site token: {token}')
+
     for match in re.finditer(r'\bscripts/[A-Za-z0-9_.\-/]+', txt):
         script_rel = match.group(0).rstrip('",\'')
         if not (ROOT / script_rel).exists():
@@ -159,6 +176,11 @@ stable_commands = {
         'bash scripts/api_compat_check.sh',
         'bash scripts/public_api_snapshot_check.sh',
         'bash scripts/c_abi_snapshot_check.sh',
+    ],
+    '08-docs-site.yml': [
+        'npm ci',
+        'npm run build',
+        'docs-site/package-lock.json',
     ],
     '09-platform-tests.yml': [
         'bash scripts/linux_container_smoke.sh',

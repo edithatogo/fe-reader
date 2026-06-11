@@ -31,9 +31,9 @@ jobs:
         working-directory: docs-site
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
         with:
           node-version: 24
           cache: npm
@@ -61,9 +61,9 @@ jobs:
         working-directory: docs-site
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
         with:
           node-version: 24
           cache: npm
@@ -73,11 +73,11 @@ jobs:
       - name: Build
         run: npm run build
       - name: Configure Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
         with:
           path: docs-site/dist
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
