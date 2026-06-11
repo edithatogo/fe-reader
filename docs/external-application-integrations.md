@@ -30,6 +30,8 @@
 
 See `contracts/rust/application_integration.rs` and `schemas/app-integration.schema.json`.
 
+Every descriptor must state whether it `requires_user_grant`, whether it `requires_network`, and which `risk_notes` apply before the integration can import, export or hand off document data.
+
 ## Deep link format
 
 ```text

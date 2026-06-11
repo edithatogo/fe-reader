@@ -67,6 +67,34 @@ def check_web_and_plugin(failures):
     require("direct_apply" in plugin["denied_by_default"], "plugin ABI snapshot must deny direct apply", failures)
 
 
+def check_application_integrations(failures):
+    doc = read("docs/external-application-integrations.md")
+    contract = read("contracts/rust/application_integration.rs")
+    diagram = read("docs/mermaid/platform_integrations.mmd")
+    for token in [
+        "Zotero",
+        "Obsidian/Logseq",
+        "LibreOffice/OnlyOffice",
+        "VS Code / JetBrains",
+        "Email clients",
+        "Nextcloud/WebDAV",
+        "requires_user_grant",
+        "High-risk mutation requires review and approval",
+    ]:
+        require(token in doc, f"external integration docs missing {token}", failures)
+    for token in [
+        "ApplicationIntegrationDescriptor",
+        "IntegrationRequest",
+        "IntegrationResponse",
+        "requires_network",
+        "requires_user_grant",
+        "risk_notes",
+    ]:
+        require(token in contract, f"application integration contract missing {token}", failures)
+    for token in ["Open Recent", "XDG portals", "DocumentsProvider", "App Intents"]:
+        require(token in diagram, f"platform integration diagram missing {token}", failures)
+
+
 def check_cli_and_sdk_policy(failures):
     cli = load_json("contracts/snapshots/cli/fe_reader_cli.commands.preview.json")
     require("inspect" in cli["commands"], "CLI snapshot missing inspect", failures)
@@ -100,6 +128,7 @@ def main():
         check_mcp(failures)
         check_platform_contracts(failures)
         check_web_and_plugin(failures)
+        check_application_integrations(failures)
         check_cli_and_sdk_policy(failures)
         check_enterprise_policy(failures)
     except Exception as exc:
