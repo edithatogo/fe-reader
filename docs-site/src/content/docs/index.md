@@ -12,8 +12,12 @@ The project is implementation-first: contracts compile, smoke tests run, and eve
 - Pure `fe_reader_core` document and workflow contracts.
 - Adapter crates for rendering, PDF parsing, automation, plugins, bindings, and platform integration.
 - Operation mutation pipeline: `OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt`.
+- Native macOS shell checkpoint with SwiftUI-first layout, local document intake, recent documents, metadata panels, status surfaces, and command wiring.
 - Release provenance scaffolding with SBOM status, signing readiness, and public-channel policy checks.
 - Render backend scaffolding with validated tile requests, stable cache keys, PDFium adapter boundaries, and conservative GPU policy flags.
+- Read-only transaction journal inspection and recovery listing for sidecars that need crash-recovery review.
+- Read-only metadata diagnostics for document-info fields, trailer keys, XMP stream length, XMP SHA-256, safe previews, and non-fatal parser/decode errors.
+- Expanded security-policy aliases for COM, AppleScript, D-Bus, Android intents, iOS App Intents, browser extensions, local APIs, plugins, external tools, and network access.
 
 ## What it is not
 

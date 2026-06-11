@@ -19,6 +19,7 @@ export default defineConfig({
           items: [
             { label: 'Fe Reader', slug: 'index' },
             { label: 'Architecture', slug: 'architecture' },
+            { label: 'Native macOS Shell', slug: 'native-macos-shell' },
             { label: 'Release Quality', slug: 'release-quality' },
             { label: 'Automation Safety', slug: 'automation-safety' },
           ],
