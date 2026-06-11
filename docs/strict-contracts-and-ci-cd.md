@@ -35,6 +35,7 @@ This applies to UI, CLI, MCP, COM, AppleScript, D-Bus, Android intents, iOS App 
 - `security-supply-chain`: cargo-deny, cargo-audit, cargo-vet advisory mode during bootstrap, zizmor/actionlint, CodeQL, Scorecard.
 - `api-compatibility`: public API snapshots and semver checks once stable surfaces exist.
 - `cross-platform-smoke`: Linux, macOS, Windows compile/test smoke.
+- `wave0-first-30-prs`: validates the non-overlapping PR sequencing plan before feature breadth expands.
 
 ## Frontier checks
 

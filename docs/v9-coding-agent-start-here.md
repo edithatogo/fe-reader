@@ -36,6 +36,11 @@ cargo run -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json
 5. Materialise public API snapshots for stable crates once they stop being scaffolds.
 6. Convert advisory checks to hard gates only after baselines exist and an ADR/promotion note is accepted.
 
+## Sequencing evidence
+
+- `docs/wave0-first-30-prs.md` enumerates the first 30 PRs as intentionally small, non-overlapping tasks.
+- `scripts/wave0_first_30_prs_check.py` validates the plan shape so it stays machine-checkable.
+
 ## Stop rule
 
 Do not add new product features until:

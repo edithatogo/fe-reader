@@ -38,3 +38,8 @@ These PRs are intentionally small. They allow parallel agents to work without cr
 ## Rule for coding agents
 
 Do not combine unrelated PRs. If a task touches more than two architectural layers, split it.
+
+## Evidence
+
+- `scripts/wave0_first_30_prs_check.py` validates the sequence, uniqueness and parallelism assumptions in this plan.
+- `docs/v9-coding-agent-start-here.md` names the first hard gates that keep this sequencing policy real.
