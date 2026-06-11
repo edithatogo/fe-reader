@@ -9,9 +9,12 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@astrojs/starlight": "^0.39.2",
-    "astro": "^6.3.7",
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/starlight": "^0.39.3",
+    "astro": "^6.4.6",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "volar-service-yaml": "0.0.71"
   }
 }
