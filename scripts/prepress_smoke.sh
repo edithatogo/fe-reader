@@ -10,8 +10,14 @@ root = Path.cwd()
 baseline_path = root / "fixtures/expected/prepress/text-search-fixture.prepress.json"
 target_path = root / "target/prepress-reports/text-search-fixture.prepress.json"
 schema_path = root / "schemas/color-prepress-report.schema.json"
+contract_path = root / "contracts" / "rust" / "color_prepress.rs"
+crate_path = root / "crates" / "fe_reader_prepress" / "src" / "lib.rs"
 
 baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+
+for path in (schema_path, contract_path, crate_path):
+    if not path.exists():
+        raise SystemExit(f"prepress smoke failure: missing {path.relative_to(root)}")
 
 required = ("document_id", "output_intents", "colour_findings", "font_findings", "page_box_findings")
 missing = [key for key in required if key not in baseline]

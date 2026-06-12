@@ -1240,6 +1240,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "fe_reader_prepress"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "fe_reader_quality_dashboard"
 version = "0.1.0"
 dependencies = [

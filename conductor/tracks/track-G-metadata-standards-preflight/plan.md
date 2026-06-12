@@ -31,12 +31,14 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 - Add unit/smoke test.
 - Add CLI or adapter path where applicable.
 - Run `scripts/conductor_phase_gate.sh --phase G4 --auto-fix`.
+- Evidence: `crates/fe_reader_prepress/src/lib.rs`, `scripts/prepress_smoke.sh`.
 ### Phase G5 — accessibility inspection
 
 - Implement contract skeleton.
 - Add unit/smoke test.
 - Add CLI or adapter path where applicable.
 - Run `scripts/conductor_phase_gate.sh --phase G5 --auto-fix`.
+- Evidence: `crates/fe_reader_accessibility/src/lib.rs`, `scripts/accessibility_audit_smoke.py`.
 
 ## Exit criteria
 
