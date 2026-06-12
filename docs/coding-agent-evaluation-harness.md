@@ -32,3 +32,8 @@ add a redaction verification check without incremental append
 ```
 
 The harness should grade generated changes by running phase gates and checking file-boundary rules.
+
+## Evidence
+
+- `scripts/agent_eval_smoke.py` validates the harness criteria and emits a local evidence report.
+- The harness remains local-first and does not upload evaluation results by default.

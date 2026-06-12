@@ -30,6 +30,9 @@ matrix:
   optimization_oracle:
     command: bash scripts/optimization_oracle_smoke.sh
     gate: P0
+  agent_eval:
+    command: python3 scripts/agent_eval_smoke.py
+    gate: P0
   ocr_searchable_pdf_contract:
     command: python3 scripts/ocr_searchable_pdf_contract_smoke.py
     gate: advisory_until_ocr_provider_baseline
