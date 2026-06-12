@@ -11,8 +11,9 @@ fixture="fixtures/minimal/minimal.pdf"
 metadata_json="$(cargo run -q -p fe_reader_cli -- metadata "$fixture" --json)"
 diff_json="$(cargo run -q -p fe_reader_cli -- metadata-diff "$fixture" "$fixture" --json)"
 scrub_json="$(cargo run -q -p fe_reader_cli -- metadata-scrub "$fixture" --profile clean-share --plan-only --json)"
+forensic_json="$(cargo run -q -p fe_reader_cli -- metadata-scrub "$fixture" --profile forensic-preserve --plan-only --json)"
 
-METADATA_JSON="$metadata_json" DIFF_JSON="$diff_json" SCRUB_JSON="$scrub_json" python3 - <<'PY'
+METADATA_JSON="$metadata_json" DIFF_JSON="$diff_json" SCRUB_JSON="$scrub_json" FORENSIC_JSON="$forensic_json" python3 - <<'PY'
 from __future__ import annotations
 
 import json
@@ -41,6 +42,13 @@ assert scrub["plan_only"] is True
 assert scrub["plan"]["operations"] == [
     {"op": "set_metadata", "key": "metadata_scrub_mode", "value": "clean_share"}
 ]
+
+forensic = json.loads(os.environ["FORENSIC_JSON"])
+assert forensic["intent"]["risk_level"] == "read_only"
+assert forensic["plan"]["write_mode"] == "no_write"
+assert forensic["plan"]["approved_for_apply"] is False
+assert forensic["plan_only"] is True
+assert forensic["plan"]["operations"] == [{"op": "noop"}]
 PY
 
 if cargo run -q -p fe_reader_cli -- metadata-scrub "$fixture" --profile clean-share >/tmp/fe-reader-metadata-scrub-no-plan-only.out 2>&1; then

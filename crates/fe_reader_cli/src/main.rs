@@ -346,12 +346,20 @@ fn main() -> Result<()> {
             let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
             let metadata = fe_reader_metadata::metadata_snapshot_path(&path)?;
             let scrub_mode = MetadataScrubMode::parse_profile(&profile)?;
-            let intent = OperationIntent::mutation(
-                OperationSource::Cli,
-                summary.document_id.clone(),
-                OperationKind::PlanMutation,
-                "metadata_scrub",
-            )
+            let intent = if matches!(scrub_mode, MetadataScrubMode::ForensicPreserve) {
+                OperationIntent::read_only(
+                    OperationSource::Cli,
+                    summary.document_id.clone(),
+                    "metadata_scrub_forensic_preserve",
+                )
+            } else {
+                OperationIntent::mutation(
+                    OperationSource::Cli,
+                    summary.document_id.clone(),
+                    OperationKind::PlanMutation,
+                    "metadata_scrub",
+                )
+            }
             .with_document_fingerprint(summary.fingerprint.clone());
             let plan = fe_reader_metadata::plan_metadata_operations(
                 &intent,

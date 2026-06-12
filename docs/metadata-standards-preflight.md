@@ -10,6 +10,7 @@ Fe Reader should support:
 - metadata diff;
 - metadata scrub profile;
 - forensic preserve profile;
+- conformance claims and standards cues;
 - embedded file metadata;
 - annotation metadata;
 - form field metadata;

@@ -45,6 +45,10 @@ pub struct MetadataSummary {
     pub xmp_streams: Vec<XmpMetadataStream>,
     /// Root trailer dictionary keys visible to the parser.
     pub trailer_keys: Vec<String>,
+    /// Claimed or recognized conformance markers and standards cues.
+    pub conformance_claims: Vec<String>,
+    /// Non-fatal warnings produced by metadata inspection.
+    pub warnings: Vec<String>,
     /// Non-fatal parser error, if the PDF could not be opened for metadata inspection.
     pub parser_error: Option<String>,
 }
@@ -112,6 +116,8 @@ pub struct MetadataDiff {
 pub enum MetadataScrubMode {
     /// Preserve all metadata.
     Preserve,
+    /// Preserve metadata but emit a no-write forensic review plan.
+    ForensicPreserve,
     /// Remove common private fields but keep user-visible title/subject.
     CleanShare,
     /// Remove all non-essential metadata.
@@ -127,6 +133,7 @@ impl MetadataScrubMode {
     pub fn parse_profile(profile: &str) -> Result<Self, FeError> {
         match profile {
             "preserve" => Ok(Self::Preserve),
+            "forensic-preserve" | "forensic_preserve" => Ok(Self::ForensicPreserve),
             "clean-share" | "clean_share" => Ok(Self::CleanShare),
             "aggressive" => Ok(Self::Aggressive),
             _ => Err(FeError::new(
@@ -139,6 +146,7 @@ impl MetadataScrubMode {
     fn as_plan_value(self) -> &'static str {
         match self {
             Self::Preserve => "preserve",
+            Self::ForensicPreserve => "forensic_preserve",
             Self::CleanShare => "clean_share",
             Self::Aggressive => "aggressive",
         }
@@ -176,9 +184,12 @@ pub fn plan_metadata_operations(
                 key: field.clone(),
                 value: value.clone(),
             },
-            MetadataOperation::Scrub { mode } => PatchOperation::SetMetadata {
-                key: "metadata_scrub_mode".to_string(),
-                value: mode.as_plan_value().to_string(),
+            MetadataOperation::Scrub { mode } => match mode {
+                MetadataScrubMode::ForensicPreserve => PatchOperation::Noop,
+                _ => PatchOperation::SetMetadata {
+                    key: "metadata_scrub_mode".to_string(),
+                    value: mode.as_plan_value().to_string(),
+                },
             },
         })
         .collect();
@@ -324,6 +335,8 @@ fn inspect_lopdf_document(document: &Document) -> MetadataSummary {
         xmp_metadata_present: has_xmp_metadata(document),
         xmp_streams: inspect_xmp_streams(document),
         trailer_keys: sorted_dictionary_keys(&document.trailer),
+        conformance_claims: inspect_conformance_claims(document),
+        warnings: inspect_metadata_warnings(document),
         parser_error: None,
     }
 }
@@ -372,13 +385,17 @@ fn has_xmp_metadata(document: &Document) -> bool {
 }
 
 fn catalog_has_metadata(document: &Document) -> bool {
+    catalog_has_key(document, b"Metadata")
+}
+
+fn catalog_has_key(document: &Document, key: &[u8]) -> bool {
     document
         .trailer
         .get(b"Root")
         .ok()
         .and_then(|root| document.dereference(root).ok())
         .and_then(|(_, root)| root.as_dict().ok())
-        .is_some_and(|catalog| catalog.has(b"Metadata"))
+        .is_some_and(|catalog| catalog.has(key))
 }
 
 fn is_xmp_metadata_stream(object: &Object) -> bool {
@@ -427,6 +444,33 @@ fn inspect_xmp_stream(object_id: String, stream: &lopdf::Stream) -> XmpMetadataS
         preview: preview_utf8(&bytes),
         decode_error,
     }
+}
+
+fn inspect_conformance_claims(document: &Document) -> Vec<String> {
+    let mut claims = Vec::new();
+    if document.version.trim_start().starts_with('2') {
+        claims.push("pdf-2.0".to_string());
+    }
+    if catalog_has_key(document, b"StructTreeRoot") {
+        claims.push("tagged-pdf".to_string());
+    }
+    if catalog_has_key(document, b"OutputIntents") {
+        claims.push("output-intents".to_string());
+    }
+    if catalog_has_key(document, b"AF") {
+        claims.push("associated-files".to_string());
+    }
+    claims.sort();
+    claims.dedup();
+    claims
+}
+
+fn inspect_metadata_warnings(document: &Document) -> Vec<String> {
+    let mut warnings = Vec::new();
+    if document.version.trim_start().starts_with('2') && !catalog_has_metadata(document) {
+        warnings.push("PDF 2.0 document does not expose an XMP metadata stream".to_string());
+    }
+    warnings
 }
 
 fn preview_utf8(bytes: &[u8]) -> String {
@@ -581,7 +625,29 @@ mod tests {
             MetadataScrubMode::parse_profile("clean-share").unwrap(),
             MetadataScrubMode::CleanShare
         );
+        assert_eq!(
+            MetadataScrubMode::parse_profile("forensic-preserve").unwrap(),
+            MetadataScrubMode::ForensicPreserve
+        );
         assert!(MetadataScrubMode::parse_profile("unknown").is_err());
+    }
+
+    #[test]
+    fn forensic_preserve_mode_is_no_write_read_only() {
+        let intent = OperationIntent::read_only(
+            fe_reader_core::OperationSource::Cli,
+            fe_reader_core::DocumentId::new(),
+            "metadata_scrub_forensic_preserve",
+        );
+        let plan = plan_metadata_operations(
+            &intent,
+            &[MetadataOperation::Scrub {
+                mode: MetadataScrubMode::ForensicPreserve,
+            }],
+        );
+        assert_eq!(plan.write_mode, fe_reader_core::WriteMode::NoWrite);
+        assert_eq!(plan.risk_level, fe_reader_core::RiskLevel::ReadOnly);
+        assert_eq!(plan.operations, vec![fe_reader_core::PatchOperation::Noop]);
     }
 
     #[test]
@@ -591,6 +657,8 @@ mod tests {
         assert_eq!(summary.document_info, DocumentInfo::default());
         assert!(!summary.xmp_metadata_present);
         assert!(summary.xmp_streams.is_empty());
+        assert!(summary.conformance_claims.is_empty());
+        assert!(summary.warnings.is_empty());
         assert!(summary.parser_error.is_none());
         assert!(summary.trailer_keys.contains(&"Root".to_string()));
         assert!(!summary.trailer_keys.contains(&"Info".to_string()));
@@ -622,6 +690,8 @@ mod tests {
         );
         assert!(summary.trailer_keys.contains(&"Info".to_string()));
         assert!(summary.trailer_keys.contains(&"Root".to_string()));
+        assert!(summary.conformance_claims.is_empty());
+        assert!(summary.warnings.is_empty());
         assert!(summary.parser_error.is_none());
     }
 
@@ -647,6 +717,37 @@ mod tests {
         assert_eq!(summary.xmp_streams[0].sha256_hex, sha256_hex(xmp));
         assert!(summary.xmp_streams[0].preview.contains("rdf:RDF"));
         assert!(summary.xmp_streams[0].decode_error.is_none());
+    }
+
+    #[test]
+    fn inspect_pdf_2_0_features_reports_claims() {
+        let mut document = Document::with_version("2.0");
+        let catalog_id = document.add_object(dictionary! {
+            "Type" => "Catalog",
+            "StructTreeRoot" => dictionary! {},
+            "OutputIntents" => lopdf::Object::Array(vec![]),
+            "AF" => lopdf::Object::Array(vec![]),
+        });
+        document.trailer.set("Root", catalog_id);
+
+        let mut bytes = Vec::new();
+        document.save_to(&mut bytes).unwrap();
+
+        let summary = inspect_metadata_bytes(&bytes);
+
+        assert_eq!(
+            summary.conformance_claims,
+            vec![
+                "associated-files".to_string(),
+                "output-intents".to_string(),
+                "pdf-2.0".to_string(),
+                "tagged-pdf".to_string(),
+            ]
+        );
+        assert_eq!(
+            summary.warnings,
+            vec!["PDF 2.0 document does not expose an XMP metadata stream".to_string()]
+        );
     }
 
     fn minimal_pdf_bytes(info: Option<Dictionary>) -> Vec<u8> {

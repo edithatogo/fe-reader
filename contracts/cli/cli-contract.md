@@ -11,6 +11,7 @@ fe-reader extract-text input.pdf --page 5 --bbox --json
 fe-reader metadata input.pdf --json
 fe-reader metadata-diff before.pdf after.pdf --json
 fe-reader metadata-scrub input.pdf --profile clean-share --plan-only
+fe-reader metadata-scrub input.pdf --profile forensic-preserve --plan-only
 fe-reader organise input.pdf --delete 3,4 --out output.pdf
 fe-reader plan-workflow input.pdf --workflow healthcare.deidentify.basic --params params.json
 fe-reader plan-redaction input.pdf --recipe redaction.json
