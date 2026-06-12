@@ -4,6 +4,7 @@ python3 - <<'PY'
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 root = Path.cwd()
@@ -44,6 +45,7 @@ if schema.get("properties", {}).get("level", {}).get("enum") != [
     raise SystemExit("optimization oracle smoke failure: level enum drifted")
 
 receipt = {
+    "plan_id": "opt-001",
     "operation": "pdf_optimization",
     "input_sha256": "a" * 64,
     "output_sha256": "b" * 64,
@@ -57,16 +59,19 @@ receipt = {
     "streams_deduplicated": 12,
     "warnings": [],
 }
-for token in [
-    "operation",
-    "input_sha256",
-    "output_sha256",
-    "bytes_before",
-    "bytes_after",
-    "linearized",
-    "signatures_preserved",
-]:
-    if token not in receipt:
-        raise SystemExit(f"optimization oracle smoke failure: receipt missing token {token}")
+if receipt.get("operation") != "pdf_optimization":
+    raise SystemExit("optimization oracle smoke failure: receipt operation drifted")
+if not re.fullmatch(r"[0-9a-f]{64}", receipt.get("input_sha256", "")):
+    raise SystemExit("optimization oracle smoke failure: invalid input digest")
+if not re.fullmatch(r"[0-9a-f]{64}", receipt.get("output_sha256", "")):
+    raise SystemExit("optimization oracle smoke failure: invalid output digest")
+if receipt.get("level") not in schema.get("properties", {}).get("level", {}).get("enum", []):
+    raise SystemExit("optimization oracle smoke failure: invalid optimization level")
+if receipt.get("bytes_after", 0) > receipt.get("bytes_before", 0):
+    raise SystemExit("optimization oracle smoke failure: receipt size regression")
+if not isinstance(receipt.get("warnings"), list):
+    raise SystemExit("optimization oracle smoke failure: warnings must be a list")
+if receipt.get("signatures_preserved") is not True:
+    raise SystemExit("optimization oracle smoke failure: signatures must be preserved in smoke receipt")
 print("optimization oracle smoke: ok")
 PY

@@ -63,6 +63,7 @@ fe-reader optimize input.pdf --level aggressive --image-quality 85 --out output.
 ## Evidence
 
 - `scripts/optimization_oracle_smoke.sh` validates the optimisation contract, schema and receipt shape.
+- `scripts/optimization_oracle_smoke.sh` now validates receipt digests and the size-reduction invariant as well.
 - Optimisation claims must remain receipt-backed and preserve signature warnings.
 
 ## Never do silently
