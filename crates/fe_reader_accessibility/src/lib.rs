@@ -66,6 +66,8 @@ pub struct AccessibilityAuditReport {
     pub findings: Vec<AccessibilityFinding>,
     /// Optional WCAG target used for UI audits.
     pub wcag_target: Option<String>,
+    /// Adapter and toolchain notes gathered while building the report.
+    pub adapter_notes: Vec<String>,
 }
 
 impl AccessibilityAuditReport {
@@ -93,6 +95,7 @@ impl AccessibilityAuditReport {
                 },
             ],
             wcag_target: Some("wcag22-aa".to_string()),
+            adapter_notes: Vec::new(),
         }
     }
 
@@ -188,6 +191,7 @@ impl AccessibilityAuditReport {
             targets: vec![AccessibilityTarget::PdfDocument],
             findings,
             wcag_target: Some("wcag22-aa".to_string()),
+            adapter_notes: vec!["text extraction adapter executed".to_string()],
         }
     }
 
@@ -204,33 +208,38 @@ impl AccessibilityAuditReport {
         let extraction = fe_reader_pdf_model::extract_text_spans_path(path)
             .map_err(|error| AccessibilityAuditError::invalid(error.to_string()))?;
         let mut report = Self::from_text_extraction(summary.document_id.to_string(), &extraction);
-        if let Ok(pdfinfo) = run_pdfinfo(path) {
-            if let Some(tagged) = pdfinfo.tagged {
-                report.findings.push(AccessibilityFinding {
-                    target: AccessibilityTarget::PdfDocument,
-                    severity: if tagged {
-                        AccessibilitySeverity::Info
-                    } else {
-                        AccessibilitySeverity::Warning
-                    },
-                    location: "pdfinfo".to_string(),
-                    message: if tagged {
-                        "pdfinfo reported a tagged PDF".to_string()
-                    } else {
-                        "pdfinfo did not report tagged PDF structure".to_string()
-                    },
-                    suggested_fix: if tagged {
-                        None
-                    } else {
-                        Some(
-                            "Inspect the tagged structure and reading order before accessibility release"
-                                .to_string(),
-                        )
-                    },
-                });
-            }
-            if let Some(page_count) = pdfinfo.page_count {
-                if page_count == 0 {
+        match run_pdfinfo(path) {
+            Ok(pdfinfo) => {
+                report
+                    .adapter_notes
+                    .push("pdfinfo adapter executed".to_string());
+                if let Some(tagged) = pdfinfo.tagged {
+                    report.findings.push(AccessibilityFinding {
+                        target: AccessibilityTarget::PdfDocument,
+                        severity: if tagged {
+                            AccessibilitySeverity::Info
+                        } else {
+                            AccessibilitySeverity::Warning
+                        },
+                        location: "pdfinfo".to_string(),
+                        message: if tagged {
+                            "pdfinfo reported a tagged PDF".to_string()
+                        } else {
+                            "pdfinfo did not report tagged PDF structure".to_string()
+                        },
+                        suggested_fix: if tagged {
+                            None
+                        } else {
+                            Some(
+                                "Inspect the tagged structure and reading order before accessibility release"
+                                    .to_string(),
+                            )
+                        },
+                    });
+                }
+                if let Some(page_count) = pdfinfo.page_count
+                    && page_count == 0
+                {
                     report.findings.push(AccessibilityFinding {
                         target: AccessibilityTarget::PdfDocument,
                         severity: AccessibilitySeverity::Error,
@@ -242,6 +251,11 @@ impl AccessibilityAuditReport {
                         ),
                     });
                 }
+            }
+            Err(error) => {
+                report
+                    .adapter_notes
+                    .push(format!("pdfinfo unavailable: {}", error.message));
             }
         }
         Ok(report)

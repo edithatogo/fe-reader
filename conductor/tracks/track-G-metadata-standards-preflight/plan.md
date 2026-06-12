@@ -27,20 +27,22 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 - Evidence: `crates/fe_reader_metadata/src/lib.rs`, `scripts/conductor_phase_gate.sh --phase G3 --auto-fix`.
 ### Phase G4 — PDF/A/UA/X adapters
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase G4 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase G4 --auto-fix`.
 - Evidence: `crates/fe_reader_prepress/src/lib.rs`, `scripts/prepress_smoke.sh`.
+  Verified: `scripts/conductor_phase_gate.sh --phase G4 --auto-fix` passed on 2026-06-12.
   Current bridge: `PrepressReport::from_lab_session` converts page-graph diagnostics into a preflight report.
   Current CLI: `fe-reader prepress <file> --json`.
 ### Phase G5 — accessibility inspection
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase G5 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase G5 --auto-fix`.
 - Evidence: `crates/fe_reader_accessibility/src/lib.rs`, `scripts/accessibility_audit_smoke.py`.
+  Verified: `scripts/conductor_phase_gate.sh --phase G5 --auto-fix` passed on 2026-06-12.
   Current bridge: `AccessibilityAuditReport::from_text_extraction` converts text-layer diagnostics into an audit report.
   Current CLI: `fe-reader accessibility <file> --json`.
 

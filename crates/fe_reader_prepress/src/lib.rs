@@ -88,6 +88,8 @@ pub struct PrepressReport {
     pub font_findings: Vec<FontFinding>,
     /// Page-box findings.
     pub page_box_findings: Vec<PageBoxFinding>,
+    /// Adapter and toolchain notes gathered while building the report.
+    pub adapter_notes: Vec<String>,
 }
 
 impl PrepressReport {
@@ -120,6 +122,7 @@ impl PrepressReport {
                 trim_box: None,
                 art_box: None,
             }],
+            adapter_notes: Vec::new(),
         }
     }
 
@@ -218,6 +221,11 @@ impl PrepressReport {
             },
             font_findings: Vec::new(),
             page_box_findings,
+            adapter_notes: if session.error.is_some() {
+                vec!["PDF Engineering Lab parser reported a non-fatal error".to_string()]
+            } else {
+                Vec::new()
+            },
         }
     }
 
@@ -234,33 +242,36 @@ impl PrepressReport {
         let lab = fe_reader_pdf_model::inspect_lab_path(path.as_ref())
             .map_err(|error| PrepressError::invalid(error.to_string()))?;
         let mut report = Self::from_lab_session(&lab);
+        let mut adapter_notes = Vec::new();
 
         if let Ok(pdfinfo) = run_pdfinfo(path.as_ref()) {
+            adapter_notes.push("pdfinfo adapter executed".to_string());
             report.page_box_findings = pdfinfo.page_boxes;
-            if let Some(tagged) = pdfinfo.tagged {
-                if tagged {
-                    report.output_intents.push(OutputIntentSummary {
-                        object_id: None,
-                        subtype: Some("pdfua-tagged".to_string()),
-                        profile_description: Some("pdfinfo reported tagged PDF".to_string()),
-                        page_index: None,
-                    });
-                }
+            if let Some(tagged) = pdfinfo.tagged
+                && tagged
+            {
+                report.output_intents.push(OutputIntentSummary {
+                    object_id: None,
+                    subtype: Some("pdfua-tagged".to_string()),
+                    profile_description: Some("pdfinfo reported tagged PDF".to_string()),
+                    page_index: None,
+                });
             }
-            if let Some(page_count) = pdfinfo.page_count {
-                if page_count == 0 {
-                    report.colour_findings.push(ColourFinding {
-                        page_index: None,
-                        category: "empty_document".to_string(),
-                        code: "pdfinfo_no_pages".to_string(),
-                        message: "pdfinfo reported zero pages".to_string(),
-                        preservation_risk: false,
-                    });
-                }
+            if let Some(page_count) = pdfinfo.page_count
+                && page_count == 0
+            {
+                report.colour_findings.push(ColourFinding {
+                    page_index: None,
+                    category: "empty_document".to_string(),
+                    code: "pdfinfo_no_pages".to_string(),
+                    message: "pdfinfo reported zero pages".to_string(),
+                    preservation_risk: false,
+                });
             }
         }
 
         if let Ok(qpdf) = run_qpdf_json(path.as_ref()) {
+            adapter_notes.push("qpdf adapter executed".to_string());
             if qpdf.encrypted {
                 report.colour_findings.push(ColourFinding {
                     page_index: None,
@@ -281,6 +292,7 @@ impl PrepressReport {
             }
         }
 
+        report.adapter_notes = adapter_notes;
         Ok(report)
     }
 }

@@ -1,9 +1,9 @@
 {
   "track_id": "track-G-metadata-standards-preflight",
   "type": "feature",
-  "status": "in_progress",
+  "status": "complete",
   "created_at": "2026-06-12T00:00:00Z",
-  "updated_at": "2026-06-12T00:00:00Z",
+  "updated_at": "2026-06-12T12:22:33Z",
   "description": "Implement metadata inspection, scrub/preserve, PDF 2.0 feature recognition, PDF/A/UA/X adapters, and accessibility inspection contracts.",
   "deliverables": [
     "crates/fe_reader_metadata/src/lib.rs",
