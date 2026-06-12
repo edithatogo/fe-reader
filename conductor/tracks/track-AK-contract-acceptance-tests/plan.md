@@ -15,3 +15,4 @@
 - `scripts/security_policy_check.sh` asserts default security policy, MCP destructive-tool requirements, and platform approval-token patterns.
 - `cargo test -p fe_reader_security --lib` covers the default policy matrix.
 - `scripts/conductor_phase_gate.sh --phase track-AK-contract-acceptance-tests --auto-fix` succeeds.
+- `bash scripts/wave0_bootstrap_check.sh`, `bash scripts/v8_cli_smoke.sh`, and `python3 scripts/wave0_acceptance_check.py` were re-run on 2026-06-12 and passed.

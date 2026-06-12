@@ -17,4 +17,5 @@
 - `python3 scripts/validate_schemas.py` succeeds.
 - `bash scripts/v8_cli_smoke.sh` succeeds.
 - `bash scripts/wave0_bootstrap_check.sh` succeeds.
+- `bash scripts/wave0_bootstrap_check.sh`, `bash scripts/v8_cli_smoke.sh`, and `python3 scripts/wave0_acceptance_check.py` were re-run on 2026-06-12 and passed.
 - No acceptance criteria changes were needed in `docs/wave0-contract-acceptance-tests.md`.
