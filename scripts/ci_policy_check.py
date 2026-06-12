@@ -2,6 +2,8 @@
 from pathlib import Path
 import re
 import sys
+
+import yaml
 ROOT = Path(__file__).resolve().parents[1]
 failures = []
 workflow_dir = ROOT / '.github' / 'workflows'
@@ -77,6 +79,7 @@ for wf in workflow_dir.glob('*.yml'):
                     failures.append(f'{wf.name} performance evidence upload missing token: {token}')
 
     if wf.name == '07-release.yml':
+        wf_doc = yaml.safe_load(txt)
         if 'workflow_dispatch:' not in txt:
             failures.append('07-release.yml must be manually dispatched during bootstrap')
         if 'bash scripts/release_evidence_check.sh' not in txt:
@@ -116,22 +119,58 @@ for wf in workflow_dir.glob('*.yml'):
         ]:
             if f'secrets.{secret_name}' not in txt:
                 failures.append(f'07-release.yml missing strict release secret binding: {secret_name}')
+        if not isinstance(wf_doc, dict) or "jobs" not in wf_doc:
+            failures.append("07-release.yml must parse as workflow yaml")
+        else:
+            release_job = wf_doc["jobs"].get("release-readiness", {})
+            env = release_job.get("env", {}) if isinstance(release_job, dict) else {}
+            for secret_name in [
+                'FE_WINDOWS_SIGNING_CERT',
+                'FE_WINDOWS_SIGNING_PASSWORD',
+                'FE_MACOS_DEVELOPER_ID_CERT',
+                'FE_MACOS_NOTARY_PROFILE',
+                'FE_LINUX_SIGNING_KEY',
+                'FE_ANDROID_UPLOAD_KEYSTORE',
+                'FE_ANDROID_UPLOAD_KEYSTORE_PASSWORD',
+                'FE_IOS_DISTRIBUTION_CERT',
+                'FE_IOS_APPSTORE_CONNECT_KEY',
+            ]:
+                if secret_name not in env:
+                    failures.append(f'07-release.yml missing env binding for {secret_name}')
 
     if wf.name == '08-docs-site.yml':
-        for token in [
-            'name: Docs Site',
-            'npm ci',
-            'npm run build',
-            'docs-site/package-lock.json',
-            'actions/configure-pages',
-            'actions/upload-pages-artifact',
-            'actions/deploy-pages',
-            'pages: write',
-            'id-token: write',
-            'github-pages',
-        ]:
-            if token not in txt:
-                failures.append(f'08-docs-site.yml missing docs site token: {token}')
+        wf_doc = yaml.safe_load(txt)
+        if not isinstance(wf_doc, dict) or "jobs" not in wf_doc:
+            failures.append("08-docs-site.yml must parse as workflow yaml")
+        else:
+            jobs = wf_doc["jobs"]
+            build = jobs.get("build", {})
+            deploy = jobs.get("deploy", {})
+            if build.get("name") != "Build Starlight docs":
+                failures.append("08-docs-site.yml build job name mismatch")
+            if deploy.get("name") != "Deploy Starlight docs":
+                failures.append("08-docs-site.yml deploy job name mismatch")
+            build_steps = build.get("steps", [])
+            deploy_steps = deploy.get("steps", [])
+            build_uses = {step.get("uses") for step in build_steps if isinstance(step, dict)}
+            deploy_uses = {step.get("uses") for step in deploy_steps if isinstance(step, dict)}
+            for action in [
+                'actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP',
+                'actions/setup-node@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP',
+                'actions/configure-pages@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP',
+                'actions/upload-pages-artifact@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP',
+                'actions/deploy-pages@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP',
+            ]:
+                if action not in txt:
+                    failures.append(f'08-docs-site.yml missing docs site action: {action}')
+            if 'pages: write' not in txt or 'id-token: write' not in txt:
+                failures.append('08-docs-site.yml missing Pages deployment permissions')
+            if build.get("timeout-minutes") != 15 or deploy.get("timeout-minutes") != 15:
+                failures.append("08-docs-site.yml timeout-minutes mismatch")
+            if build.get("permissions", {}).get("contents") != "read":
+                failures.append("08-docs-site.yml build permissions mismatch")
+            if deploy.get("permissions", {}).get("pages") != "write" or deploy.get("permissions", {}).get("id-token") != "write":
+                failures.append("08-docs-site.yml deploy permissions mismatch")
 
     for match in re.finditer(r'\bscripts/[A-Za-z0-9_.\-/]+', txt):
         script_rel = match.group(0).rstrip('",\'')
