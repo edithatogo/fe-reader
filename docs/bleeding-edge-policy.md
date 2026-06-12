@@ -82,6 +82,8 @@ max_lifetime_days: 60
 - `next`: latest stable versions plus optional frontier crates.
 - `experiments/*`: git dependencies, nightly flags, alternate renderers, local inference.
 - `release/*`: dependency refresh frozen except for security fixes.
+- main: stable-core and stable-app only.
+- Promotion requires an ADR, explicit owner, rollback plan and exit criteria.
 
 ## Review rule
 
