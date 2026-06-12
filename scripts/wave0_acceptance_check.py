@@ -40,6 +40,8 @@ def expect(condition: bool, message: str) -> None:
 def validate_summary_schema(summary: object) -> None:
     schema_path = ROOT / "schemas/pdf-document-summary.schema.json"
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    expect(schema.get("title") == "PdfDocumentSummary", "summary schema title mismatch")
+    expect(schema.get("additionalProperties") is False, "summary schema must reject additional properties")
     if jsonschema is not None:
         jsonschema.validate(summary, schema)
 
@@ -318,6 +320,9 @@ def check_additive_cli_contracts() -> None:
             recoveries["recovery_required_count"] == 0,
             "planned journal directory must not report recovery work",
         )
+        recovery_entries = recoveries.get("recoveries", [])
+        expect(isinstance(recovery_entries, list), "journal recoveries must be a list")
+        expect(recovery_entries == [], "planned journal directory must not list recovery entries")
 
 
 def check_ir_schema_smoke() -> None:
