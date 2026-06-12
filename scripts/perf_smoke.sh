@@ -30,4 +30,15 @@ manifest = {
 }
 Path("artifacts/perf/manifest.json").write_text(json.dumps(manifest, sort_keys=True) + "\n", encoding="utf-8")
 Path("artifacts/perf/summary.md").write_text(f"# Performance Smoke\n\n- Status: {status}\n- Detail: {detail}\n", encoding="utf-8")
+loaded = json.loads(Path("artifacts/perf/manifest.json").read_text(encoding="utf-8"))
+if loaded.get("check") != "perf_smoke":
+    raise SystemExit("perf smoke manifest check drifted")
+if loaded.get("status") != status:
+    raise SystemExit("perf smoke manifest status drifted")
+if loaded.get("outputs") != ["artifacts/perf/manifest.json", "artifacts/perf/summary.md"]:
+    raise SystemExit("perf smoke manifest outputs drifted")
+summary = Path("artifacts/perf/summary.md").read_text(encoding="utf-8")
+for token in ["# Performance Smoke", "- Status:", "- Detail:"]:
+    if token not in summary:
+        raise SystemExit(f"perf smoke summary missing token: {token}")
 PY
