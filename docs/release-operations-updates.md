@@ -71,3 +71,4 @@ release readiness check passes.
 
 - `scripts/wave7_release_hardening_smoke.py` validates the release evidence bundle, packaging templates and compatibility snapshots.
 - Release claims should stay bound to generated evidence under `target/release-evidence/`.
+- Generated release evidence should include the release-evidence bundle, not just the update manifest.
