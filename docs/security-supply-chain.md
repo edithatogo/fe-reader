@@ -53,6 +53,7 @@ Operations that require human/policy approval:
 ## v4 release security additions
 
 - Generate CycloneDX SBOM for each release artifact.
+- SBOM audit should verify CycloneDX structure, metadata component identity and component coverage before release evidence is accepted.
 - Generate provenance/attestation artifacts for CI-built binaries.
 - Validate signed update manifests before publication.
 - Keep renderer/converter/helper-process crash failures non-mutating.

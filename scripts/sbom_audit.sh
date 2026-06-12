@@ -50,9 +50,24 @@ report = {
     "sbom_path": sbom_path if Path(sbom_path).exists() else None,
 }
 if Path(sbom_path).exists():
-    data = Path(sbom_path).read_bytes()
-    report["sha256"] = hashlib.sha256(data).hexdigest()
-    report["bytes"] = len(data)
+    sbom = json.loads(Path(sbom_path).read_text(encoding="utf-8"))
+    if sbom.get("bomFormat") != "CycloneDX":
+        raise SystemExit("SBOM missing CycloneDX bomFormat")
+    if not sbom.get("specVersion"):
+        raise SystemExit("SBOM missing specVersion")
+    metadata = sbom.get("metadata", {})
+    component = metadata.get("component", {})
+    for key in ["type", "name", "bom-ref"]:
+        if not component.get(key):
+            raise SystemExit(f"SBOM metadata component missing {key}")
+    components = sbom.get("components", [])
+    if not isinstance(components, list) or not components:
+        raise SystemExit("SBOM missing components")
+    report["sha256"] = hashlib.sha256(Path(sbom_path).read_bytes()).hexdigest()
+    report["bytes"] = len(Path(sbom_path).read_bytes())
+    report["bomFormat"] = sbom.get("bomFormat")
+    report["specVersion"] = sbom.get("specVersion")
+    report["componentCount"] = len(components)
 Path("target/release-evidence/sbom-status.json").write_text(
     json.dumps(report, sort_keys=True) + "\n", encoding="utf-8"
 )
