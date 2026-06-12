@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 #![warn(missing_docs)]
 
+use fe_reader_pdf_model::PdfLabSession;
 use serde::{Deserialize, Serialize};
 
 /// Crate name exposed for smoke tests and workspace health checks.
@@ -153,6 +154,71 @@ impl PrepressReport {
         }
         Ok(())
     }
+
+    /// Builds a preflight scaffold from the PDF Engineering Lab page graph.
+    #[must_use]
+    pub fn from_lab_session(session: &PdfLabSession) -> Self {
+        let page_box_findings = if session.pages.is_empty() {
+            vec![PageBoxFinding {
+                page_index: 0,
+                media_box: [0.0, 0.0, 1.0, 1.0],
+                crop_box: None,
+                bleed_box: None,
+                trim_box: None,
+                art_box: None,
+            }]
+        } else {
+            session
+                .pages
+                .iter()
+                .map(|page| PageBoxFinding {
+                    page_index: page.page_index.0,
+                    media_box: page
+                        .media_box
+                        .map(|rect| {
+                            [
+                                rect.x as f64,
+                                rect.y as f64,
+                                rect.x as f64 + rect.width as f64,
+                                rect.y as f64 + rect.height as f64,
+                            ]
+                        })
+                        .unwrap_or([0.0, 0.0, 1.0, 1.0]),
+                    crop_box: page.crop_box.map(|rect| {
+                        [
+                            rect.x as f64,
+                            rect.y as f64,
+                            rect.x as f64 + rect.width as f64,
+                            rect.y as f64 + rect.height as f64,
+                        ]
+                    }),
+                    bleed_box: None,
+                    trim_box: None,
+                    art_box: None,
+                })
+                .collect()
+        };
+        Self {
+            document_id: session.document_sha256.clone(),
+            output_intents: Vec::new(),
+            colour_findings: if session.error.is_some() {
+                vec![ColourFinding {
+                    page_index: None,
+                    category: "parser_error".to_string(),
+                    code: "preflight_parser_error".to_string(),
+                    message: session
+                        .error
+                        .clone()
+                        .unwrap_or_else(|| "parser error".to_string()),
+                    preservation_risk: false,
+                }]
+            } else {
+                Vec::new()
+            },
+            font_findings: Vec::new(),
+            page_box_findings,
+        }
+    }
 }
 
 /// Prepress report validation error.
@@ -199,5 +265,19 @@ mod tests {
         let mut report = PrepressReport::smoke();
         report.document_id.clear();
         assert!(report.validate().is_err());
+    }
+
+    #[test]
+    fn lab_session_populates_page_boxes() {
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("..")
+            .join("fixtures")
+            .join("minimal")
+            .join("minimal.pdf");
+        let session = fe_reader_pdf_model::inspect_lab_path(&fixture).unwrap();
+        let report = PrepressReport::from_lab_session(&session);
+        assert!(!report.page_box_findings.is_empty());
+        assert_eq!(report.document_id, session.document_sha256);
     }
 }

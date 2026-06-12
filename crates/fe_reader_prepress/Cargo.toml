@@ -6,6 +6,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+fe_reader_pdf_model = { path = "../fe_reader_pdf_model" }
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

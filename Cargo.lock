@@ -1067,6 +1067,7 @@ dependencies = [
 name = "fe_reader_accessibility"
 version = "0.1.0"
 dependencies = [
+ "fe_reader_pdf_model",
  "serde",
  "serde_json",
  "thiserror",
@@ -1243,6 +1244,7 @@ dependencies = [
 name = "fe_reader_prepress"
 version = "0.1.0"
 dependencies = [
+ "fe_reader_pdf_model",
  "serde",
  "serde_json",
  "thiserror",

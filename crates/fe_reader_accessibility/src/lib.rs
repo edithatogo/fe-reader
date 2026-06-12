@@ -6,6 +6,7 @@
 #![forbid(unsafe_code)]
 #![warn(missing_docs)]
 
+use fe_reader_pdf_model::PdfTextExtractionSummary;
 use serde::{Deserialize, Serialize};
 
 /// Crate name exposed for smoke tests and workspace health checks.
@@ -120,6 +121,74 @@ impl AccessibilityAuditReport {
         }
         Ok(())
     }
+
+    /// Builds a PDF accessibility report from extracted text diagnostics.
+    #[must_use]
+    pub fn from_text_extraction(
+        surface_id: impl Into<String>,
+        extraction: &PdfTextExtractionSummary,
+    ) -> Self {
+        let mut findings = Vec::new();
+        findings.push(AccessibilityFinding {
+            target: AccessibilityTarget::PdfDocument,
+            severity: AccessibilitySeverity::Info,
+            location: "text-layer".to_string(),
+            message: format!(
+                "extraction adapter {} returned {} span(s)",
+                extraction.adapter,
+                extraction.spans.len()
+            ),
+            suggested_fix: None,
+        });
+        if extraction.spans.is_empty() {
+            findings.push(AccessibilityFinding {
+                target: AccessibilityTarget::PdfDocument,
+                severity: AccessibilitySeverity::Warning,
+                location: "text-layer".to_string(),
+                message: "no extractable text spans were reported".to_string(),
+                suggested_fix: Some(
+                    "Inspect the tagged PDF structure and text extraction fallback".to_string(),
+                ),
+            });
+        }
+        if !extraction.precise_geometry {
+            findings.push(AccessibilityFinding {
+                target: AccessibilityTarget::PdfDocument,
+                severity: AccessibilitySeverity::Warning,
+                location: "text-layer".to_string(),
+                message: "geometry is reported with fallback precision".to_string(),
+                suggested_fix: Some(
+                    "Use the reading-order and tagged-structure inspection adapters".to_string(),
+                ),
+            });
+        }
+        for diagnostic in &extraction.diagnostics {
+            findings.push(AccessibilityFinding {
+                target: AccessibilityTarget::PdfDocument,
+                severity: AccessibilitySeverity::Info,
+                location: "diagnostics".to_string(),
+                message: diagnostic.clone(),
+                suggested_fix: None,
+            });
+        }
+        if let Some(error) = &extraction.error {
+            findings.push(AccessibilityFinding {
+                target: AccessibilityTarget::PdfDocument,
+                severity: AccessibilitySeverity::Error,
+                location: "parser".to_string(),
+                message: error.clone(),
+                suggested_fix: Some(
+                    "Resolve the text extraction error before auditing accessibility".to_string(),
+                ),
+            });
+        }
+        Self {
+            surface_id: surface_id.into(),
+            targets: vec![AccessibilityTarget::PdfDocument],
+            findings,
+            wcag_target: Some("wcag22-aa".to_string()),
+        }
+    }
 }
 
 /// Accessibility audit validation error.
@@ -166,5 +235,25 @@ mod tests {
         let mut report = AccessibilityAuditReport::smoke("surface-1");
         report.surface_id.clear();
         assert!(report.validate().is_err());
+    }
+
+    #[test]
+    fn text_extraction_populates_pdf_findings() {
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("..")
+            .join("fixtures")
+            .join("corpus")
+            .join("basic")
+            .join("text-search-fixture.pdf");
+        let extraction = fe_reader_pdf_model::extract_text_spans_path(&fixture).unwrap();
+        let report = AccessibilityAuditReport::from_text_extraction("surface-2", &extraction);
+        assert!(!report.findings.is_empty());
+        assert!(
+            report
+                .findings
+                .iter()
+                .any(|finding| finding.target == AccessibilityTarget::PdfDocument)
+        );
     }
 }
