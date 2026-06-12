@@ -73,5 +73,6 @@ release readiness check passes.
 - `scripts/release_evidence_check.sh` validates the release evidence bundle shape, update-manifest schema and contract-input digests.
 - `scripts/release_readiness_check.sh` validates the release readiness bundle against the release evidence schema and packaging/channel definitions.
 - `scripts/wave4_distribution_smoke.py` validates packaging matrix structure, manifest syntax and release evidence shape.
+- `scripts/semver_check.sh` records a local semver status artifact even when the comparison tool is unavailable.
 - Release claims should stay bound to generated evidence under `target/release-evidence/`.
 - Generated release evidence should include the release-evidence bundle, not just the update manifest.
