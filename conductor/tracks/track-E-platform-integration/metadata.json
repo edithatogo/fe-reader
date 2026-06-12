@@ -1,0 +1,16 @@
+{
+  "track_id": "track-E-platform-integration",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-12T00:00:00Z",
+  "updated_at": "2026-06-12T00:00:00Z",
+  "description": "Implement native platform integration contracts for Windows, macOS, Linux, Android, and iOS with read-only/default-deny behavior by default.",
+  "deliverables": [
+    "crates/fe_reader_platform/src/lib.rs",
+    "contracts/platform/windows-com/FeReaderAutomation.idl",
+    "contracts/platform/macos-applescript/FeReader.sdef",
+    "contracts/platform/linux-dbus/org.fereader.FeReader1.xml",
+    "contracts/platform/android-intents/AndroidManifest.contract.xml",
+    "contracts/platform/ios-appintents/FeReaderAppIntents.swift"
+  ]
+}

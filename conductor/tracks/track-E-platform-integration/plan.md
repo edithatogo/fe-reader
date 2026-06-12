@@ -41,3 +41,9 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 - Tests pass.
 - Review skill passes.
 - Any blocked/forked dependency is recorded in `third_party/fork-policy.yaml`.
+
+## Completion Evidence
+
+- Platform integration contracts are implemented in `crates/fe_reader_platform/src/lib.rs` as read-only/default-deny stubs for Windows, macOS, Linux, Android, and iOS surfaces.
+- Contract files exist for Windows COM, macOS AppleScript, Linux D-Bus, Android intents, and iOS App Intents under `contracts/platform/`.
+- Verified with `cargo test -q -p fe_reader_platform`, `bash scripts/platform_recent_smoke.sh`, `bash scripts/wave5_integration_smoke.sh`, `python3 scripts/platform_search_contract_smoke.py`, `python3 scripts/ios_share_shortcuts_smoke.py`, and `python3 scripts/mobile_smoke_bindings_check.py`.

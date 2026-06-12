@@ -41,3 +41,9 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 - Tests pass.
 - Review skill passes.
 - Any blocked/forked dependency is recorded in `third_party/fork-policy.yaml`.
+
+## Completion Evidence
+
+- Native shell is implemented in `native/macos/FeReaderNativeApp.swift` with a SwiftUI-first shell, AppKit interop for launch and capture behavior, native command surfaces, and adapter-driven document handling.
+- Verified on 2026-06-12 with `bash script/build_and_run.sh --verify`, which produced `artifacts/screenshots/fe-reader-native-preview.png` and passed the native preview check.
+- Verified with `cargo test -q -p fe_reader_platform`, `bash scripts/platform_recent_smoke.sh`, `bash scripts/wave5_integration_smoke.sh`, `python3 scripts/platform_search_contract_smoke.py`, `python3 scripts/ios_share_shortcuts_smoke.py`, and `python3 scripts/mobile_smoke_bindings_check.py`.
