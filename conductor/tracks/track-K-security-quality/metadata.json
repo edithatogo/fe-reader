@@ -1,0 +1,14 @@
+{
+  "track_id": "track-K-security-quality",
+  "type": "feature",
+  "status": "complete",
+  "created_at": "2026-06-12T00:00:00Z",
+  "updated_at": "2026-06-12T12:53:39Z",
+  "description": "Implement security and quality contracts for cargo deny/audit/vet, fuzzing, schema validation, architecture compliance, and redaction verification.",
+  "deliverables": [
+    "crates/fe_reader_security/src/lib.rs",
+    "crates/fe_reader_redaction/src/lib.rs",
+    "scripts/conductor_phase_gate.sh",
+    "docs/security-and-quality.md"
+  ]
+}
