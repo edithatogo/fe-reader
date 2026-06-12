@@ -6,34 +6,34 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 
 ### Phase L1 — Web local/PWA
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase L1 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase L1 --auto-fix`.
 ### Phase L2 — WASM core subset
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase L2 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase L2 --auto-fix`.
 ### Phase L3 — PDF.js rendering
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase L3 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase L3 --auto-fix`.
 ### Phase L4 — File System Access fallback
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase L4 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase L4 --auto-fix`.
 ### Phase L5 — browser extension
 
-- Implement contract skeleton.
-- Add unit/smoke test.
-- Add CLI or adapter path where applicable.
-- Run `scripts/conductor_phase_gate.sh --phase L5 --auto-fix`.
+- [x] Implement contract skeleton.
+- [x] Add unit/smoke test.
+- [x] Add CLI or adapter path where applicable.
+- [x] Run `scripts/conductor_phase_gate.sh --phase L5 --auto-fix`.
 
 ## Exit criteria
 
@@ -41,3 +41,5 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 - Tests pass.
 - Review skill passes.
 - Any blocked/forked dependency is recorded in `third_party/fork-policy.yaml`.
+
+Track L completed after L1-L5 phase gates passed on 2026-06-12.

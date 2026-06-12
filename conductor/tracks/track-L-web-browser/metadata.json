@@ -1,0 +1,14 @@
+{
+  "track_id": "track-L-web-browser",
+  "type": "feature",
+  "status": "complete",
+  "created_at": "2026-06-12T00:00:00Z",
+  "updated_at": "2026-06-12T13:13:00Z",
+  "description": "Implement web local/PWA, WASM core subset, PDF.js rendering, file system access fallback, and browser extension contracts.",
+  "deliverables": [
+    "contracts/web/postmessage-contract.md",
+    "docs/web-version.md",
+    "docs/requirements-traceability.md",
+    "scripts/browser_extension_contract_smoke.py"
+  ]
+}
