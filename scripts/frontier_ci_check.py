@@ -5,6 +5,8 @@ import re
 import sys
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 failures: list[str] = []
 
@@ -37,28 +39,65 @@ for path, text in [
             failures.append(f"{path} contains forbidden frontier token: {forbidden}")
 
 if frontier:
-    for command in [
-        "toolchain: [beta, nightly]",
-        "cargo +${{ matrix.toolchain }} check --workspace --all-targets",
-        "bash scripts/miri_smoke.sh",
-        "bash scripts/sanitizer_smoke.sh",
-        "bash scripts/fuzz_smoke.sh",
-        "bash scripts/gpu_frontier_smoke.sh",
-        "bash scripts/differential_oracle_smoke.sh",
-    ]:
-        if command not in frontier:
-            failures.append(f"frontier nightly missing command: {command}")
+    try:
+        frontier_doc = yaml.safe_load(frontier)
+    except yaml.YAMLError as exc:
+        failures.append(f"frontier nightly invalid yaml: {exc}")
+        frontier_doc = None
+    if not isinstance(frontier_doc, dict) or "jobs" not in frontier_doc:
+        failures.append("frontier nightly invalid structure")
+    else:
+        job = frontier_doc["jobs"].get("frontier", {})
+        matrix_doc = job.get("strategy", {}).get("matrix", {})
+        if matrix_doc.get("toolchain") != ["beta", "nightly"]:
+            failures.append("frontier nightly toolchain matrix mismatch")
+        if job.get("continue-on-error") is not True:
+            failures.append("frontier nightly must continue-on-error")
+        step_runs = [step.get("run") for step in job.get("steps", []) if isinstance(step, dict)]
+        for command in [
+            "rustup toolchain install ${{ matrix.toolchain }} --profile minimal",
+            "cargo +${{ matrix.toolchain }} check --workspace --all-targets",
+            "bash scripts/miri_smoke.sh",
+            "bash scripts/sanitizer_smoke.sh",
+            "bash scripts/fuzz_smoke.sh",
+            "bash scripts/gpu_frontier_smoke.sh",
+            "bash scripts/differential_oracle_smoke.sh",
+        ]:
+            if command not in step_runs:
+                failures.append(f"frontier nightly missing command: {command}")
 
 if performance:
-    for command in [
-        "bash scripts/perf_smoke.sh",
-        "bash scripts/toolchain_experiment_smoke.sh",
-        "actions/upload-artifact",
-        "artifacts/perf/**",
-        "if-no-files-found: warn",
-    ]:
-        if command not in performance:
-            failures.append(f"performance nightly missing evidence token: {command}")
+    try:
+        performance_doc = yaml.safe_load(performance)
+    except yaml.YAMLError as exc:
+        failures.append(f"performance nightly invalid yaml: {exc}")
+        performance_doc = None
+    if not isinstance(performance_doc, dict) or "jobs" not in performance_doc:
+        failures.append("performance nightly invalid structure")
+    else:
+        job = performance_doc["jobs"].get("performance", {})
+        if job.get("continue-on-error") is not True:
+            failures.append("performance nightly must continue-on-error")
+        step_runs = [step.get("run") for step in job.get("steps", []) if isinstance(step, dict)]
+        for command in [
+            "bash scripts/perf_smoke.sh",
+            "bash scripts/toolchain_experiment_smoke.sh",
+        ]:
+            if command not in step_runs:
+                failures.append(f"performance nightly missing command: {command}")
+        upload_steps = [
+            step for step in job.get("steps", []) if isinstance(step, dict) and step.get("uses", "").startswith("actions/upload-artifact")
+        ]
+        if not upload_steps:
+            failures.append("performance nightly missing artifact upload step")
+        else:
+            with_section = upload_steps[0].get("with", {})
+            if with_section.get("path") != "artifacts/perf/**":
+                failures.append("performance nightly artifact path mismatch")
+            if with_section.get("if-no-files-found") != "warn":
+                failures.append("performance nightly artifact missing warn mode")
+            if with_section.get("retention-days") != 14:
+                failures.append("performance nightly artifact retention mismatch")
 
 if matrix:
     for token in [
