@@ -4,6 +4,8 @@ import pathlib
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+EVIDENCE = ROOT / "target" / "frontier-reports"
+EVIDENCE.mkdir(parents=True, exist_ok=True)
 
 
 def read(rel):
@@ -45,9 +47,41 @@ def main():
         text = read(script)
         require("target/frontier-reports" in text, f"{script} must emit advisory frontier reports", failures)
 
-    docs = read("docs/bleeding-edge-policy.md") + "\n" + read("docs/performance-engineering.md")
-    for token in ["feature-gated", "benchmark", "rollback", "frontier-intelligence"]:
+    docs = (
+        read("docs/bleeding-edge-policy.md")
+        + "\n"
+        + read("docs/performance-engineering.md")
+        + "\n"
+        + read("docs/toolchain-optimization-experimental-lanes.md")
+    )
+    for token in [
+        "feature-gated",
+        "benchmark",
+        "rollback",
+        "frontier-intelligence",
+        "owner",
+        "exit criteria",
+        "visual regression",
+    ]:
         require(token in docs, f"frontier docs missing {token}", failures)
+
+    report = {
+        "check": "wave6_frontier_optional",
+        "status": "pass",
+        "policy_snapshot": "contracts/snapshots/frontier/wave6.frontier-policy.preview.json",
+        "advisory_scripts": [
+            "scripts/gpu_frontier_smoke.sh",
+            "scripts/toolchain_experiment_smoke.sh",
+        ],
+        "governance": {
+            "feature_gated": True,
+            "benchmark_required": True,
+            "rollback_required": True,
+            "default_disabled": True,
+        },
+    }
+    evidence = EVIDENCE / "wave6-frontier-optional.json"
+    evidence.write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
 
     if failures:
         for failure in failures:

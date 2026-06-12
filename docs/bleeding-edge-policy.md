@@ -97,3 +97,8 @@ visual, compatibility or policy evidence supports promotion. Promotion requires
 an ADR, explicit owner, rollback plan and exit criteria; local-intelligence,
 GPU and PGO/BOLT experiments must stay disabled by default until that evidence
 exists.
+
+## Evidence
+
+- `scripts/wave6_frontier_optional_smoke.py` validates the preview policy snapshot and the frontier lane documentation.
+- Frontier lanes stay advisory and disabled by default until an ADR promotes them.
