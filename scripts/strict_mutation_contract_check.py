@@ -6,6 +6,8 @@ import re
 import sys
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 failures: list[str] = []
 
@@ -55,6 +57,8 @@ if plugin_host:
 mcp_tools_path = ROOT / "contracts/mcp/tools.manifest.json"
 if mcp_tools_path.exists():
     tools = json.loads(mcp_tools_path.read_text(encoding="utf-8"))
+    if tools.get("default_mode") != "read_only":
+        failures.append("MCP tools manifest must default to read_only")
     for tool in tools.get("tools", []):
         name = tool.get("name", "")
         risk = tool.get("risk", "")
@@ -63,6 +67,10 @@ if mcp_tools_path.exists():
             failures.append(f"MCP tool {name} is directly {risk}; use plan-only or disabled approved apply")
         if "plan" in name and "plan" not in risk and "plan" not in description:
             failures.append(f"MCP planning tool {name} must be explicitly plan-only")
+        if name == "fe.apply_approved_patch" and risk != "approved_mutation_disabled_by_default":
+            failures.append("approved patch tool risk drifted")
+        if name == "fe.plan_conversion" and risk != "external_disclosure_plan_only":
+            failures.append("conversion planning tool risk drifted")
     names = {tool.get("name") for tool in tools.get("tools", [])}
     if "fe.convert_document" in names:
         failures.append("MCP conversion must not expose fe.convert_document directly")
@@ -71,18 +79,23 @@ else:
 
 mcp_policy = require("contracts/mcp/server-policy.yaml")
 if mcp_policy:
-    for token in [
-        "document_hash_match",
-        "patch_plan_id",
-        "user_approval_token",
-        "policy_allow_rule",
-        "fe.apply_approved_patch",
-        "fe.apply_approved_conversion",
-        "fe.export_document",
-        "fe.delete_pages",
-    ]:
-        if token not in mcp_policy:
-            failures.append(f"MCP server policy missing token: {token}")
+    policy = yaml.safe_load(mcp_policy)
+    if not isinstance(policy, dict):
+        failures.append("MCP server policy must parse as yaml mapping")
+    else:
+        if policy.get("default_mode") != "read_only":
+            failures.append("MCP server policy must default to read_only")
+        mutation = policy.get("mutation_policy", {})
+        if not isinstance(mutation, dict):
+            failures.append("MCP server policy missing mutation_policy mapping")
+        else:
+            required = mutation.get("destructive_tools_require", [])
+            if required != ["document_hash_match", "patch_plan_id", "user_approval_token", "policy_allow_rule"]:
+                failures.append("MCP server policy destructive tool requirements drifted")
+            disabled = mutation.get("disabled_by_default", [])
+            for tool_name in ["fe.apply_approved_patch", "fe.apply_approved_conversion", "fe.export_document", "fe.delete_pages"]:
+                if tool_name not in disabled:
+                    failures.append(f"MCP server policy missing disabled tool: {tool_name}")
 
 windows_com = require("contracts/platform/windows-com/FeReaderAutomation.idl")
 if windows_com:
