@@ -17,6 +17,7 @@ required_files=(
   "schemas/file-format-version.schema.json"
   "docs/wave0-first-30-prs.md"
   "docs/implementation-stop-rule.md"
+  "docs/wave0-contract-acceptance-tests.md"
 )
 
 for f in "${required_files[@]}"; do

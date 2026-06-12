@@ -31,3 +31,8 @@ Wave 0 is accepted when the following are true.
 ## Implementation stop rule
 
 Only add scope when it changes a contract, schema, test, CLI command, acceptance criterion or security boundary.
+
+## Evidence
+
+- `scripts/wave0_bootstrap_check.sh` and `scripts/wave0_acceptance_check.py` are the bootstrap gate pair for Wave 0.
+- The acceptance checks should remain aligned with the CLI, schema and policy contracts rather than with any placeholder output.
