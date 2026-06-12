@@ -6,6 +6,8 @@ import re
 import sys
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 failures: list[str] = []
 
@@ -122,6 +124,11 @@ if ruleset:
 
 for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
     text = path.read_text(encoding="utf-8")
+    try:
+        doc = yaml.safe_load(text)
+    except yaml.YAMLError as exc:
+        failures.append(f"{path.relative_to(ROOT)} invalid workflow yaml: {exc}")
+        doc = None
     rel = path.relative_to(ROOT)
     for token in ["permissions:", "concurrency:", "timeout-minutes:"]:
         if token not in text:
@@ -136,36 +143,70 @@ for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
                 failures.append(f"{rel} action use missing bootstrap/pinning marker: {stripped}")
 
     if path.name == "08-docs-site.yml":
-        for token in [
-            "npm ci",
-            "npm run build",
-            "docs-site/package-lock.json",
-            "actions/configure-pages",
-            "actions/upload-pages-artifact",
-            "actions/deploy-pages",
-            "pages: write",
-            "id-token: write",
-        ]:
-            if token not in text:
-                failures.append(f"{rel} missing docs site deployment token: {token}")
+        if not isinstance(doc, dict) or "jobs" not in doc:
+            failures.append(f"{rel} invalid workflow structure")
+        else:
+            build = doc["jobs"].get("build", {})
+            deploy = doc["jobs"].get("deploy", {})
+            if build.get("name") != "Build Starlight docs":
+                failures.append(f"{rel} build job name mismatch")
+            if deploy.get("name") != "Deploy Starlight docs":
+                failures.append(f"{rel} deploy job name mismatch")
+            if build.get("timeout-minutes") != 15 or deploy.get("timeout-minutes") != 15:
+                failures.append(f"{rel} timeout-minutes mismatch")
+            if build.get("permissions", {}).get("contents") != "read":
+                failures.append(f"{rel} build permissions mismatch")
+            if deploy.get("permissions", {}).get("pages") != "write" or deploy.get("permissions", {}).get("id-token") != "write":
+                failures.append(f"{rel} deploy permissions mismatch")
+            build_step_uses = {step.get("uses") for step in build.get("steps", []) if isinstance(step, dict)}
+            deploy_step_uses = {step.get("uses") for step in deploy.get("steps", []) if isinstance(step, dict)}
+            for action in [
+                "actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP",
+                "actions/setup-node@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP",
+                "actions/configure-pages@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP",
+                "actions/upload-pages-artifact@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP",
+                "actions/deploy-pages@v5 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP",
+            ]:
+                if action not in text:
+                    failures.append(f"{rel} missing docs site deployment token: {action}")
 
 release_workflow = read(".github/workflows/07-release.yml")
 if release_workflow:
-    for token in [
-        "bash scripts/release_evidence_check.sh",
-        "bash scripts/sbom_audit.sh",
-        "bash scripts/generate_provenance_attestation.sh",
-        "bash scripts/signing_readiness_check.sh",
-        "python3 scripts/release_provenance_check.py",
-        "python3 scripts/release_matrix_check.py",
-        "bash scripts/release_readiness_check.sh",
-        "actions/upload-artifact",
-        "target/release-evidence/**",
-        "if-no-files-found: error",
-        "retention-days:",
-    ]:
-        if token not in release_workflow:
-            failures.append(f"release workflow missing evidence token: {token}")
+    try:
+        release_doc = yaml.safe_load(release_workflow)
+    except yaml.YAMLError as exc:
+        failures.append(f"release workflow invalid yaml: {exc}")
+        release_doc = None
+    if not isinstance(release_doc, dict) or "jobs" not in release_doc:
+        failures.append("release workflow invalid structure")
+    else:
+        job = release_doc["jobs"].get("release-readiness", {})
+        steps = job.get("steps", [])
+        step_runs = {step.get("run") for step in steps if isinstance(step, dict) and "run" in step}
+        required_runs = {
+            "bash scripts/release_evidence_check.sh",
+            "bash scripts/sbom_audit.sh",
+            "bash scripts/generate_provenance_attestation.sh",
+            "bash scripts/signing_readiness_check.sh",
+            "python3 scripts/release_provenance_check.py",
+            "python3 scripts/release_matrix_check.py",
+            "bash scripts/release_readiness_check.sh",
+        }
+        if not required_runs.issubset(step_runs):
+            failures.append("release workflow missing required release readiness steps")
+        upload_steps = [
+            step for step in steps if isinstance(step, dict) and step.get("uses", "").startswith("actions/upload-artifact")
+        ]
+        if not upload_steps:
+            failures.append("release workflow missing artifact upload step")
+        else:
+            with_section = upload_steps[0].get("with", {})
+            if with_section.get("path") != "target/release-evidence/**":
+                failures.append("release workflow artifact path mismatch")
+            if with_section.get("if-no-files-found") != "error":
+                failures.append("release workflow artifact missing error mode")
+            if with_section.get("retention-days") != 30:
+                failures.append("release workflow artifact retention mismatch")
 
 evidence_schema = read("schemas/release-evidence.schema.json")
 if evidence_schema:
