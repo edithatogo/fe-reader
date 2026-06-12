@@ -55,12 +55,25 @@ import json
 import sys
 from pathlib import Path
 
+import yaml
+
 channel, sbom_status, sbom_detail, provenance_status, signing_status, *required = sys.argv[1:]
 files = []
 for rel in required:
     path = Path(rel)
     data = path.read_bytes()
     files.append({"path": rel, "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)})
+matrix = yaml.safe_load(Path("packaging/package-matrix.yaml").read_text(encoding="utf-8"))
+channels = yaml.safe_load(Path("packaging/release-channels.yaml").read_text(encoding="utf-8"))
+schema = json.loads(Path("schemas/release-evidence.schema.json").read_text(encoding="utf-8"))
+if not isinstance(matrix, dict) or "targets" not in matrix:
+    raise SystemExit("package matrix missing targets mapping")
+if not isinstance(channels, dict) or "channels" not in channels:
+    raise SystemExit("release channels missing channels mapping")
+if schema.get("title") != "ReleaseEvidenceBundle":
+    raise SystemExit("release evidence schema title mismatch")
+if schema.get("properties", {}).get("channel", {}).get("enum") != ["dev", "nightly", "preview", "beta", "stable", "lts", "store_submission"]:
+    raise SystemExit("release evidence schema channel enum mismatch")
 report = {
     "check": "release_readiness",
     "channel": channel,
@@ -73,6 +86,12 @@ report = {
         {"name": "signing_readiness", "status": signing_status, "detail": "target/release-evidence/signing-readiness.json"},
     ],
 }
+for artifact in report["required_files"]:
+    if len(artifact["sha256"]) != 64:
+        raise SystemExit(f"invalid release readiness file digest: {artifact}")
+release_evidence_schema = json.loads(Path("schemas/release-evidence.schema.json").read_text(encoding="utf-8"))
+if release_evidence_schema.get("title") != "ReleaseEvidenceBundle":
+    raise SystemExit("release evidence schema title mismatch")
 Path("target/release-evidence/release-readiness.json").write_text(
     json.dumps(report, sort_keys=True) + "\n", encoding="utf-8"
 )
