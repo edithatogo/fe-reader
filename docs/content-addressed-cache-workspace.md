@@ -68,3 +68,8 @@ fe-reader cache clear --document input.pdf
 fe-reader workspace list
 fe-reader workspace forget input.pdf
 ```
+
+## Evidence
+
+- `scripts/cache_workspace_smoke.sh` validates the cache/workspace and offline-collaboration contracts and emits a local evidence report.
+- Cache entries remain local-first and non-authoritative; review packets remain hash-bound and approval-gated.
