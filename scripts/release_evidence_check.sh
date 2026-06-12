@@ -13,6 +13,8 @@ import os
 import sys
 from pathlib import Path
 
+import yaml
+
 source_commit, source_tag, toolchain, release_id, channel = sys.argv[1:6]
 if not source_commit or source_commit == "unknown":
     raise SystemExit("source_commit must be resolved")
@@ -32,6 +34,21 @@ inputs = [
     Path("target/release-evidence/signing-readiness.json"),
     Path("Cargo.lock"),
 ]
+matrix_doc = yaml.safe_load(Path("packaging/package-matrix.yaml").read_text(encoding="utf-8"))
+channels_doc = yaml.safe_load(Path("packaging/release-channels.yaml").read_text(encoding="utf-8"))
+manifest_schema = json.loads(Path("schemas/update-manifest.schema.json").read_text(encoding="utf-8"))
+if not isinstance(matrix_doc, dict) or "targets" not in matrix_doc:
+    raise SystemExit("package matrix missing targets mapping")
+if not isinstance(channels_doc, dict) or "channels" not in channels_doc:
+    raise SystemExit("release channels missing channels mapping")
+for channel_name in ["nightly", "preview", "stable"]:
+    if channel_name not in channels_doc["channels"]:
+        raise SystemExit(f"release channels missing channel mapping: {channel_name}")
+if manifest_schema.get("title") != "Fe Reader Signed Update Manifest":
+    raise SystemExit("update manifest schema title mismatch")
+for field in manifest_schema.get("required", []):
+    if field not in {"manifest_version", "app_version", "channel", "artifacts", "manifest_signature"}:
+        raise SystemExit(f"unexpected required field in update manifest schema: {field}")
 artifacts = []
 for path in inputs:
     if not path.exists():
@@ -81,6 +98,14 @@ evidence = {
         }
     ],
 }
+required_artifact_fields = {"path", "sha256", "kind"}
+for artifact in evidence["artifacts"]:
+    if set(artifact) != required_artifact_fields | {"bytes"}:
+        raise SystemExit(f"unexpected release evidence artifact shape: {artifact}")
+    if artifact["kind"] != "release_contract_input":
+        raise SystemExit(f"unexpected artifact kind: {artifact}")
+    if len(artifact["sha256"]) != 64:
+        raise SystemExit(f"invalid artifact digest: {artifact}")
 out = Path("target/release-evidence/release-evidence.json")
 out.write_text(json.dumps(evidence, sort_keys=True) + "\n", encoding="utf-8")
 PY
