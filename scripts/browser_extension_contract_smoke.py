@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
@@ -21,6 +22,21 @@ def main() -> int:
     web_contract = WEB_CONTRACT.read_text(encoding="utf-8")
     external_doc = EXTERNAL_DOC.read_text(encoding="utf-8")
     web_doc = WEB_DOC.read_text(encoding="utf-8")
+
+    match = re.search(r"```json\s*(\{.*?\})\s*```", web_contract, re.S)
+    if not match:
+        fail("postMessage contract missing json code block")
+    contract = json.loads(match.group(1))
+    if contract.get("fe_reader_protocol") != "0.1":
+        fail("postMessage contract protocol drifted")
+    if contract.get("origin") != "browser-extension|web-local|self-hosted":
+        fail("postMessage contract origin drifted")
+    if contract.get("operation") != "open|inspect|plan_workflow|plan_redaction|plan_conversion":
+        fail("postMessage contract operations drifted")
+    if contract.get("risk") != "read_only|plan_only":
+        fail("postMessage contract risk drifted")
+    if not isinstance(contract.get("payload"), dict):
+        fail("postMessage contract payload must be an object")
 
     for token in (
         "origin\": \"browser-extension|web-local|self-hosted",
@@ -68,6 +84,14 @@ def main() -> int:
             fail("browser smoke sample must use browser-extension origin")
         if message["risk"] not in {"read_only", "plan_only"}:
             fail("browser extension samples must stay read-only or plan-only")
+        if message["operation"] not in {"inspect", "plan_workflow"}:
+            fail("browser extension sample operation drifted")
+        if not isinstance(message.get("payload"), dict):
+            fail("browser extension sample payload must be an object")
+        if message["operation"] == "inspect" and message["payload"].get("source") != "embedded-pdf-link":
+            fail("browser extension inspect payload drifted")
+        if message["operation"] == "plan_workflow" and message["payload"].get("workflow_id") != "review.extract_metadata":
+            fail("browser extension plan payload drifted")
         if message["operation"] in {"apply_patch", "export_converted_output", "upload_document"}:
             fail("browser extension sample contains forbidden direct mutation/export operation")
 
@@ -81,6 +105,7 @@ def main() -> int:
                 "origin": "browser-extension",
                 "allowed_risks": ["plan_only", "read_only"],
                 "direct_file_mutation": "denied",
+                "sample_message_count": len(sample_messages),
             },
             indent=2,
             sort_keys=True,
