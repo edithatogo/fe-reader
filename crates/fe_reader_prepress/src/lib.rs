@@ -5,6 +5,7 @@
 
 use fe_reader_pdf_model::PdfLabSession;
 use serde::{Deserialize, Serialize};
+use std::{path::Path, process::Command};
 
 /// Crate name exposed for smoke tests and workspace health checks.
 pub const CRATE_NAME: &str = env!("CARGO_PKG_NAME");
@@ -219,6 +220,69 @@ impl PrepressReport {
             page_box_findings,
         }
     }
+
+    /// Builds a preflight report from a PDF file using local toolchain adapters when available.
+    ///
+    /// This path uses the PDF Engineering Lab summary as the core input and enriches it with
+    /// `pdfinfo`/`qpdf` adapter diagnostics when those tools are installed.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the file cannot be inspected by the underlying PDF model or if a
+    /// configured external tool fails to execute.
+    pub fn from_pdf_path(path: impl AsRef<Path>) -> Result<Self, PrepressError> {
+        let lab = fe_reader_pdf_model::inspect_lab_path(path.as_ref())
+            .map_err(|error| PrepressError::invalid(error.to_string()))?;
+        let mut report = Self::from_lab_session(&lab);
+
+        if let Ok(pdfinfo) = run_pdfinfo(path.as_ref()) {
+            report.page_box_findings = pdfinfo.page_boxes;
+            if let Some(tagged) = pdfinfo.tagged {
+                if tagged {
+                    report.output_intents.push(OutputIntentSummary {
+                        object_id: None,
+                        subtype: Some("pdfua-tagged".to_string()),
+                        profile_description: Some("pdfinfo reported tagged PDF".to_string()),
+                        page_index: None,
+                    });
+                }
+            }
+            if let Some(page_count) = pdfinfo.page_count {
+                if page_count == 0 {
+                    report.colour_findings.push(ColourFinding {
+                        page_index: None,
+                        category: "empty_document".to_string(),
+                        code: "pdfinfo_no_pages".to_string(),
+                        message: "pdfinfo reported zero pages".to_string(),
+                        preservation_risk: false,
+                    });
+                }
+            }
+        }
+
+        if let Ok(qpdf) = run_qpdf_json(path.as_ref()) {
+            if qpdf.encrypted {
+                report.colour_findings.push(ColourFinding {
+                    page_index: None,
+                    category: "encrypted_document".to_string(),
+                    code: "qpdf_encrypted".to_string(),
+                    message: "qpdf reported the document as encrypted".to_string(),
+                    preservation_risk: true,
+                });
+            }
+            if qpdf.page_count == 0 {
+                report.colour_findings.push(ColourFinding {
+                    page_index: None,
+                    category: "empty_document".to_string(),
+                    code: "qpdf_no_pages".to_string(),
+                    message: "qpdf reported zero pages".to_string(),
+                    preservation_risk: false,
+                });
+            }
+        }
+
+        Ok(report)
+    }
 }
 
 /// Prepress report validation error.
@@ -235,6 +299,96 @@ impl PrepressError {
             message: message.into(),
         }
     }
+}
+
+struct PdfInfoAdapterReport {
+    page_count: Option<u32>,
+    tagged: Option<bool>,
+    page_boxes: Vec<PageBoxFinding>,
+}
+
+struct QpdfAdapterReport {
+    encrypted: bool,
+    page_count: u32,
+}
+
+fn run_pdfinfo(path: &Path) -> Result<PdfInfoAdapterReport, PrepressError> {
+    let output = Command::new("pdfinfo")
+        .arg(path)
+        .output()
+        .map_err(|error| PrepressError::invalid(format!("pdfinfo failed: {error}")))?;
+    if !output.status.success() {
+        return Err(PrepressError::invalid(format!(
+            "pdfinfo exited unsuccessfully: {}",
+            String::from_utf8_lossy(&output.stderr)
+        )));
+    }
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let mut page_count = None;
+    let mut tagged = None;
+    let mut width = 1.0_f64;
+    let mut height = 1.0_f64;
+    for line in stdout.lines() {
+        if let Some(value) = line.strip_prefix("Pages:") {
+            page_count = value.trim().parse::<u32>().ok();
+        } else if let Some(value) = line.strip_prefix("Tagged:") {
+            tagged = Some(value.trim().eq_ignore_ascii_case("yes"));
+        } else if let Some(value) = line.strip_prefix("Page size:") {
+            let value = value.trim();
+            let dims = value.split_whitespace().collect::<Vec<_>>();
+            if dims.len() >= 4 && dims[1] == "x" && dims[3] == "pts" {
+                width = dims[0].parse::<f64>().unwrap_or(1.0);
+                height = dims[2].parse::<f64>().unwrap_or(1.0);
+            }
+        }
+    }
+    let count = page_count.unwrap_or(1);
+    let mut page_boxes = Vec::new();
+    for page_index in 0..count {
+        page_boxes.push(PageBoxFinding {
+            page_index,
+            media_box: [0.0, 0.0, width, height],
+            crop_box: Some([0.0, 0.0, width, height]),
+            bleed_box: None,
+            trim_box: None,
+            art_box: None,
+        });
+    }
+    Ok(PdfInfoAdapterReport {
+        page_count,
+        tagged,
+        page_boxes,
+    })
+}
+
+fn run_qpdf_json(path: &Path) -> Result<QpdfAdapterReport, PrepressError> {
+    let output = Command::new("qpdf")
+        .arg("--json")
+        .arg(path)
+        .output()
+        .map_err(|error| PrepressError::invalid(format!("qpdf failed: {error}")))?;
+    if !output.status.success() && output.stdout.is_empty() {
+        return Err(PrepressError::invalid(format!(
+            "qpdf exited unsuccessfully: {}",
+            String::from_utf8_lossy(&output.stderr)
+        )));
+    }
+    let parsed: serde_json::Value = serde_json::from_slice(&output.stdout)
+        .map_err(|error| PrepressError::invalid(format!("qpdf json parse failed: {error}")))?;
+    let page_count = parsed
+        .get("pages")
+        .and_then(|pages| pages.as_array())
+        .map(|pages| pages.len() as u32)
+        .unwrap_or(0);
+    let encrypted = parsed
+        .get("encrypt")
+        .and_then(|encrypt| encrypt.get("encrypted"))
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false);
+    Ok(QpdfAdapterReport {
+        encrypted,
+        page_count,
+    })
 }
 
 /// Returns a stable identity string for diagnostics.
@@ -279,5 +433,18 @@ mod tests {
         let report = PrepressReport::from_lab_session(&session);
         assert!(!report.page_box_findings.is_empty());
         assert_eq!(report.document_id, session.document_sha256);
+    }
+
+    #[test]
+    fn path_adapter_uses_system_reports() {
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("..")
+            .join("fixtures")
+            .join("minimal")
+            .join("minimal.pdf");
+        let report = PrepressReport::from_pdf_path(&fixture).unwrap();
+        assert!(!report.page_box_findings.is_empty());
+        assert_eq!(report.document_id.len(), 64);
     }
 }

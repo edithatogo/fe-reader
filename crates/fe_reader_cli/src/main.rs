@@ -2,15 +2,15 @@
 
 use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
+use fe_reader_accessibility::AccessibilityAuditReport;
 use fe_reader_core::{
     OperationIntent, OperationKind, OperationSource, PatchOperation, PatchPlan, RiskLevel,
     TransactionId, TransactionJournalEntry, TransactionJournalSidecar, TransactionPhase,
     list_recovery_required_transaction_sidecars, read_transaction_sidecar,
     write_transaction_sidecar,
 };
-use fe_reader_accessibility::AccessibilityAuditReport;
-use fe_reader_prepress::PrepressReport;
 use fe_reader_metadata::{MetadataOperation, MetadataScrubMode};
+use fe_reader_prepress::PrepressReport;
 use fe_reader_render::RenderBackend;
 use fe_reader_search::{SearchQuery, build_search_index_records, search_spans};
 use fe_reader_security::{PolicyAction, SecurityPolicy, evaluate_policy};
@@ -403,7 +403,7 @@ fn main() -> Result<()> {
         Command::Prepress { path, json } => {
             let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
             let lab = fe_reader_pdf_model::inspect_lab_path(&path)?;
-            let report = PrepressReport::from_lab_session(&lab);
+            let report = PrepressReport::from_pdf_path(&path)?;
             let intent = OperationIntent::read_only(
                 OperationSource::Cli,
                 summary.document_id.clone(),
@@ -435,11 +435,9 @@ fn main() -> Result<()> {
         }
         Command::Accessibility { path, json } => {
             let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
+            let mut report = AccessibilityAuditReport::from_pdf_path(&path)?;
+            report.surface_id = summary.document_id.to_string();
             let extraction = fe_reader_pdf_model::extract_text_spans_path(&path)?;
-            let report = AccessibilityAuditReport::from_text_extraction(
-                summary.document_id.to_string(),
-                &extraction,
-            );
             let intent = OperationIntent::read_only(
                 OperationSource::Cli,
                 summary.document_id.clone(),
@@ -464,7 +462,10 @@ fn main() -> Result<()> {
                 println!("surface_id={}", report.surface_id);
                 println!("targets={}", report.targets.len());
                 println!("findings={}", report.findings.len());
-                println!("wcag_target={}", report.wcag_target.as_deref().unwrap_or(""));
+                println!(
+                    "wcag_target={}",
+                    report.wcag_target.as_deref().unwrap_or("")
+                );
                 println!("plan_id={}", plan.plan_id.0);
             }
         }

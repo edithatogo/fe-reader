@@ -8,6 +8,7 @@
 
 use fe_reader_pdf_model::PdfTextExtractionSummary;
 use serde::{Deserialize, Serialize};
+use std::{path::Path, process::Command};
 
 /// Crate name exposed for smoke tests and workspace health checks.
 pub const CRATE_NAME: &str = env!("CARGO_PKG_NAME");
@@ -189,6 +190,62 @@ impl AccessibilityAuditReport {
             wcag_target: Some("wcag22-aa".to_string()),
         }
     }
+
+    /// Builds an accessibility audit report from a PDF file using local toolchain adapters when
+    /// available.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the PDF cannot be inspected or a configured external tool fails.
+    pub fn from_pdf_path(path: impl AsRef<Path>) -> Result<Self, AccessibilityAuditError> {
+        let path = path.as_ref();
+        let summary = fe_reader_pdf_model::sniff_pdf_path(path)
+            .map_err(|error| AccessibilityAuditError::invalid(error.to_string()))?;
+        let extraction = fe_reader_pdf_model::extract_text_spans_path(path)
+            .map_err(|error| AccessibilityAuditError::invalid(error.to_string()))?;
+        let mut report = Self::from_text_extraction(summary.document_id.to_string(), &extraction);
+        if let Ok(pdfinfo) = run_pdfinfo(path) {
+            if let Some(tagged) = pdfinfo.tagged {
+                report.findings.push(AccessibilityFinding {
+                    target: AccessibilityTarget::PdfDocument,
+                    severity: if tagged {
+                        AccessibilitySeverity::Info
+                    } else {
+                        AccessibilitySeverity::Warning
+                    },
+                    location: "pdfinfo".to_string(),
+                    message: if tagged {
+                        "pdfinfo reported a tagged PDF".to_string()
+                    } else {
+                        "pdfinfo did not report tagged PDF structure".to_string()
+                    },
+                    suggested_fix: if tagged {
+                        None
+                    } else {
+                        Some(
+                            "Inspect the tagged structure and reading order before accessibility release"
+                                .to_string(),
+                        )
+                    },
+                });
+            }
+            if let Some(page_count) = pdfinfo.page_count {
+                if page_count == 0 {
+                    report.findings.push(AccessibilityFinding {
+                        target: AccessibilityTarget::PdfDocument,
+                        severity: AccessibilitySeverity::Error,
+                        location: "pdfinfo".to_string(),
+                        message: "pdfinfo reported zero pages".to_string(),
+                        suggested_fix: Some(
+                            "Verify the input file and parser before running accessibility audit"
+                                .to_string(),
+                        ),
+                    });
+                }
+            }
+        }
+        Ok(report)
+    }
 }
 
 /// Accessibility audit validation error.
@@ -205,6 +262,35 @@ impl AccessibilityAuditError {
             message: message.into(),
         }
     }
+}
+
+struct PdfInfoAdapterReport {
+    page_count: Option<u32>,
+    tagged: Option<bool>,
+}
+
+fn run_pdfinfo(path: &Path) -> Result<PdfInfoAdapterReport, AccessibilityAuditError> {
+    let output = Command::new("pdfinfo")
+        .arg(path)
+        .output()
+        .map_err(|error| AccessibilityAuditError::invalid(format!("pdfinfo failed: {error}")))?;
+    if !output.status.success() {
+        return Err(AccessibilityAuditError::invalid(format!(
+            "pdfinfo exited unsuccessfully: {}",
+            String::from_utf8_lossy(&output.stderr)
+        )));
+    }
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let mut page_count = None;
+    let mut tagged = None;
+    for line in stdout.lines() {
+        if let Some(value) = line.strip_prefix("Pages:") {
+            page_count = value.trim().parse::<u32>().ok();
+        } else if let Some(value) = line.strip_prefix("Tagged:") {
+            tagged = Some(value.trim().eq_ignore_ascii_case("yes"));
+        }
+    }
+    Ok(PdfInfoAdapterReport { page_count, tagged })
 }
 
 /// Returns a stable identity string for diagnostics.
@@ -255,5 +341,19 @@ mod tests {
                 .iter()
                 .any(|finding| finding.target == AccessibilityTarget::PdfDocument)
         );
+    }
+
+    #[test]
+    fn path_adapter_uses_system_reports() {
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("..")
+            .join("fixtures")
+            .join("corpus")
+            .join("basic")
+            .join("text-search-fixture.pdf");
+        let report = AccessibilityAuditReport::from_pdf_path(&fixture).unwrap();
+        assert!(!report.findings.is_empty());
+        assert!(!report.surface_id.is_empty());
     }
 }
