@@ -5,6 +5,8 @@ import pathlib
 import sys
 import xml.etree.ElementTree as ET
 
+import yaml
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "target" / "release-evidence"
 EVIDENCE.mkdir(parents=True, exist_ok=True)
@@ -41,11 +43,15 @@ def validate_distribution_target(target, failures):
 def generate_installer_matrix(failures):
     matrix = read("packaging/package-matrix.yaml")
     channels = read("packaging/release-channels.yaml")
+    matrix_doc = yaml.safe_load(matrix)
+    channels_doc = yaml.safe_load(channels)
+    require(isinstance(matrix_doc, dict) and "targets" in matrix_doc, "package matrix missing targets mapping", failures)
+    require(isinstance(channels_doc, dict) and "channels" in channels_doc, "release channels missing channels mapping", failures)
     targets = []
     for platform in ["windows", "macos", "linux", "android", "ios"]:
-        require(f"  {platform}:" in matrix, f"package matrix missing platform {platform}", failures)
+        require(platform in matrix_doc["targets"], f"package matrix missing platform {platform}", failures)
     for channel in ["nightly", "preview", "stable"]:
-        require(f"  {channel}:" in channels, f"release channels missing {channel}", failures)
+        require(channel in channels_doc["channels"], f"release channels missing {channel}", failures)
 
     targets.extend(
         [
@@ -116,6 +122,9 @@ def generate_installer_matrix(failures):
     )
     for target in targets:
         validate_distribution_target(target, failures)
+    for platform, target in [(t["platform"], t) for t in targets]:
+        if platform == "windows":
+            require(target["install_scope"] in {"local_user", "store"}, "windows target scope drifted", failures)
     report = {
         "check": "wave4_installer_matrix",
         "status": "pass",
@@ -123,15 +132,19 @@ def generate_installer_matrix(failures):
         "targets": targets,
     }
     (EVIDENCE / "installer-matrix.json").write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
+    require(report["schema"] == "schemas/distribution-target.schema.json", "installer matrix schema path drifted", failures)
+    require(len(report["targets"]) == 7, "installer matrix target count drifted", failures)
 
 
 def validate_registry_manifests(failures):
     manifest_checks = []
-    json.loads(read("packaging/windows/scoop/fe-reader.json"))
+    scoop = json.loads(read("packaging/windows/scoop/fe-reader.json"))
+    require(isinstance(scoop, dict) and scoop.get("version"), "scoop manifest missing version", failures)
     manifest_checks.append("packaging/windows/scoop/fe-reader.json")
 
     for rel in ["packaging/windows/msix/AppxManifest.contract.xml", "packaging/windows/chocolatey/fe-reader.nuspec"]:
-        ET.fromstring(read(rel))
+        root = ET.fromstring(read(rel))
+        require(root.tag, f"{rel} missing xml root", failures)
         manifest_checks.append(rel)
 
     text_checks = {
@@ -157,6 +170,7 @@ def validate_registry_manifests(failures):
         "manifests": files,
     }
     (EVIDENCE / "registry-manifests.json").write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
+    require(len(report["manifests"]) == len(manifest_checks), "registry manifest report count drifted", failures)
 
 
 def write_update_manifest(failures):
@@ -191,6 +205,7 @@ def write_update_manifest(failures):
         require(bool(artifact["signature"]), "artifact signature is required", failures)
     require(bool(manifest["manifest_signature"]), "manifest_signature is required", failures)
     (EVIDENCE / "update-manifest.dev.json").write_text(json.dumps(manifest, sort_keys=True) + "\n", encoding="utf-8")
+    require(len(manifest["artifacts"]) == 1, "update manifest smoke must keep one artifact", failures)
 
 
 def validate_release_evidence_schema(failures):
@@ -202,6 +217,7 @@ def validate_release_evidence_schema(failures):
         for field in schema["required"]:
             require(field in data, f"release evidence missing required field {field}", failures)
         require(data.get("channel") in schema["properties"]["channel"]["enum"], "release evidence channel not allowed", failures)
+        require(data.get("builder", {}).get("kind") in {"local", "github-actions"}, "release evidence builder kind drifted", failures)
         for artifact in data.get("artifacts", []):
             require(len(artifact.get("sha256", "")) == 64, f"release artifact hash invalid: {artifact}", failures)
 
@@ -228,6 +244,7 @@ def main():
         "failures": failures,
     }
     (EVIDENCE / "wave4-distribution-smoke.json").write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
+    require(report["status"] in {"pass", "fail"}, "distribution report status drifted", failures)
     if failures:
         for failure in failures:
             print(f"wave4 distribution failure: {failure}", file=sys.stderr)
