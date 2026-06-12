@@ -37,6 +37,7 @@ def main() -> int:
     provenance = json.loads(PROVENANCE.read_text(encoding="utf-8"))
     require(provenance.get("_type") == "https://in-toto.io/Statement/v1", "wrong in-toto statement type")
     require(provenance.get("predicateType") == "https://slsa.dev/provenance/v1", "wrong predicate type")
+    require(bool(provenance.get("subject")), "missing provenance subject list")
 
     subject = provenance.get("subject")
     require(isinstance(subject, list) and subject, "missing provenance subject")
@@ -45,11 +46,23 @@ def main() -> int:
 
     predicate = provenance.get("predicate", {})
     build_definition = predicate.get("buildDefinition", {})
+    require(
+        build_definition.get("buildType") == "https://github.com/fereader/fe-reader/bootstrap-release",
+        "unexpected provenance build type",
+    )
+    external_parameters = build_definition.get("externalParameters", {})
+    require(external_parameters.get("channel") in {"dev", "nightly", "preview", "beta", "stable", "lts", "store_submission"}, "unexpected provenance channel")
+    internal_parameters = build_definition.get("internalParameters", {})
+    require("workflow" in internal_parameters, "missing provenance internal workflow parameter")
     materials = build_definition.get("resolvedDependencies", [])
     require(isinstance(materials, list) and materials, "missing hashed build materials")
     for material in materials:
         require("uri" in material, "material missing uri")
         require(bool(material.get("digest", {}).get("sha256")), f"material missing sha256 digest: {material}")
+
+    run_details = predicate.get("runDetails", {})
+    require("builder" in run_details, "missing provenance run builder details")
+    require("metadata" in run_details, "missing provenance run metadata")
 
     docs = DOC.read_text(encoding="utf-8")
     for token in [
@@ -57,6 +70,7 @@ def main() -> int:
         "contract-only",
         "not a cryptographic C2PA manifest",
         "target/release-evidence/content-credentials-provenance-smoke.json",
+        "later implementation needs a feature gate",
     ]:
         require(token in docs, f"provenance doc missing token: {token}")
 

@@ -67,6 +67,7 @@ Cosign, SLSA or store credentials are available:
 - `target/release-evidence/content-credentials-provenance-smoke.json` records the contract-only C2PA / Content Credentials readiness smoke result. It validates the provenance scaffold and documents that Wave 0 does not emit a signed Content Credentials payload.
 - `target/release-evidence/release-matrix.json` records the release packaging matrix validation across platforms and channels.
 - `target/release-evidence/release-evidence.json` links the SBOM/status, provenance and signing-readiness evidence into the release bundle.
+- `scripts/content_credentials_provenance_smoke.py` checks the provenance scaffold shape, docs boundary and release-material hashes without asserting a signed C2PA manifest.
 
 Real public releases must replace advisory placeholders with CycloneDX SBOM,
 artifact hashes, real signing/notarization receipts and provenance attestations.
@@ -76,9 +77,9 @@ artifact hashes, real signing/notarization receipts and provenance attestations.
 C2PA / Content Credentials provenance authoring is contract-only in this wave.
 The current smoke evidence validates source commit, build material digests and
 release documentation, but it is not a cryptographic C2PA manifest and does not
-embed metadata into release artifacts. A later implementation needs a feature
-gate, signing-material governance, rollback criteria and fixture coverage before
-it can become release-blocking.
+embed metadata into release artifacts. A later implementation needs a feature gate,
+signing-material governance, rollback criteria and fixture coverage before it can
+become release-blocking.
 
 ## Policy
 
