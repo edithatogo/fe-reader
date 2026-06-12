@@ -21,6 +21,14 @@ except Exception:
 
 payload = json.loads(os.environ["SEARCH_JSON"])
 expected = json.loads(Path(os.environ["EXPECTED_PATH"]).read_text(encoding="utf-8"))
+schema = json.loads(Path("schemas/search-index.schema.json").read_text(encoding="utf-8"))
+
+if schema.get("title") != "Fe Reader Search Index Record":
+    raise SystemExit("search smoke failed: schema title drifted")
+if schema.get("additionalProperties") is not False:
+    raise SystemExit("search smoke failed: schema must reject additional properties")
+if schema.get("required") != ["document_id", "document_sha256", "page_index", "span_id", "text", "bbox"]:
+    raise SystemExit("search smoke failed: required fields drifted")
 
 assert payload["summary"]["fingerprint"]["sha256_hex"] == expected[0]["document_sha256"]
 assert payload["text"]["extraction"]["adapter"] == "lopdf"
@@ -38,9 +46,11 @@ assert [
     payload["hits"][0]["bbox"]["height"],
 ] == expected[0]["bbox"]
 assert payload["hits"][0]["char_offset"] == 3
+assert expected[0]["reading_order"] == 0
+assert len(expected[0]["bbox"]) == 4
+assert expected[0]["document_id"].startswith("sha256:")
 
 if jsonschema is not None:
-    schema = json.loads(Path("schemas/search-index.schema.json").read_text(encoding="utf-8"))
     for record in expected:
         jsonschema.validate(record, schema)
 PY
