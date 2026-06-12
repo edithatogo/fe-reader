@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
@@ -22,24 +23,23 @@ def main() -> int:
     plan = PLAN.read_text(encoding="utf-8")
     automation = AUTOMATION.read_text(encoding="utf-8")
 
-    for token in (
-        "import AppIntents",
-        "FeOpenDocumentIntent",
-        "FeExtractPageTextIntent",
-        "FePlanWorkflowIntent",
-        "IntentFile",
-        "ReturnsValue<String>",
-    ):
-        if token not in ios:
-            fail(f"iOS App Intents contract missing {token}")
-
+    if "import AppIntents" not in ios:
+        fail("iOS App Intents contract missing import AppIntents")
+    for intent in ("FeOpenDocumentIntent", "FeExtractPageTextIntent", "FePlanWorkflowIntent"):
+        if intent not in ios:
+            fail(f"iOS App Intents contract missing {intent}")
+    if "IntentFile" not in ios or "ReturnsValue<String>" not in ios:
+        fail("iOS App Intents contract missing file/value intent support")
     for guard in ("patch_plan_id", "document_hash_match", "policy_allow_rule", "approval_token"):
         if guard not in ios:
             fail(f"iOS App Intents contract missing guard {guard}")
-
-    for forbidden in ("func apply", "ApplyPatch", "approvedForApply = true"):
-        if forbidden in ios:
-            fail(f"iOS contract exposes forbidden apply shape: {forbidden}")
+    if any(forbidden in ios for forbidden in ("func apply", "ApplyPatch", "approvedForApply = true")):
+        fail("iOS contract exposes forbidden apply shape")
+    titles = re.findall(r'static var title: LocalizedStringResource = "([^"]+)"', ios)
+    if titles != ["Open Document in Fe Reader", "Extract PDF Page Text", "Plan Fe Reader Workflow"]:
+        fail("iOS intent titles drifted")
+    if "func perform() async throws -> some IntentResult & ReturnsValue<String>" not in ios:
+        fail("iOS plan intent must return a value")
 
     for token in (
         "Share/open-in support",
@@ -68,6 +68,7 @@ def main() -> int:
                 "mutation_policy": "read_only_or_plan_only",
                 "supports_apply": False,
                 "surfaces": ["share_extension", "shortcuts", "app_intents"],
+                "intent_titles": titles,
             },
             indent=2,
             sort_keys=True,
