@@ -82,5 +82,18 @@ report = {
     "targets": ["windows", "macos", "linux", "android", "ios"],
     "channels": ["nightly", "preview", "stable"],
 }
+for entry in report["required_files"]:
+    if set(entry) != {"path", "sha256", "bytes"}:
+        print(f"release matrix entry shape mismatch: {entry}", file=sys.stderr)
+        raise SystemExit(1)
+    if len(entry["sha256"]) != 64:
+        print(f"release matrix digest mismatch: {entry}", file=sys.stderr)
+        raise SystemExit(1)
+if report["targets"] != ["windows", "macos", "linux", "android", "ios"]:
+    print("release matrix target ordering mismatch", file=sys.stderr)
+    raise SystemExit(1)
+if report["channels"] != ["nightly", "preview", "stable"]:
+    print("release matrix channel ordering mismatch", file=sys.stderr)
+    raise SystemExit(1)
 (evidence_dir / "release-matrix.json").write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
 print("release matrix: ok")

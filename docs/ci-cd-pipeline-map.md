@@ -38,3 +38,4 @@
 - Compatibility corpus report.
 - Accessibility report.
 - Installer/package manifest report.
+- Release matrix report with per-target package matrix hashes and channel policy validation.
