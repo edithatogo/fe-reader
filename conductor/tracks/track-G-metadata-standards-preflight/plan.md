@@ -33,6 +33,7 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 - Run `scripts/conductor_phase_gate.sh --phase G4 --auto-fix`.
 - Evidence: `crates/fe_reader_prepress/src/lib.rs`, `scripts/prepress_smoke.sh`.
   Current bridge: `PrepressReport::from_lab_session` converts page-graph diagnostics into a preflight report.
+  Current CLI: `fe-reader prepress <file> --json`.
 ### Phase G5 — accessibility inspection
 
 - Implement contract skeleton.
@@ -41,6 +42,7 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 - Run `scripts/conductor_phase_gate.sh --phase G5 --auto-fix`.
 - Evidence: `crates/fe_reader_accessibility/src/lib.rs`, `scripts/accessibility_audit_smoke.py`.
   Current bridge: `AccessibilityAuditReport::from_text_extraction` converts text-layer diagnostics into an audit report.
+  Current CLI: `fe-reader accessibility <file> --json`.
 
 ## Exit criteria
 

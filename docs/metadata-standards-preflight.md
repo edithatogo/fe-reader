@@ -39,6 +39,11 @@ Fe Reader should support:
 - Output intents and colour profile inspection.
 - Encryption and signature inspection.
 
+## CLI surfaces
+
+- `fe-reader prepress <file> --json` produces a read-only preflight scaffold report from the PDF lab page graph.
+- `fe-reader accessibility <file> --json` produces a read-only accessibility audit scaffold from extracted text diagnostics.
+
 ## PDF/A, PDF/UA, PDF/X approach
 
 Fe Reader should not pretend to implement all validation internally at first. Use adapters:

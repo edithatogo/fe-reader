@@ -12,6 +12,8 @@ fe-reader metadata input.pdf --json
 fe-reader metadata-diff before.pdf after.pdf --json
 fe-reader metadata-scrub input.pdf --profile clean-share --plan-only
 fe-reader metadata-scrub input.pdf --profile forensic-preserve --plan-only
+fe-reader prepress input.pdf --json
+fe-reader accessibility input.pdf --json
 fe-reader organise input.pdf --delete 3,4 --out output.pdf
 fe-reader plan-workflow input.pdf --workflow healthcare.deidentify.basic --params params.json
 fe-reader plan-redaction input.pdf --recipe redaction.json

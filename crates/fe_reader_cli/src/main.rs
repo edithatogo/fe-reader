@@ -8,6 +8,8 @@ use fe_reader_core::{
     list_recovery_required_transaction_sidecars, read_transaction_sidecar,
     write_transaction_sidecar,
 };
+use fe_reader_accessibility::AccessibilityAuditReport;
+use fe_reader_prepress::PrepressReport;
 use fe_reader_metadata::{MetadataOperation, MetadataScrubMode};
 use fe_reader_render::RenderBackend;
 use fe_reader_search::{SearchQuery, build_search_index_records, search_spans};
@@ -61,6 +63,22 @@ enum Command {
         /// Require plan-only output. Apply is intentionally unavailable in Wave 2.
         #[arg(long)]
         plan_only: bool,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Generate a prepress report without mutating the document.
+    Prepress {
+        /// Path to a PDF file.
+        path: String,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Generate an accessibility audit report without mutating the document.
+    Accessibility {
+        /// Path to a PDF file.
+        path: String,
         /// Emit JSON output.
         #[arg(long)]
         json: bool,
@@ -379,6 +397,74 @@ fn main() -> Result<()> {
                 println!("profile={profile}");
                 println!("write_mode={:?}", plan.write_mode);
                 println!("approved_for_apply={}", plan.approved_for_apply);
+                println!("plan_id={}", plan.plan_id.0);
+            }
+        }
+        Command::Prepress { path, json } => {
+            let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
+            let lab = fe_reader_pdf_model::inspect_lab_path(&path)?;
+            let report = PrepressReport::from_lab_session(&lab);
+            let intent = OperationIntent::read_only(
+                OperationSource::Cli,
+                summary.document_id.clone(),
+                "prepress",
+            )
+            .with_document_fingerprint(summary.fingerprint.clone());
+            let plan = PatchPlan::draft(
+                &intent,
+                format!("prepress {path}"),
+                vec![PatchOperation::Noop],
+            );
+            if json {
+                let value = serde_json::json!({
+                    "intent": intent,
+                    "plan": plan,
+                    "summary": summary,
+                    "lab": lab,
+                    "report": report,
+                });
+                println!("{}", serde_json::to_string_pretty(&value)?);
+            } else {
+                println!("document_id={}", report.document_id);
+                println!("output_intents={}", report.output_intents.len());
+                println!("colour_findings={}", report.colour_findings.len());
+                println!("font_findings={}", report.font_findings.len());
+                println!("page_box_findings={}", report.page_box_findings.len());
+                println!("plan_id={}", plan.plan_id.0);
+            }
+        }
+        Command::Accessibility { path, json } => {
+            let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
+            let extraction = fe_reader_pdf_model::extract_text_spans_path(&path)?;
+            let report = AccessibilityAuditReport::from_text_extraction(
+                summary.document_id.to_string(),
+                &extraction,
+            );
+            let intent = OperationIntent::read_only(
+                OperationSource::Cli,
+                summary.document_id.clone(),
+                "accessibility",
+            )
+            .with_document_fingerprint(summary.fingerprint.clone());
+            let plan = PatchPlan::draft(
+                &intent,
+                format!("accessibility {path}"),
+                vec![PatchOperation::Noop],
+            );
+            if json {
+                let value = serde_json::json!({
+                    "intent": intent,
+                    "plan": plan,
+                    "summary": summary,
+                    "extraction": extraction,
+                    "report": report,
+                });
+                println!("{}", serde_json::to_string_pretty(&value)?);
+            } else {
+                println!("surface_id={}", report.surface_id);
+                println!("targets={}", report.targets.len());
+                println!("findings={}", report.findings.len());
+                println!("wcag_target={}", report.wcag_target.as_deref().unwrap_or(""));
                 println!("plan_id={}", plan.plan_id.0);
             }
         }
