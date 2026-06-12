@@ -10,6 +10,8 @@ import os
 import sys
 from pathlib import Path
 
+import yaml
+
 channel, targets_raw = sys.argv[1:3]
 required = ["packaging/codesigning.md", "schemas/update-manifest.schema.json", "packaging/release-channels.yaml"]
 files = []
@@ -21,6 +23,8 @@ for rel in required:
 strict_channels = {"preview", "beta", "stable", "lts", "store_submission"}
 status = "advisory"
 detail = "Signing keys and notarization credentials are not required for dev bootstrap"
+matrix = yaml.safe_load(Path("packaging/package-matrix.yaml").read_text(encoding="utf-8"))
+channels_doc = yaml.safe_load(Path("packaging/release-channels.yaml").read_text(encoding="utf-8"))
 required_secrets = {
     "windows": ["FE_WINDOWS_SIGNING_CERT", "FE_WINDOWS_SIGNING_PASSWORD"],
     "macos": ["FE_MACOS_DEVELOPER_ID_CERT", "FE_MACOS_NOTARY_PROFILE"],
@@ -29,6 +33,25 @@ required_secrets = {
     "ios": ["FE_IOS_DISTRIBUTION_CERT", "FE_IOS_APPSTORE_CONNECT_KEY"],
 }
 all_platforms = list(required_secrets)
+required_channel_policies = {
+    "nightly": {"signing": "optional", "publishing": "github_prerelease", "notes": "developer/test only"},
+    "preview": {"signing": "required_where_supported", "publishing": "prerelease_registries", "notes": "beta users"},
+    "stable": {"signing": "required", "notarization": "required_on_macos", "publishing": "all_configured_registries"},
+}
+if not isinstance(matrix, dict) or "targets" not in matrix:
+    raise SystemExit("package matrix missing targets mapping")
+if not isinstance(channels_doc, dict) or "channels" not in channels_doc:
+    raise SystemExit("release channels missing channels mapping")
+for platform in all_platforms:
+    if platform not in matrix["targets"] or not isinstance(matrix["targets"][platform], dict):
+        raise SystemExit(f"package matrix missing platform mapping: {platform}")
+for channel_name, expected in required_channel_policies.items():
+    channel_doc = channels_doc["channels"].get(channel_name)
+    if not isinstance(channel_doc, dict):
+        raise SystemExit(f"release channels missing policy mapping: {channel_name}")
+    for key, value in expected.items():
+        if channel_doc.get(key) != value:
+            raise SystemExit(f"release channels policy mismatch for {channel_name}.{key}")
 requested_platforms = [
     token.strip().lower()
     for token in targets_raw.replace(";", ",").replace(" ", ",").split(",")
@@ -70,6 +93,8 @@ report = {
     "configured_target_platforms": requested_platforms,
     "status": status,
     "detail": detail,
+    "package_matrix_path": "packaging/package-matrix.yaml",
+    "release_channels_path": "packaging/release-channels.yaml",
     "required_files": files,
     "required_secret_names": required_secrets,
     "required_secret_names_for_configured_targets": selected_required_secrets,
