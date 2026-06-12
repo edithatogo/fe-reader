@@ -62,6 +62,7 @@ Cosign, SLSA or store credentials are available:
 - `target/release-evidence/sbom-status.json` records whether CycloneDX SBOM generation ran or was skipped.
 - `target/release-evidence/cargo-metadata.json` records dependency graph evidence when Cargo is available.
 - `target/release-evidence/provenance.json` records source commit, workflow/run identity and hashed build materials. It is an in-toto-shaped placeholder, not a cryptographic attestation.
+- `scripts/generate_provenance_attestation.sh` validates the provenance statement shape before writing the evidence file.
 - `target/release-evidence/signing-readiness.json` records signing and notarization readiness without storing secrets.
 - `target/release-evidence/provenance-readiness.json` records whether public-channel provenance requirements are satisfied.
 - `target/release-evidence/release-readiness.json` records the release gate checks that fed the provenance readiness summary.
