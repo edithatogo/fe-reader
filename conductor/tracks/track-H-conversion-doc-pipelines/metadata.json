@@ -1,0 +1,14 @@
+{
+  "track_id": "track-H-conversion-doc-pipelines",
+  "type": "feature",
+  "status": "complete",
+  "created_at": "2026-06-12T00:00:00Z",
+  "updated_at": "2026-06-12T12:32:03Z",
+  "description": "Implement plan-only conversion and source pipeline contracts for Markdown, DOCX, HTML, images, Pandoc, LibreOffice, Quarto, Typst, and LaTeX workflows.",
+  "deliverables": [
+    "crates/fe_reader_conversion/src/lib.rs",
+    "contracts/rust/conversion.rs",
+    "schemas/conversion-job.schema.json",
+    "docs/conversion-publishing-workflows.md"
+  ]
+}
