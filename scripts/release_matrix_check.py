@@ -5,6 +5,8 @@ import pathlib
 import sys
 
 root = pathlib.Path(__file__).resolve().parents[1]
+evidence_dir = root / "target" / "release-evidence"
+evidence_dir.mkdir(parents=True, exist_ok=True)
 required = [
     "packaging/package-matrix.yaml",
     "packaging/release-channels.yaml",
@@ -20,7 +22,7 @@ if missing:
     raise SystemExit(1)
 matrix = (root / "packaging/package-matrix.yaml").read_text(encoding="utf-8")
 channels = (root / "packaging/release-channels.yaml").read_text(encoding="utf-8")
-for token in ["windows:", "macos:", "linux:", "android:", "ios:"]:
+for token in ["targets:", "windows:", "macos:", "linux:", "android:", "ios:"]:
     if token not in matrix:
         print(f"package matrix missing target: {token}", file=sys.stderr)
         raise SystemExit(1)
@@ -28,9 +30,25 @@ for token in ["nightly:", "preview:", "stable:"]:
     if token not in channels:
         print(f"release channels missing channel: {token}", file=sys.stderr)
         raise SystemExit(1)
+for token in ["signing:", "publishing:", "notes:"]:
+    if token not in channels:
+        print(f"release channels missing policy token: {token}", file=sys.stderr)
+        raise SystemExit(1)
 
-evidence_dir = root / "target/release-evidence"
-evidence_dir.mkdir(parents=True, exist_ok=True)
+target_checks = {
+    "windows": ["local_user", "global_admin", "stores", "bindings"],
+    "macos": ["local_user", "global_admin", "stores"],
+    "linux": ["local_user", "global_admin", "registries"],
+    "android": ["stores", "evaluate"],
+    "ios": ["stores"],
+}
+for platform, subkeys in target_checks.items():
+    for subkey in subkeys:
+        token = f"  {subkey}:"
+        if token not in matrix:
+            print(f"package matrix missing {platform} subkey: {subkey}", file=sys.stderr)
+            raise SystemExit(1)
+
 files = []
 for rel in required:
     path = root / rel
