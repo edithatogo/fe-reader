@@ -70,6 +70,9 @@ def check_docs_and_templates(failures):
         "docs/differential-testing-oracles.md": ["Wave 7", "accepted corpus coverage", "documented limitation"],
         "docs/pdf-optimization-linearization-compression.md": ["receipt", "signature", "safe"],
         "docs/content-addressed-cache-workspace.md": ["privacy-sensitive", "not authoritative"],
+        "docs/release-operations-updates.md": ["signed update manifest", "SBOM", "provenance/attestation artifact", "compatibility report", "accessibility report"],
+        "docs/api-compatibility-governance.md": ["Wave 0 UniFFI facade is `preview`", "cargo semver-checks", "contracts/snapshots/"],
+        "docs/differential-testing-oracles.md": ["Wave 7", "accepted corpus coverage", "documented limitation"],
     }
     for rel, tokens in doc_tokens.items():
         text = read(rel)

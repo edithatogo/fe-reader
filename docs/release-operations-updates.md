@@ -66,3 +66,8 @@ channels may use advisory SBOM status plus placeholder provenance and signing
 readiness records. Preview, beta, stable, LTS and store-submission channels
 must have real SBOM output and provenance/signing-readiness evidence before the
 release readiness check passes.
+
+## Evidence
+
+- `scripts/wave7_release_hardening_smoke.py` validates the release evidence bundle, packaging templates and compatibility snapshots.
+- Release claims should stay bound to generated evidence under `target/release-evidence/`.
