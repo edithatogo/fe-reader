@@ -52,6 +52,16 @@ def main() -> None:
     ]:
         if token not in CRATE.read_text(encoding="utf-8"):
             fail(f"quality dashboard crate missing token: {token}")
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    if schema.get("title") != "Fe Reader Public Quality Dashboard":
+        fail("dashboard schema title mismatch")
+    reports_schema = schema.get("properties", {}).get("reports", {})
+    if reports_schema.get("type") != "array":
+        fail("dashboard schema reports must be an array")
+    item_required = set(reports_schema.get("items", {}).get("required", []))
+    for field in ["kind", "status", "artifact"]:
+        if field not in item_required:
+            fail(f"dashboard schema missing required report field: {field}")
     for token in [
         "local-first",
         "privacy-sensitive release evidence",
@@ -85,10 +95,14 @@ def main() -> None:
             },
         ],
     }
+    if len(dashboard["reports"]) != 2:
+        fail("dashboard must include two smoke reports")
+    for report in dashboard["reports"]:
+        if report["status"] not in {"pass", "warn", "fail", "not_run"}:
+            fail(f"invalid dashboard report status: {report}")
     if not all(report["artifact"] for report in dashboard["reports"]):
         fail("all report artifacts must be non-empty local paths")
     if jsonschema is not None:
-        schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
         jsonschema.validate(dashboard, schema)
     print("quality dashboard smoke passed")
 
