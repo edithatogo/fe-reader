@@ -61,6 +61,16 @@ if schema:
             if field not in props:
                 failures.append(f"release evidence schema missing provenance context field: {field}")
 
+readiness_schema = read("schemas/release-evidence.schema.json")
+if readiness_schema:
+    try:
+        readiness_schema_data = json.loads(readiness_schema)
+    except json.JSONDecodeError as exc:
+        failures.append(f"release readiness schema invalid JSON: {exc}")
+    else:
+        if readiness_schema_data.get("title") != "ReleaseEvidenceBundle":
+            failures.append("release readiness schema title mismatch")
+
 matrix = read("contracts/ci/contract-test-matrix.yaml")
 if matrix:
     for token in [
@@ -115,6 +125,19 @@ if evidence_dir.exists():
     (evidence_dir / "provenance-readiness.json").write_text(
         json.dumps(readiness, sort_keys=True) + "\n", encoding="utf-8"
     )
+    if (evidence_dir / "release-readiness.json").exists():
+        try:
+            release_readiness = json.loads((evidence_dir / "release-readiness.json").read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            failures.append(f"release readiness artifact invalid JSON: {exc}")
+        else:
+            checks = release_readiness.get("checks", [])
+            names = {check.get("name") for check in checks if isinstance(check, dict)}
+            for check_name in ["required_release_files", "sbom_presence", "provenance_attestation", "signing_readiness"]:
+                if check_name not in names:
+                    failures.append(f"release readiness missing check: {check_name}")
+            if release_readiness.get("channel") != release_channel:
+                failures.append("release readiness channel mismatch")
 
 if failures:
     print("RELEASE PROVENANCE CHECK FAILED")

@@ -64,6 +64,7 @@ Cosign, SLSA or store credentials are available:
 - `target/release-evidence/provenance.json` records source commit, workflow/run identity and hashed build materials. It is an in-toto-shaped placeholder, not a cryptographic attestation.
 - `target/release-evidence/signing-readiness.json` records signing and notarization readiness without storing secrets.
 - `target/release-evidence/provenance-readiness.json` records whether public-channel provenance requirements are satisfied.
+- `target/release-evidence/release-readiness.json` records the release gate checks that fed the provenance readiness summary.
 - `target/release-evidence/content-credentials-provenance-smoke.json` records the contract-only C2PA / Content Credentials readiness smoke result. It validates the provenance scaffold and documents that Wave 0 does not emit a signed Content Credentials payload.
 - `target/release-evidence/release-matrix.json` records the release packaging matrix validation across platforms and channels.
 - `target/release-evidence/release-evidence.json` links the SBOM/status, provenance and signing-readiness evidence into the release bundle.
