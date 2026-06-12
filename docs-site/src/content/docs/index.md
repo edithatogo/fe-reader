@@ -13,6 +13,7 @@ The project is implementation-first: contracts compile, smoke tests run, and eve
 - Adapter crates for rendering, PDF parsing, automation, plugins, bindings, and platform integration.
 - Operation mutation pipeline: `OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt`.
 - Native macOS shell checkpoint with SwiftUI-first layout, local document intake, recent documents, metadata panels, status surfaces, and command wiring.
+- Starlight docs site pages for release quality and release pipeline evidence artifacts.
 - Release provenance scaffolding with SBOM status, signing readiness, and public-channel policy checks.
 - Render backend scaffolding with validated tile requests, stable cache keys, PDFium adapter boundaries, and conservative GPU policy flags.
 - Read-only transaction journal inspection and recovery listing for sidecars that need crash-recovery review.

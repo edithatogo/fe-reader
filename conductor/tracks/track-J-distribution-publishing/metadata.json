@@ -1,0 +1,16 @@
+{
+  "track_id": "track-J-distribution-publishing",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-12T00:00:00Z",
+  "updated_at": "2026-06-12T00:00:00Z",
+  "description": "Implement distribution and publishing release flows with explicit release evidence artifacts and public docs coverage.",
+  "deliverables": [
+    ".github/workflows/07-release.yml",
+    ".github/workflows/08-docs-site.yml",
+    "docs-site/src/content/docs/release-pipeline.md",
+    "docs-site/src/content/docs/release-quality.md",
+    "scripts/release_evidence_check.sh",
+    "scripts/release_readiness_check.sh"
+  ]
+}

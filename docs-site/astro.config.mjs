@@ -21,6 +21,7 @@ export default defineConfig({
             { label: 'Architecture', slug: 'architecture' },
             { label: 'Native macOS Shell', slug: 'native-macos-shell' },
             { label: 'Release Quality', slug: 'release-quality' },
+            { label: 'Release Pipeline', slug: 'release-pipeline' },
             { label: 'Automation Safety', slug: 'automation-safety' },
           ],
         },

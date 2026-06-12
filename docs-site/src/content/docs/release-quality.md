@@ -14,6 +14,7 @@ The current release evidence scaffold records:
 - release matrix and readiness reports
 - schema and CI policy validation
 - docs-site build and dependency-audit evidence for the public Starlight documentation surface
+- release pipeline documentation that enumerates the explicit evidence artifacts
 
 Public release channels must not silently skip provenance evidence. Development and nightly lanes may stay advisory while the tooling baseline is still being established.
 
