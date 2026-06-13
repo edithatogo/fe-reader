@@ -1,0 +1,15 @@
+{
+  "track_id": "track-AE-docs-community-adoption",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T03:12:26Z",
+  "description": "Track for Track AE: Documentation, Training & Community implementation and registry tracking.",
+  "deliverables": [
+    "Track-specific contract updates",
+    "Track-specific schema updates",
+    "Smoke tests and phase-gate integration",
+    "Documentation updates",
+    "Release evidence notes when the track affects public behaviour"
+  ]
+}
