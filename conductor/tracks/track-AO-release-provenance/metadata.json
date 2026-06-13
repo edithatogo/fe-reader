@@ -1,0 +1,16 @@
+{
+  "track_id": "track-AO-release-provenance",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Record auditable release provenance, SBOM status, signing readiness, and release-evidence bundle scaffolding.",
+  "deliverables": [
+    "docs/reproducible-builds-provenance.md",
+    "docs/release-operations-updates.md",
+    "docs/release-readiness-v7-checklist.md",
+    "scripts/release_evidence_check.sh",
+    "scripts/release_provenance_check.py",
+    "scripts/signing_readiness_check.sh"
+  ]
+}

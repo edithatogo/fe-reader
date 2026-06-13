@@ -1,0 +1,19 @@
+{
+  "track_id": "track-N-performance-engineering",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Make performance measurable, enforceable, and cross-platform with budgets, benchmarks, profiling, and release optimization lanes.",
+  "deliverables": [
+    "docs/performance-engineering.md",
+    "docs/platform-performance-playbooks.md",
+    "benchmarks/budgets/performance-budgets.yaml",
+    "benchmarks/scenarios/*.yaml",
+    "contracts/rust/performance.rs",
+    "scripts/perf_smoke.sh",
+    "scripts/perf_profile_linux.sh",
+    "ci/performance.yml.sample",
+    "crates/xtask/src/perf.rs"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "track_id": "track-S-developer-ecosystem-sdk",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Implement public SDK contracts, API versioning guidance, examples, contract tests, and plugin devkit scaffolding.",
+  "deliverables": [
+    "docs/developer-ecosystem-sdk.md",
+    "docs/web-version.md",
+    "docs/sidecar-format-versioning-migrations.md",
+    "contracts/snapshots/rust-public-api/*.json",
+    "scripts/api_compat_check.sh",
+    "scripts/public_api_snapshot_check.sh",
+    "scripts/version_consistency_check.py"
+  ]
+}

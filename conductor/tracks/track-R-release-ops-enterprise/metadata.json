@@ -1,0 +1,17 @@
+{
+  "track_id": "track-R-release-ops-enterprise",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Implement release operations, signed update manifests, SBOM/provenance, and enterprise policy readiness.",
+  "deliverables": [
+    "contracts/rust/update_channel.rs",
+    "schemas/release-evidence.schema.json",
+    "scripts/release_readiness_check.sh",
+    "scripts/release_evidence_check.sh",
+    "scripts/sbom_audit.sh",
+    "docs/release-operations-updates.md",
+    "docs/dependency-and-tool-version-policy.md"
+  ]
+}

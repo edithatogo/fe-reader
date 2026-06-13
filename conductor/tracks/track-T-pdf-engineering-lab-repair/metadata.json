@@ -1,0 +1,17 @@
+{
+  "track_id": "track-T-pdf-engineering-lab-repair",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Build the read-only PDF Engineering Lab, safe-open diagnostics, and copy-only repair planning layer.",
+  "deliverables": [
+    "contracts/rust/pdf_lab.rs",
+    "contracts/rust/recovery.rs",
+    "schemas/pdf-lab-session.schema.json",
+    "schemas/recovery-report.schema.json",
+    "scripts/pdf_lab_inspect_smoke.sh",
+    "scripts/pdf_lab_text_map_smoke.sh",
+    "scripts/pdf_repair_smoke.sh"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "track_id": "track-W-reproducible-builds-provenance",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Generate release evidence, SBOM, provenance, signing readiness, and reproducibility documentation.",
+  "deliverables": [
+    "schemas/release-evidence.schema.json",
+    "contracts/rust/release_evidence.rs",
+    "scripts/release_evidence_check.sh",
+    "scripts/release_provenance_check.py",
+    "scripts/sbom_audit.sh",
+    "scripts/signing_readiness_check.sh"
+  ]
+}

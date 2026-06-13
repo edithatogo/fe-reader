@@ -1,0 +1,17 @@
+{
+  "track_id": "track-Q-search-text-i18n",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Implement deterministic search, text extraction diagnostics, Unicode coverage, and release compatibility reporting.",
+  "deliverables": [
+    "crates/fe_reader_search/src/lib.rs",
+    "crates/fe_reader_text/src/lib.rs",
+    "scripts/search_index_smoke.sh",
+    "scripts/search_compatibility_report.py",
+    "docs/text-font-i18n-plan.md",
+    "docs/privacy-diagnostics-observability.md",
+    "docs/content-addressed-cache-workspace.md"
+  ]
+}

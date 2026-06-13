@@ -1,0 +1,14 @@
+{
+  "track_id": "track-C-bindings-abi",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Track for Track C: Bindings & ABI implementation and registry tracking.",
+  "deliverables": [
+    "Compileable crate/module skeletons",
+    "Unit tests and at least one golden/smoke test",
+    "Documentation update",
+    "Contract/schema update where public shape changes"
+  ]
+}

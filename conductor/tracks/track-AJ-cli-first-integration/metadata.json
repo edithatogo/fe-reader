@@ -1,0 +1,22 @@
+{
+  "track_id": "track-AJ-cli-first-integration",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Track for CLI First Integration implementation and registry tracking.",
+  "deliverables": [
+    "cargo metadata --format-version=1",
+    "cargo test --workspace --all-targets",
+    "fixtures/minimal/minimal.pdf",
+    "docs/wave0-contract-acceptance-tests.md",
+    "fe-reader inspect fixtures/minimal/minimal.pdf --json",
+    "summary.parser.page_count = 1",
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+    "python3 scripts/strict_contract_check.py",
+    "python3 scripts/validate_schemas.py",
+    "bash scripts/v8_cli_smoke.sh",
+    "bash scripts/wave0_bootstrap_check.sh"
+  ]
+}

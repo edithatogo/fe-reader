@@ -1,0 +1,16 @@
+{
+  "track_id": "track-P-compatibility-corpus-visual-qa",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
+  "description": "Build the compatibility corpus, visual regression comparison, and corpus governance coverage for accepted fixture classes.",
+  "deliverables": [
+    "fixtures/corpus/manifest.json",
+    "schemas/test-fixture.schema.json",
+    "scripts/corpus_manifest_validate.py",
+    "scripts/visual_regression_compare.py",
+    "scripts/compatibility_corpus_report.py",
+    "scripts/wave7_release_hardening_smoke.py"
+  ]
+}

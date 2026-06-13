@@ -1,0 +1,17 @@
+{
+  "track_id": "track-O-security-isolation-policy",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T01:50:50Z",
+  "description": "Track O owns threat modelling, sandbox boundaries, automation safety, policy evaluation and dangerous PDF feature handling.",
+  "deliverables": [
+    "`fe_reader_security` crate",
+    "`SecurityPolicyEngine` implementation",
+    "default policy templates",
+    "sandbox/process isolation plan",
+    "automation read-only defaults",
+    "embedded JavaScript/RichMedia/Launch action detection policy",
+    "security phase-gate checks"
+  ]
+}
