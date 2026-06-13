@@ -1,0 +1,15 @@
+{
+  "track_id": "track-AH-agent-evaluation-harness",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T03:15:50Z",
+  "description": "Track for Track AH: Coding Agent Evaluation Harness implementation and registry tracking.",
+  "deliverables": [
+    "Rust contract file in `contracts/rust/`",
+    "JSON Schema in `schemas/` where relevant",
+    "CLI or xtask smoke command where feasible",
+    "Conductor phase-gate entry",
+    "Documentation in `docs/`"
+  ]
+}
