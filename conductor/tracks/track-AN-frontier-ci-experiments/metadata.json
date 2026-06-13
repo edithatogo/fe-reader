@@ -1,0 +1,20 @@
+{
+  "track_id": "track-AN-frontier-ci-experiments",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T03:22:52Z",
+  "description": "Purpose: make v9 repository enforcement executable and auditable.",
+  "deliverables": [
+    "python3 scripts/strict_contract_check.py",
+    "python3 scripts/ci_policy_check.py",
+    "docs/v9-coding-agent-start-here.md",
+    "scripts/frontier_ci_check.py",
+    "continue-on-error",
+    "artifacts/perf/manifest.json",
+    "artifacts/perf/summary.md",
+    "target/frontier-reports",
+    "contracts/ci/contract-test-matrix.yaml",
+    "scripts/conductor_phase_gate.sh --phase track-AN-frontier-ci-experiments --auto-fix"
+  ]
+}
