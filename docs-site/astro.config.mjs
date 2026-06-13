@@ -22,6 +22,7 @@ export default defineConfig({
             { label: 'Native macOS Shell', slug: 'native-macos-shell' },
             { label: 'Release Quality', slug: 'release-quality' },
             { label: 'Release Pipeline', slug: 'release-pipeline' },
+            { label: 'Stable Desktop Release', slug: 'stable-desktop-release' },
             { label: 'Automation Safety', slug: 'automation-safety' },
           ],
         },

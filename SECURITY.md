@@ -8,7 +8,7 @@
 
 ## Reporting Vulnerabilities
 
-Use GitHub private vulnerability reporting when available for this repository.
+Use GitHub private vulnerability reporting when available for this repository so vulnerabilities can be reported privately.
 If private reporting is unavailable, open a minimal public issue that says a
 private security report is needed, without exploit details, private documents,
 paths, credentials or payloads.

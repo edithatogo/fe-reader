@@ -2,39 +2,46 @@
 
 ## Phase AW1 - Launch QA command
 
-- [ ] Task: Add a launch QA aggregator.
-    - [ ] Run desktop smoke checks.
-    - [ ] Run CLI and contract checks.
-    - [ ] Run compatibility/performance/accessibility/security/visual checks or validate evidence.
-    - [ ] Emit a concise launch readiness summary.
-- [ ] Task: Run `scripts/conductor_phase_gate.sh --phase AW1 --auto-fix`.
+- [x] Task: Add a launch QA aggregator.
+    - [x] Run desktop smoke checks.
+    - [x] Run CLI and contract checks.
+    - [x] Run compatibility/performance/accessibility/security/visual checks or validate evidence.
+    - [x] Emit a concise launch readiness summary.
+- [x] Task: Run `scripts/conductor_phase_gate.sh --phase AW1 --auto-fix`.
 
 ## Phase AW2 - README and install docs
 
-- [ ] Task: Update public install and verification documentation.
-    - [ ] Link release artifacts and checksums.
-    - [ ] Document macOS, Windows and Linux install flows.
-    - [ ] Document verification commands.
-- [ ] Task: Run `scripts/conductor_phase_gate.sh --phase AW2 --auto-fix`.
+- [x] Task: Update public install and verification documentation.
+    - [x] Link release artifacts and checksums.
+    - [x] Document macOS, Windows and Linux install flows.
+    - [x] Document verification commands.
+- [x] Task: Run `scripts/conductor_phase_gate.sh --phase AW2 --auto-fix`.
 
 ## Phase AW3 - Docs site and homepage links
 
-- [ ] Task: Update docs/homepage release surfaces.
-    - [ ] Add stable desktop release page.
-    - [ ] Add registry/package links.
-    - [ ] Ensure GitHub homepage metadata represented in repo files is current.
-- [ ] Task: Run `scripts/conductor_phase_gate.sh --phase AW3 --auto-fix`.
+- [x] Task: Update docs/homepage release surfaces.
+    - [x] Add stable desktop release page.
+    - [x] Add registry/package links.
+    - [x] Ensure GitHub homepage metadata represented in repo files is current.
+- [x] Task: Run `scripts/conductor_phase_gate.sh --phase AW3 --auto-fix`.
 
 ## Phase AW4 - Limitations and support
 
-- [ ] Task: Document launch limitations and support routes.
-    - [ ] Document mobile advisory status.
-    - [ ] Document ML/RAG deferral.
-    - [ ] Document cloud collaboration deferral.
-    - [ ] Link security and support policies.
-- [ ] Task: Run `scripts/conductor_phase_gate.sh --phase AW4 --auto-fix`.
+- [x] Task: Document launch limitations and support routes.
+    - [x] Document mobile advisory status.
+    - [x] Document ML/RAG deferral.
+    - [x] Document cloud collaboration deferral.
+    - [x] Link security and support policies.
+- [x] Task: Run `scripts/conductor_phase_gate.sh --phase AW4 --auto-fix`.
 
 ## Exit Criteria
 
 - Public docs and launch QA evidence align with actual stable desktop release readiness.
 
+## Completion Evidence
+
+- Added `scripts/launch_qa_check.py`, wired it into the release workflow, and recorded `target/release-evidence/launch-qa.json`.
+- Added stable desktop install/verification docs, launch limitations, support routing and Starlight release page.
+- Updated README and repository metadata with release, QA, support and security links.
+- Passed focused checks: `python3 scripts/launch_qa_check.py`, `python3 scripts/release_provenance_check.py`, `python3 scripts/ci_policy_check.py`, and `npm run build` in `docs-site/`.
+- Passed phase gates: `scripts/conductor_phase_gate.sh --phase AW1 --auto-fix`, `AW2`, `AW3`, and `AW4`.

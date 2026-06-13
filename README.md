@@ -103,11 +103,27 @@ Package registry links become authoritative only after the first signed preview
 artifacts are published. Until then, GitHub Releases are the canonical release
 index.
 
+Stable desktop release instructions live in
+[`docs/stable-desktop-release.md`](docs/stable-desktop-release.md). A desktop
+release should publish platform artifacts, `SHA256SUMS`, signatures, release
+notes and the GitHub Actions `release-evidence` bundle before registry or
+homepage claims are treated as authoritative.
+
 Desktop distribution gates are documented in
 [`docs/desktop-distribution-publication.md`](docs/desktop-distribution-publication.md),
 with machine-readable state in
 [`packaging/registry-status.yaml`](packaging/registry-status.yaml) and
 [`packaging/desktop-distribution.yaml`](packaging/desktop-distribution.yaml).
+
+Launch QA is summarized by:
+
+```bash
+python3 scripts/launch_qa_check.py
+```
+
+Known launch limitations and support routes are documented in
+[`docs/launch-limitations-support.md`](docs/launch-limitations-support.md),
+[`SUPPORT.md`](SUPPORT.md) and [`SECURITY.md`](SECURITY.md).
 
 ## Documentation
 

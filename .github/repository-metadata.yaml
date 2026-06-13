@@ -4,5 +4,9 @@ releases: https://github.com/edithatogo/fe-reader/releases
 documentation: https://edithatogo.github.io/fe-reader/
 packages:
   release_index: https://github.com/edithatogo/fe-reader/releases
+  stable_desktop_release: docs/stable-desktop-release.md
+  launch_qa: scripts/launch_qa_check.py
   distribution_status: packaging/registry-status.yaml
   desktop_publication_gate: packaging/desktop-distribution.yaml
+  support: SUPPORT.md
+  security: SECURITY.md

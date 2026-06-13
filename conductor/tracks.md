@@ -158,7 +158,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Launch QA, Documentation and Homepage**
+- [x] **Track: Launch QA, Documentation and Homepage**
 *Link: [./tracks/track-AW-launch-qa-docs-homepage/](./tracks/track-AW-launch-qa-docs-homepage/)*
 
 ---

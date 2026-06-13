@@ -1,9 +1,8 @@
 {
   "track_id": "track-AW-launch-qa-docs-homepage",
   "type": "feature",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-06-13T17:23:07Z",
-  "updated_at": "2026-06-13T17:23:07Z",
+  "updated_at": "2026-06-13T23:57:13Z",
   "description": "Launch QA, documentation and homepage readiness for stable desktop release."
 }
-

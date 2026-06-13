@@ -1,0 +1,36 @@
+---
+title: Stable Desktop Release
+description: Install, verification, launch QA and known limitation guidance for desktop releases.
+---
+
+Fe Reader stable desktop releases are evidence-gated. A release is not stable-ready until signed artifacts, checksums, release evidence and maintainer approval exist for each target platform.
+
+## Install Sources
+
+- GitHub Releases: <https://github.com/edithatogo/fe-reader/releases>
+- Registry status: `packaging/registry-status.yaml`
+- Desktop publication gate: `packaging/desktop-distribution.yaml`
+
+Package registries become authoritative only after their signed artifact and checksum are published.
+
+## Verification
+
+Every desktop release should include `SHA256SUMS`, signatures and a `release-evidence` artifact.
+
+```bash
+sha256sum -c SHA256SUMS
+python3 scripts/launch_qa_check.py
+```
+
+macOS releases also require Developer ID signing and notarization evidence. Windows releases require Authenticode evidence. Linux package channels require the relevant artifact checksum and repository or store review evidence.
+
+## Known launch limitations
+
+- Mobile store packages are deferred.
+- ML/RAG features are deferred.
+- Cloud collaboration is deferred.
+- Registry publication remains blocked until signed artifacts, checksums, credentials and maintainer approval are available.
+
+## Support and Security
+
+Use `SUPPORT.md` for support routing and `SECURITY.md` for vulnerability reporting. Do not post private PDFs, document text, credentials or support bundles in public issues.

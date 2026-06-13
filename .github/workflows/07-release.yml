@@ -57,6 +57,7 @@ jobs:
       - run: python3 scripts/release_provenance_check.py
       - run: python3 scripts/release_matrix_check.py
       - run: bash scripts/release_readiness_check.sh
+      - run: python3 scripts/launch_qa_check.py
       - uses: actions/upload-artifact@v7 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
         with:
           name: release-evidence
