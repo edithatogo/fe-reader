@@ -30,6 +30,7 @@
 - Long-running jobs with progress, cancellation and power/thermal budgets.
 - Public quality signals and release-readiness dashboards.
 - Toolchain optimisation and experimental lanes for build speed, PGO/BOLT and allocator/SIMD experiments.
+- Content-addressed cache, workspace catalogue and offline collaboration review packets.
 - MCP server with read-only default.
 - COM/AppleScript/D-Bus/App Intents/Android intents automation.
 - Web/PWA local viewer.
