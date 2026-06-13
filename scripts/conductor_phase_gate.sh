@@ -41,9 +41,13 @@ python3 scripts/strict_mutation_contract_check.py
 python3 scripts/architecture_compliance_check.py --workspace-root .
 python3 scripts/corpus_manifest_validate.py
 bash scripts/security_policy_check.sh
+python3 scripts/job_contract_smoke.py
+if [[ -x scripts/optimization_oracle_smoke.sh ]]; then scripts/optimization_oracle_smoke.sh; fi
+if [[ -x scripts/source_linked_smoke.sh ]]; then scripts/source_linked_smoke.sh; fi
+if [[ -x scripts/cache_workspace_smoke.sh ]]; then scripts/cache_workspace_smoke.sh; fi
 
 if [[ -x scripts/sbom_audit.sh ]]; then scripts/sbom_audit.sh || echo "SBOM audit advisory skip/failure before tooling hardening"; fi
-if [[ -x scripts/perf_smoke.sh ]]; then scripts/perf_smoke.sh || echo "perf smoke advisory skip"; fi
+if [[ -x scripts/perf_smoke.sh && "${CONDUCTOR_SKIP_PERF_SMOKE:-0}" != "1" ]]; then scripts/perf_smoke.sh || echo "perf smoke advisory skip"; fi
 if [[ -x scripts/search_index_smoke.sh ]]; then scripts/search_index_smoke.sh || echo "search smoke advisory skip"; fi
 if [[ -x scripts/metadata_wave2_smoke.sh ]]; then scripts/metadata_wave2_smoke.sh || echo "metadata Wave 2 advisory skip"; fi
 if [[ -x scripts/cli_golden_smoke.sh ]]; then scripts/cli_golden_smoke.sh || echo "CLI golden advisory skip"; fi
@@ -54,6 +58,8 @@ if [[ -x scripts/wave1_render_smoke.sh ]]; then scripts/wave1_render_smoke.sh ||
 if [[ -x scripts/platform_recent_smoke.sh ]]; then scripts/platform_recent_smoke.sh || echo "platform recent-document advisory skip"; fi
 if [[ -x scripts/pdf_lab_inspect_smoke.sh ]]; then scripts/pdf_lab_inspect_smoke.sh || echo "PDF lab inspect advisory skip"; fi
 if [[ -x scripts/pdf_lab_text_map_smoke.sh ]]; then scripts/pdf_lab_text_map_smoke.sh || echo "PDF lab text-map advisory skip"; fi
+if [[ -x scripts/pdf_lab_timeline_smoke.sh ]]; then scripts/pdf_lab_timeline_smoke.sh || echo "PDF lab timeline advisory skip"; fi
+if [[ -x scripts/pdf_lab_redaction_scan_smoke.sh ]]; then scripts/pdf_lab_redaction_scan_smoke.sh || echo "PDF lab redaction-scan advisory skip"; fi
 if [[ -x scripts/wave4_distribution_smoke.sh ]]; then scripts/wave4_distribution_smoke.sh || echo "Wave 4 distribution advisory skip"; fi
 if [[ -x scripts/wave5_integration_smoke.sh ]]; then scripts/wave5_integration_smoke.sh || echo "Wave 5 integration advisory skip"; fi
 if [[ -x scripts/wave6_frontier_optional_smoke.sh ]]; then scripts/wave6_frontier_optional_smoke.sh || echo "Wave 6 frontier advisory skip"; fi

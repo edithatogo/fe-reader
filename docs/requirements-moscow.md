@@ -26,6 +26,8 @@
 - OCR and searchable PDF generation.
 - DOCX/Markdown/HTML/image export.
 - Typst/Quarto/LaTeX/Pandoc integration.
+- PDF optimisation, linearisation and safe rewrite receipts.
+- Long-running jobs with progress, cancellation and power/thermal budgets.
 - MCP server with read-only default.
 - COM/AppleScript/D-Bus/App Intents/Android intents automation.
 - Web/PWA local viewer.

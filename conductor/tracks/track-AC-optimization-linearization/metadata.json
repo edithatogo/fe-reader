@@ -1,0 +1,15 @@
+{
+  "track_id": "track-AC-optimization-linearization",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T02:00:00Z",
+  "description": "Track for Track AC: PDF Optimisation & Linearisation implementation and registry tracking.",
+  "deliverables": [
+    "Track-specific contract updates",
+    "Track-specific schema updates",
+    "Smoke tests and phase-gate integration",
+    "Documentation updates",
+    "Release evidence notes when the track affects public behaviour"
+  ]
+}
