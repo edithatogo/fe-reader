@@ -148,7 +148,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Desktop Distribution Publication**
+- [x] **Track: Desktop Distribution Publication**
 *Link: [./tracks/track-AU-desktop-distribution-publication/](./tracks/track-AU-desktop-distribution-publication/)*
 
 ---

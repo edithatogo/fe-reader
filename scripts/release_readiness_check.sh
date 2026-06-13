@@ -81,7 +81,23 @@ elif [[ "$CHANNEL" == "stable" || "$CHANNEL" == "lts" || "$CHANNEL" == "store_su
   echo "missing stable release evidence report for release channel: $CHANNEL" >&2
   exit 1
 fi
-python3 - "$CHANNEL" "$SBOM_STATUS" "$SBOM_DETAIL" "$PROVENANCE_STATUS" "$SIGNING_STATUS" "$DESKTOP_PACKAGING_STATUS" "$STABLE_EVIDENCE_STATUS" "${REQUIRED[@]}" <<'PY'
+DESKTOP_DISTRIBUTION_STATUS="advisory"
+if [[ -f target/release-evidence/desktop-distribution-publication.json ]]; then
+  DESKTOP_DISTRIBUTION_STATUS="$(python3 - <<'PY'
+import json
+from pathlib import Path
+print(json.loads(Path("target/release-evidence/desktop-distribution-publication.json").read_text()).get("status", "unknown"))
+PY
+)"
+  if [[ "$DESKTOP_DISTRIBUTION_STATUS" == "fail" && ( "$CHANNEL" == "stable" || "$CHANNEL" == "lts" || "$CHANNEL" == "store_submission" ) ]]; then
+    echo "desktop distribution publication blocked for release channel: $CHANNEL" >&2
+    exit 1
+  fi
+elif [[ "$CHANNEL" == "stable" || "$CHANNEL" == "lts" || "$CHANNEL" == "store_submission" ]]; then
+  echo "missing desktop distribution publication report for release channel: $CHANNEL" >&2
+  exit 1
+fi
+python3 - "$CHANNEL" "$SBOM_STATUS" "$SBOM_DETAIL" "$PROVENANCE_STATUS" "$SIGNING_STATUS" "$DESKTOP_PACKAGING_STATUS" "$STABLE_EVIDENCE_STATUS" "$DESKTOP_DISTRIBUTION_STATUS" "${REQUIRED[@]}" <<'PY'
 import hashlib
 import json
 import sys
@@ -89,7 +105,7 @@ from pathlib import Path
 
 import yaml
 
-channel, sbom_status, sbom_detail, provenance_status, signing_status, desktop_packaging_status, stable_evidence_status, *required = sys.argv[1:]
+channel, sbom_status, sbom_detail, provenance_status, signing_status, desktop_packaging_status, stable_evidence_status, desktop_distribution_status, *required = sys.argv[1:]
 files = []
 for rel in required:
     path = Path(rel)
@@ -118,6 +134,7 @@ report = {
         {"name": "signing_readiness", "status": signing_status, "detail": "target/release-evidence/signing-readiness.json"},
         {"name": "desktop_packaging_signing", "status": desktop_packaging_status, "detail": "target/release-evidence/desktop-packaging-signing.json"},
         {"name": "stable_release_evidence", "status": stable_evidence_status, "detail": "target/release-evidence/stable-release-evidence.json"},
+        {"name": "desktop_distribution_publication", "status": desktop_distribution_status, "detail": "target/release-evidence/desktop-distribution-publication.json"},
     ],
 }
 for artifact in report["required_files"]:

@@ -1,6 +1,6 @@
 # Maintainer: Fe Reader Project
 pkgname=fe-reader
-pkgver=0.1.0
+pkgver=0.1.0_preview.1
 pkgrel=1
 pkgdesc="Local-first cross-platform PDF workflow platform"
 arch=('x86_64')

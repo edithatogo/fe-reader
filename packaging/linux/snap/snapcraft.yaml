@@ -1,6 +1,6 @@
 name: fe-reader
 base: core24
-version: '0.1.0'
+version: '0.1.0-preview.1'
 summary: Local-first PDF workflow platform
 description: Local-first cross-platform PDF workflow platform.
 grade: devel

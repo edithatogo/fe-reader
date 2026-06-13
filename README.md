@@ -16,6 +16,7 @@ package.
 - Rust crate API version: `0.1.0`
 - Documentation: <https://edithatogo.github.io/fe-reader/>
 - Repository: <https://github.com/edithatogo/fe-reader>
+- Releases and package status: <https://github.com/edithatogo/fe-reader/releases>
 - License: `Apache-2.0 OR MIT`
 
 ## Architecture
@@ -101,6 +102,12 @@ gated on signed artifacts, release evidence and registry credentials.
 Package registry links become authoritative only after the first signed preview
 artifacts are published. Until then, GitHub Releases are the canonical release
 index.
+
+Desktop distribution gates are documented in
+[`docs/desktop-distribution-publication.md`](docs/desktop-distribution-publication.md),
+with machine-readable state in
+[`packaging/registry-status.yaml`](packaging/registry-status.yaml) and
+[`packaging/desktop-distribution.yaml`](packaging/desktop-distribution.yaml).
 
 ## Documentation
 

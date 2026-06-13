@@ -12,11 +12,16 @@ evidence_dir.mkdir(parents=True, exist_ok=True)
 required = [
     "packaging/package-matrix.yaml",
     "packaging/release-channels.yaml",
+    "packaging/registry-status.yaml",
+    "packaging/desktop-distribution.yaml",
+    "docs/release-notes/v0.1.0-preview.1.md",
     "packaging/windows/winget/FeReader.yaml",
+    "packaging/windows/chocolatey/fe-reader.nuspec",
     "packaging/windows/scoop/fe-reader.json",
     "packaging/macos/homebrew/fe-reader.rb",
     "packaging/linux/flatpak/org.fereader.FeReader.yml",
     "packaging/linux/snap/snapcraft.yaml",
+    "packaging/linux/aur/PKGBUILD",
 ]
 missing = [p for p in required if not (root / p).exists()]
 if missing:
@@ -26,11 +31,18 @@ matrix = (root / "packaging/package-matrix.yaml").read_text(encoding="utf-8")
 channels = (root / "packaging/release-channels.yaml").read_text(encoding="utf-8")
 matrix_doc = yaml.safe_load(matrix)
 channels_doc = yaml.safe_load(channels)
+distribution_doc = yaml.safe_load((root / "packaging/desktop-distribution.yaml").read_text(encoding="utf-8"))
 if not isinstance(matrix_doc, dict) or "targets" not in matrix_doc:
     print("package matrix missing targets mapping", file=sys.stderr)
     raise SystemExit(1)
 if not isinstance(channels_doc, dict) or "channels" not in channels_doc:
     print("release channels missing channels mapping", file=sys.stderr)
+    raise SystemExit(1)
+if not isinstance(distribution_doc, dict) or "surfaces" not in distribution_doc:
+    print("desktop distribution metadata missing surfaces mapping", file=sys.stderr)
+    raise SystemExit(1)
+if distribution_doc.get("release_tag") != f"v{distribution_doc.get('version')}":
+    print("desktop distribution release tag/version mismatch", file=sys.stderr)
     raise SystemExit(1)
 
 target_checks = {
@@ -112,6 +124,7 @@ report = {
     "targets": ["windows", "macos", "linux", "android", "ios"],
     "channels": ["nightly", "preview", "stable"],
     "desktop_artifact_platforms": ["macos", "windows", "linux"],
+    "desktop_distribution_surfaces": sorted(distribution_doc["surfaces"]),
 }
 for entry in report["required_files"]:
     if set(entry) != {"path", "sha256", "bytes"}:
@@ -128,6 +141,18 @@ if report["channels"] != ["nightly", "preview", "stable"]:
     raise SystemExit(1)
 if report["desktop_artifact_platforms"] != ["macos", "windows", "linux"]:
     print("desktop artifact platform ordering mismatch", file=sys.stderr)
+    raise SystemExit(1)
+if report["desktop_distribution_surfaces"] != [
+    "aur",
+    "chocolatey",
+    "flatpak",
+    "github_releases",
+    "homebrew",
+    "scoop",
+    "snap",
+    "winget",
+]:
+    print("desktop distribution surface ordering mismatch", file=sys.stderr)
     raise SystemExit(1)
 (evidence_dir / "release-matrix.json").write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
 print("release matrix: ok")

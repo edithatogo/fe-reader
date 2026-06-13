@@ -1,0 +1,48 @@
+version: 0.1.0-preview.1
+release_tag: v0.1.0-preview.1
+release_notes: docs/release-notes/v0.1.0-preview.1.md
+release_url: https://github.com/edithatogo/fe-reader/releases/tag/v0.1.0-preview.1
+approval:
+  required: true
+  approver: maintainer
+  evidence: target/release-evidence/stable-release-evidence.json
+  policy: publication requires signed artifacts, checksums, release evidence and explicit maintainer approval
+surfaces:
+  github_releases:
+    status: blocked_signed_desktop_artifacts_required
+    url: https://github.com/edithatogo/fe-reader/releases
+    blocker: signed desktop artifacts and checksums must exist before public release publication
+    artifacts: [dmg, pkg, msi, msix, portable_zip, appimage, deb, rpm, tarball]
+  homebrew:
+    status: blocked_signed_notarized_dmg_required
+    manifest: packaging/macos/homebrew/fe-reader.rb
+    artifact: dmg
+    blocker: signed and notarized DMG required
+  winget:
+    status: blocked_signed_windows_artifact_required
+    manifest: packaging/windows/winget/FeReader.yaml
+    artifact: msi
+    blocker: signed MSI/MSIX required
+  chocolatey:
+    status: blocked_signed_windows_artifact_required
+    manifest: packaging/windows/chocolatey/fe-reader.nuspec
+    artifact: msi
+    blocker: signed Windows artifact required
+  scoop:
+    status: blocked_signed_portable_zip_required
+    manifest: packaging/windows/scoop/fe-reader.json
+    artifact: portable_zip
+    blocker: signed portable zip and checksum required
+  flatpak:
+    status: blocked_desktop_app_artifact_required
+    manifest: packaging/linux/flatpak/org.fereader.FeReader.yml
+    blocker: desktop app artifact and Flathub review required
+  snap:
+    status: blocked_snap_artifact_required
+    manifest: packaging/linux/snap/snapcraft.yaml
+    blocker: built snap and store review required
+  aur:
+    status: blocked_source_tarball_checksum_required
+    manifest: packaging/linux/aur/PKGBUILD
+    artifact: tarball
+    blocker: source tarball and checksums required

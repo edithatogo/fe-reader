@@ -1,0 +1,8 @@
+homepage: https://edithatogo.github.io/fe-reader/
+repository: https://github.com/edithatogo/fe-reader
+releases: https://github.com/edithatogo/fe-reader/releases
+documentation: https://edithatogo.github.io/fe-reader/
+packages:
+  release_index: https://github.com/edithatogo/fe-reader/releases
+  distribution_status: packaging/registry-status.yaml
+  desktop_publication_gate: packaging/desktop-distribution.yaml

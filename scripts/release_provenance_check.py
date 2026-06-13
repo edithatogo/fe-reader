@@ -26,6 +26,7 @@ if workflow:
         "bash scripts/signing_readiness_check.sh",
         "python3 scripts/desktop_packaging_signing_check.py",
         "python3 scripts/stable_release_evidence_check.py",
+        "python3 scripts/desktop_distribution_publication_check.py",
         "bash scripts/release_evidence_check.sh",
         "python3 scripts/release_provenance_check.py",
         "python3 scripts/release_matrix_check.py",
@@ -43,6 +44,7 @@ for script in [
     "scripts/signing_readiness_check.sh",
     "scripts/desktop_packaging_signing_check.py",
     "scripts/stable_release_evidence_check.py",
+    "scripts/desktop_distribution_publication_check.py",
     "scripts/release_evidence_check.sh",
     "scripts/release_readiness_check.sh",
 ]:
@@ -144,6 +146,7 @@ if evidence_dir.exists():
                 "signing_readiness",
                 "desktop_packaging_signing",
                 "stable_release_evidence",
+                "desktop_distribution_publication",
             ]:
                 if check_name not in names:
                     failures.append(f"release readiness missing check: {check_name}")

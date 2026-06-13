@@ -22,8 +22,15 @@ Fe Reader release work is evidence-first. The pipeline is designed to make every
 - `target/release-evidence/provenance.json`
 - `target/release-evidence/provenance-readiness.json`
 - `target/release-evidence/signing-readiness.json`
+- `target/release-evidence/desktop-distribution-publication.json`
 
 The GitHub release workflow uploads the complete `target/release-evidence/**` tree as the `release-evidence` artifact, so the release record stays inspectable after the job completes.
+
+## Desktop distribution
+
+Desktop package publication is represented by `packaging/desktop-distribution.yaml` and checked by `scripts/desktop_distribution_publication_check.py`. The gate keeps GitHub Releases, Homebrew, Winget, Chocolatey, Scoop, Flatpak, Snap and AUR in one of three explicit states: ready pending approval, published, or blocked with an exact reason.
+
+The public release index remains <https://github.com/edithatogo/fe-reader/releases> until signed desktop artifacts are available. Registry credentials are never stored in the repository.
 
 ## Docs-site relation
 
