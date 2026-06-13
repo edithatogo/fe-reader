@@ -1,9 +1,9 @@
 {
   "track_id": "track-I-external-integrations",
   "type": "feature",
-  "status": "complete",
+  "status": "completed",
   "created_at": "2026-06-12T00:00:00Z",
-  "updated_at": "2026-06-12T12:41:34Z",
+  "updated_at": "2026-06-13T15:23:44Z",
   "description": "Implement external integration contracts for Zotero, Obsidian/Logseq, browser extension, WebDAV/Nextcloud, email/share, and VS Code/JetBrains surfaces.",
   "deliverables": [
     "crates/fe_reader_mcp/src/lib.rs",
