@@ -1,0 +1,4 @@
+Fe Reader Wave2 Japanese vertical-writing placeholder
+Japanese: 日本語 縦書き
+Direction: vertical text coverage placeholder
+Expectation: record CJK and vertical-writing coverage only.

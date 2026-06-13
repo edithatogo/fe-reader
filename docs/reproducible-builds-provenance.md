@@ -74,6 +74,13 @@ Cosign, SLSA or store credentials are available:
 Real public releases must replace advisory placeholders with CycloneDX SBOM,
 artifact hashes, real signing/notarization receipts and provenance attestations.
 
+## Advisory waivers
+
+The current SBOM audit baseline accepts two benchmark-only transitive advisories,
+`RUSTSEC-2025-0141` and `RUSTSEC-2026-0173`, because the upstream crates do not
+currently offer a safe upgrade path. The waiver is explicit in `deny.toml` and
+keeps the release-evidence check green while leaving the advisory history visible.
+
 ## Content Credentials boundary
 
 C2PA / Content Credentials provenance authoring is contract-only in this wave.

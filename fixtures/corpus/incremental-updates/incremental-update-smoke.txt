@@ -1,0 +1,5 @@
+Fe Reader Wave3 incremental-update placeholder
+Revision 1: base content marker
+Revision 2: appended content marker
+Revision 3: incremental update and xref timeline marker
+Expectation: record incremental-update coverage only; do not claim rewrite or repair support.

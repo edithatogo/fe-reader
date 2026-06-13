@@ -25,6 +25,15 @@ OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt
 | Redaction leak scanner | Show residual sensitive text/images/object streams after redaction output. | 3 |
 | Repair planner | Propose xref rebuild, orphan cleanup, stream decode repair and page tree recovery. | 3 |
 
+## Current coverage
+
+| Coverage | Status | Evidence |
+|---|---|---|
+| Object/page graph inspection | Implemented | `scripts/pdf_lab_inspect_smoke.sh` |
+| Content/text-map diagnostics | Implemented | `scripts/pdf_lab_text_map_smoke.sh` |
+| Safe-open and repair planning | Implemented | `scripts/pdf_repair_smoke.sh` |
+| Timeline and leak scanning | Implemented | `scripts/pdf_lab_timeline_smoke.sh`, `scripts/pdf_lab_redaction_scan_smoke.sh` |
+
 ## UI surface
 
 The lab should be available through:

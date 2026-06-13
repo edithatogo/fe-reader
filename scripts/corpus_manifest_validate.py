@@ -1,18 +1,75 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, pathlib, sys
-root = pathlib.Path.cwd()
-manifest = root / "fixtures" / "corpus" / "manifest.json"
-if not manifest.exists():
-    print("corpus manifest missing; creating directories is required before Wave 0 exits", file=sys.stderr)
-    sys.exit(0)  # advisory until fixtures are materialised
+
+import json
+import pathlib
+import sys
+
+ROOT = pathlib.Path.cwd()
+MANIFEST = ROOT / "fixtures" / "corpus" / "manifest.json"
+FIXTURE_SCHEMA = ROOT / "schemas" / "test-fixture.schema.json"
+
+
+def fail(message: str, code: int = 1) -> None:
+    print(message, file=sys.stderr)
+    sys.exit(code)
+
+
+if not MANIFEST.exists():
+    fail(
+        "corpus manifest missing; creating directories is required before Wave 0 exits",
+        code=0,
+    )
+
 try:
-    data = json.loads(manifest.read_text())
-except Exception as e:
-    print(f"invalid corpus manifest: {e}", file=sys.stderr)
-    sys.exit(1)
-for item in data.get("fixtures", []):
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+except Exception as exc:
+    fail(f"invalid corpus manifest: {exc}")
+
+if manifest.get("manifest_version") != "0.1.0":
+    fail("corpus manifest must declare manifest_version 0.1.0")
+fixtures = manifest.get("fixtures")
+if not isinstance(fixtures, list) or not fixtures:
+    fail("corpus manifest must contain a non-empty fixtures array")
+
+try:
+    fixture_schema = json.loads(FIXTURE_SCHEMA.read_text(encoding="utf-8"))
+except Exception as exc:
+    fail(f"invalid fixture schema: {exc}")
+
+required = set(fixture_schema.get("required", []))
+allowed = set(fixture_schema.get("properties", {}).keys()) | {
+    "id",
+    "category",
+    "source_kind",
+    "expected_behavior",
+    "expected_search_index",
+}
+
+for item in fixtures:
+    if not isinstance(item, dict):
+        fail("each corpus manifest entry must be an object")
     if item.get("redistribution") == "forbidden":
-        print(f"forbidden fixture must not be committed: {item.get('fixture_id')}", file=sys.stderr)
-        sys.exit(1)
+        fail(f"forbidden fixture must not be committed: {item.get('fixture_id') or item.get('id')}")
+
+    fixture_id = item.get("fixture_id") or item.get("id")
+    if not fixture_id:
+        fail("corpus manifest entries must include fixture_id or id")
+
+    path = item.get("path")
+    if not path:
+        fail(f"corpus manifest entry {fixture_id} is missing path")
+    if not (ROOT / path).exists():
+        fail(f"corpus fixture path does not exist: {path}")
+
+    if "fixture_id" in item:
+        missing = [field for field in required if field not in item]
+        if missing:
+            fail(
+                f"fixture {fixture_id} is missing required fields: {', '.join(sorted(missing))}"
+            )
+        extra = sorted(set(item) - allowed)
+        if extra:
+            fail(f"fixture {fixture_id} has unexpected fields: {', '.join(extra)}")
+
 print("corpus manifest check passed")

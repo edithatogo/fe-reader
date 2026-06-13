@@ -262,6 +262,12 @@ impl RenderTileCache {
         self.tiles.len()
     }
 
+    /// Returns the aggregate byte length of cached tile buffers.
+    #[must_use]
+    pub fn byte_len(&self) -> usize {
+        self.tiles.values().map(|tile| tile.bytes.len()).sum()
+    }
+
     /// Returns true when no tiles are cached.
     #[must_use]
     pub fn is_empty(&self) -> bool {

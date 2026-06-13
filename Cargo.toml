@@ -29,6 +29,7 @@ members = [
   "crates/fe_reader_c_abi",
   "crates/fe_reader_mcp",
   "crates/fe_reader_plugin_host",
+  "crates/fe_reader_perf_benches",
   "crates/xtask"
 ]
 

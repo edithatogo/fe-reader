@@ -21,6 +21,7 @@ for path in (schema_path, contract_path, docs_path, template_path, capability_pa
 schema = json.loads(schema_path.read_text(encoding="utf-8"))
 template = json.loads(template_path.read_text(encoding="utf-8"))
 capability = json.loads(capability_path.read_text(encoding="utf-8"))
+contract = contract_path.read_text(encoding="utf-8")
 
 try:
     import jsonschema  # type: ignore
@@ -36,6 +37,10 @@ if template["permissions"].get("allow_external_build") is not False:
     raise SystemExit("source-linked template must disable external build by default")
 if template["permissions"].get("allow_network") is not False:
     raise SystemExit("source-linked template must disable network by default")
+if "source_map" not in contract:
+    raise SystemExit("source-linked contract must expose source_map")
+if "source_map_path" in contract:
+    raise SystemExit("source-linked contract must use source_map, not source_map_path")
 
 discovery = capability.get("provider_capability_discovery", {})
 if discovery.get("required_before_execution") is not True:
@@ -47,8 +52,6 @@ if policy.get("requires_explicit_user_action") is not True:
     raise SystemExit("source-linked provider policy must require explicit user action")
 if policy.get("requires_audit_receipt") is not True:
     raise SystemExit("source-linked provider policy must require audit receipt")
-
-contract = contract_path.read_text(encoding="utf-8")
 for token in ("Typst", "Quarto", "Pandoc", "Tectonic", "CustomExternal"):
     if token not in contract:
         raise SystemExit(f"source-linked contract missing provider token: {token}")

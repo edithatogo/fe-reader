@@ -34,6 +34,24 @@ pub enum PolicyAction {
     NetworkAccess,
 }
 
+/// PDF active-content category.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PdfActiveContentKind {
+    /// Embedded JavaScript action.
+    JavaScript,
+    /// Launch or open-file action.
+    Launch,
+    /// Remote URI action.
+    RemoteUri,
+    /// RichMedia content.
+    RichMedia,
+    /// Embedded executable attachment.
+    EmbeddedExecutable,
+    /// SubmitForm action.
+    SubmitForm,
+}
+
 /// Security policy configuration.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SecurityPolicy {
@@ -45,6 +63,18 @@ pub struct SecurityPolicy {
     pub allow_plugins: bool,
     /// Whether network access is allowed.
     pub allow_network: bool,
+    /// Whether embedded JavaScript actions are allowed.
+    pub allow_pdf_javascript: bool,
+    /// Whether launch/open-file actions are allowed.
+    pub allow_pdf_launch_actions: bool,
+    /// Whether RichMedia is allowed.
+    pub allow_pdf_rich_media: bool,
+    /// Whether remote URI actions are allowed.
+    pub allow_pdf_remote_uri: bool,
+    /// Whether embedded executable attachments are allowed.
+    pub allow_pdf_embedded_executables: bool,
+    /// Whether SubmitForm actions are allowed.
+    pub allow_pdf_submit_form: bool,
 }
 
 /// Policy evaluation result.
@@ -133,6 +163,58 @@ pub fn evaluate_policy(
                 PolicyDecision::allow("network access allowed by policy", true)
             } else {
                 PolicyDecision::deny("network access is disabled")
+            }
+        }
+    }
+}
+
+/// Evaluates a security policy for PDF active-content findings.
+#[must_use]
+pub fn evaluate_pdf_active_content_policy(
+    policy: &SecurityPolicy,
+    kind: PdfActiveContentKind,
+) -> PolicyDecision {
+    match kind {
+        PdfActiveContentKind::JavaScript => {
+            if policy.allow_pdf_javascript {
+                PolicyDecision::allow("PDF JavaScript allowed by policy", true)
+            } else {
+                PolicyDecision::deny("PDF JavaScript is disabled by default")
+            }
+        }
+        PdfActiveContentKind::Launch => {
+            if policy.allow_pdf_launch_actions {
+                PolicyDecision::allow("PDF launch actions allowed by policy", true)
+            } else {
+                PolicyDecision::deny("PDF launch actions are disabled by default")
+            }
+        }
+        PdfActiveContentKind::RemoteUri => {
+            if policy.allow_pdf_remote_uri {
+                PolicyDecision::allow("PDF remote URI actions allowed by policy", true)
+            } else {
+                PolicyDecision::deny("PDF remote URI actions are disabled by default")
+            }
+        }
+        PdfActiveContentKind::RichMedia => {
+            if policy.allow_pdf_rich_media {
+                PolicyDecision::allow("PDF RichMedia allowed by policy", true)
+            } else {
+                PolicyDecision::deny("PDF RichMedia is disabled by default")
+            }
+        }
+        PdfActiveContentKind::EmbeddedExecutable => {
+            if policy.allow_pdf_embedded_executables {
+                PolicyDecision::allow("embedded executables allowed by policy", true)
+            } else {
+                PolicyDecision::deny("embedded executables are disabled by default")
+            }
+        }
+        PdfActiveContentKind::SubmitForm => {
+            if policy.allow_pdf_submit_form {
+                PolicyDecision::allow("PDF submit-form actions allowed by policy", true)
+            } else {
+                PolicyDecision::deny("PDF submit-form actions are disabled by default")
             }
         }
     }
@@ -257,6 +339,26 @@ mod tests {
                     "{source:?} {action:?} denial must require review"
                 );
             }
+        }
+    }
+
+    #[test]
+    fn pdf_active_content_is_denied_by_default() {
+        let policy = SecurityPolicy::default();
+        for kind in [
+            PdfActiveContentKind::JavaScript,
+            PdfActiveContentKind::Launch,
+            PdfActiveContentKind::RemoteUri,
+            PdfActiveContentKind::RichMedia,
+            PdfActiveContentKind::EmbeddedExecutable,
+            PdfActiveContentKind::SubmitForm,
+        ] {
+            let decision = evaluate_pdf_active_content_policy(&policy, kind);
+            assert!(!decision.allowed, "{kind:?} must be denied by default");
+            assert!(
+                decision.requires_review,
+                "{kind:?} denial must require review"
+            );
         }
     }
 

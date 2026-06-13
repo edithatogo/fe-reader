@@ -1,0 +1,4 @@
+Fe Reader Wave2 ligature placeholder
+Text: office affinity efficient official
+Direction: ligature coverage placeholder
+Expectation: record ligature and font fallback coverage only.

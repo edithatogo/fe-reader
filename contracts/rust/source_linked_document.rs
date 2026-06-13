@@ -1,13 +1,15 @@
 //! Source-linked document contracts for Typst, Quarto, LaTeX/Tectonic and Pandoc workflows.
 
-#[derive(Debug, Clone)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SourceLinkedProject {
     pub project_id: String,
     pub root_dir: String,
     pub provider: BuildProviderKind,
     pub entrypoint: String,
     pub output_pdf: String,
-    pub source_map_path: Option<String>,
+    pub source_map: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

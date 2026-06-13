@@ -14,6 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = ROOT / "schemas/pdf-document-summary.schema.json"
 SNAPSHOT = ROOT / "contracts/snapshots/rust-public-api/fe_reader_pdf_model.preview.json"
 MINIMAL = "fixtures/minimal/minimal.pdf"
+MINIMAL_V1_0 = "fixtures/corpus/basic/minimal-v1_0.pdf"
+MINIMAL_V2_0 = "fixtures/corpus/basic/minimal-v2_0.pdf"
 MALFORMED = "fixtures/corpus/malformed-adversarial/truncated-catalog.pdf"
 
 
@@ -144,6 +146,34 @@ def require_minimal_summary() -> None:
         fail("minimal parser trailer keys must include Root")
 
 
+def require_versioned_fixture(path: str, expected_version: str) -> None:
+    payload = inspect(path)
+    summary = payload.get("summary")
+    if not isinstance(summary, dict):
+        fail(f"{path} inspect output missing summary object")
+    validate_with_jsonschema(summary, json.loads(SCHEMA.read_text(encoding="utf-8")))
+
+    header = summary.get("header")
+    if not isinstance(header, dict):
+        fail(f"{path} header must be an object")
+    if header.get("version") != expected_version:
+        fail(
+            f"{path} expected header version {expected_version!r}, got {header.get('version')!r}"
+        )
+
+    parser = summary.get("parser")
+    if not isinstance(parser, dict):
+        fail(f"{path} parser must be an object")
+    if parser.get("adapter") != "lopdf":
+        fail(f"{path} parser adapter must be lopdf")
+    if parser.get("page_count") != 1:
+        fail(f"{path} parser must report one page")
+    if parser.get("error") is not None:
+        fail(f"{path} parser must not report an error")
+    if summary.get("eof_marker_hint") is not True:
+        fail(f"{path} must report an EOF marker")
+
+
 def require_malformed_summary() -> None:
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
     summary = inspect(MALFORMED).get("summary")
@@ -174,6 +204,8 @@ def main() -> int:
     require_schema_tokens()
     require_snapshot()
     require_minimal_summary()
+    require_versioned_fixture(MINIMAL_V1_0, "1.0")
+    require_versioned_fixture(MINIMAL_V2_0, "2.0")
     require_malformed_summary()
     print("pdf model contract check passed")
     return 0

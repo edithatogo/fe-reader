@@ -30,6 +30,15 @@ assert has_rule({"risk_class": "ReadOnly"}, "allow")
 assert has_rule({"source": "Plugin", "risk_class": "HighMutation"}, "deny")
 assert has_rule({"risk_class": "ExternalExecution"}, "deny")
 assert has_rule({"risk_class": "SecureRedaction"}, "require_interactive_approval")
+for kind in [
+    "JavaScript",
+    "Launch",
+    "RemoteUri",
+    "RichMedia",
+    "EmbeddedExecutable",
+    "SubmitForm",
+]:
+    assert has_rule({"risk_class": "PdfActiveContent", "kind": kind}, "deny")
 assert policy.get("rules")[0].get("reason") == "read-only operations are allowed by default"
 
 mcp_policy = json.loads(json.dumps(__import__("yaml").safe_load((root / "contracts/mcp/server-policy.yaml").read_text())))

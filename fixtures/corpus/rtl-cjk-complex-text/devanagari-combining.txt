@@ -1,0 +1,4 @@
+Fe Reader Wave2 Devanagari placeholder
+Devanagari: हिन्दी कक्षा
+Direction: combining mark and shaping coverage placeholder
+Expectation: record combining-mark coverage only.

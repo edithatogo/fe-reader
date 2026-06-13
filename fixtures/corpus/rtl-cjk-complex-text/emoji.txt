@@ -1,0 +1,4 @@
+Fe Reader Wave2 emoji placeholder
+Emoji: 😀 📄 🔍
+Direction: emoji coverage placeholder
+Expectation: record emoji glyph fallback coverage only.

@@ -9,6 +9,10 @@ rust-version.workspace = true
 name = "fe-reader"
 path = "src/main.rs"
 
+[features]
+default = []
+mimalloc-allocator = ["dep:mimalloc"]
+
 [dependencies]
 anyhow.workspace = true
 serde_json.workspace = true
@@ -23,3 +27,4 @@ fe_reader_render = { path = "../fe_reader_render" }
 fe_reader_search = { path = "../fe_reader_search" }
 fe_reader_security = { path = "../fe_reader_security" }
 fe_reader_text = { path = "../fe_reader_text" }
+mimalloc = { workspace = true, optional = true }

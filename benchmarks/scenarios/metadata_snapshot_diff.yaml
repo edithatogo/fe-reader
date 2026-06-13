@@ -1,0 +1,8 @@
+version: 0.1
+scenario_id: metadata.snapshot_diff_100_pages
+command: cargo xtask perf bench --suite default
+metrics:
+  - wall_time_ms
+  - peak_rss_mb
+  - output_bytes
+  - change_count

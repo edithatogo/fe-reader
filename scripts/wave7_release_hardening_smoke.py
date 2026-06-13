@@ -108,6 +108,8 @@ def check_snapshots_and_reports(failures):
     for rel in [
         "target/frontier-reports/gpu-frontier-smoke.json",
         "target/frontier-reports/toolchain-experiment-smoke.json",
+        "target/compatibility-corpus-report.json",
+        "target/search-compatibility-report.json",
     ]:
         path = ROOT / rel
         require(path.exists(), f"missing frontier report {rel}", failures)

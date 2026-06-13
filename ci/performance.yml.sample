@@ -20,8 +20,8 @@ jobs:
         run: cargo bench --workspace --no-run
       - name: Perf smoke
         run: scripts/perf_smoke.sh
-      - name: Deterministic benchmark advisory
-        run: cargo bench --workspace || true
+      - name: Deterministic benchmark baseline
+        run: cargo xtask perf callgrind --suite deterministic
       - name: Upload perf artifacts
         uses: actions/upload-artifact@v4
         with:

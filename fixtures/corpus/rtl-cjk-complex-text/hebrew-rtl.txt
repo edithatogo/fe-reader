@@ -1,0 +1,4 @@
+Fe Reader Wave2 Hebrew RTL placeholder
+Hebrew: שלום עולם
+Direction: right-to-left
+Expectation: record RTL font fallback risk only.

@@ -83,6 +83,8 @@ benchmarks/
 | iOS/iPadOS | Xcode Instruments, Metal System Trace, Time Profiler, Allocations, Energy Log | measure Pencil latency, file coordination, and memory pressure |
 | Web/PWA | Chrome Performance panel, Lighthouse, WebGPU capture tools | measure WASM load, file access, tile compositing |
 
+The concrete platform playbooks live in [docs/platform-performance-playbooks.md](/Volumes/PortableSSD/GitHub/fe-reader/docs/platform-performance-playbooks.md).
+
 ## Build profiles
 
 Use separate build profiles rather than one overloaded `release` profile.
@@ -122,6 +124,26 @@ codegen-units = 1
 ```
 
 `release-thinlto` should be the default distribution candidate. `release-fat` is measured but not assumed faster.
+
+## Release optimisation lane
+
+The release lane compares distribution builds and allocator variants, then writes a signed report under `artifacts/perf/release/`.
+
+```bash
+cargo xtask perf release --suite default
+```
+
+The default comparison builds:
+
+- `release-thinlto` with the system allocator;
+- `release-fat` with the system allocator;
+- `release-thinlto` with the optional `mimalloc-allocator` feature.
+
+The lane records binary size and size-tool status in:
+
+- `artifacts/perf/release/manifest.json`
+- `artifacts/perf/release/summary.md`
+- `artifacts/perf/release/summary.md.sha256`
 
 ## PGO and BOLT lane
 

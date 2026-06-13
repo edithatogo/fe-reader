@@ -216,6 +216,51 @@ pub struct PdfTextMapSession {
     pub error: Option<String>,
 }
 
+/// Read-only incremental revision timeline summary.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PdfRevisionTimelineSession {
+    /// Deterministic local session id.
+    pub session_id: String,
+    /// SHA-256 of inspected bytes.
+    pub document_sha256: String,
+    /// Revision markers discovered in the byte stream.
+    pub revisions: Vec<PdfRevisionTimelineEntry>,
+    /// Deterministic findings about the observed update history.
+    pub findings: Vec<PdfLabFinding>,
+    /// Non-fatal parser error.
+    pub error: Option<String>,
+}
+
+/// One revision marker in a read-only incremental update timeline.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PdfRevisionTimelineEntry {
+    /// Zero-based revision index.
+    pub revision_index: u32,
+    /// Offset of the `startxref` marker in the raw byte stream.
+    pub startxref_offset: usize,
+    /// Whether this revision appears to be incremental.
+    pub incremental_update: bool,
+    /// Whether a `/Prev` marker was observed near the revision.
+    pub prev_marker: bool,
+}
+
+/// Read-only residual leak scan report for a redacted PDF and its receipt.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PdfRedactionLeakScanSession {
+    /// Deterministic local session id.
+    pub session_id: String,
+    /// SHA-256 of inspected bytes.
+    pub document_sha256: String,
+    /// SHA-256 of the receipt bytes when supplied.
+    pub receipt_sha256: Option<String>,
+    /// Residual markers discovered in the document bytes or extracted text.
+    pub residual_markers: Vec<String>,
+    /// Deterministic findings about redaction leakage.
+    pub findings: Vec<PdfLabFinding>,
+    /// Non-fatal parser error.
+    pub error: Option<String>,
+}
+
 /// Read-only content stream diagnostic summary.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PdfContentStreamDiagnostic {
@@ -356,6 +401,67 @@ pub fn inspect_text_map_bytes(
 ) -> Result<PdfTextMapSession, FeError> {
     require_pdf_header(bytes)?;
     Ok(inspect_text_map_with_lopdf(bytes, page_index))
+}
+
+/// Builds a read-only incremental revision timeline from a path.
+///
+/// # Errors
+///
+/// Returns an error if the file cannot be read or does not begin with a PDF header.
+pub fn inspect_timeline_path(
+    path: impl AsRef<Path>,
+) -> Result<PdfRevisionTimelineSession, FeError> {
+    let bytes = fs::read(path.as_ref())
+        .map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    inspect_timeline_bytes(&bytes)
+}
+
+/// Builds a read-only incremental revision timeline from bytes.
+///
+/// # Errors
+///
+/// Returns an error if the byte stream does not begin with a PDF header.
+pub fn inspect_timeline_bytes(bytes: &[u8]) -> Result<PdfRevisionTimelineSession, FeError> {
+    require_pdf_header(bytes)?;
+    Ok(inspect_timeline_with_bytes(bytes))
+}
+
+/// Builds a read-only redaction leak scan from a path and optional receipt.
+///
+/// # Errors
+///
+/// Returns an error if the file cannot be read or does not begin with a PDF header.
+pub fn inspect_redaction_leak_scan_path<P, R>(
+    path: P,
+    receipt_path: Option<R>,
+) -> Result<PdfRedactionLeakScanSession, FeError>
+where
+    P: AsRef<Path>,
+    R: AsRef<Path>,
+{
+    let bytes = fs::read(path.as_ref())
+        .map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?;
+    let receipt_bytes = match receipt_path {
+        Some(path) => Some(
+            fs::read(path.as_ref())
+                .map_err(|error| FeError::new(FeErrorKind::Io, error.to_string()))?,
+        ),
+        None => None,
+    };
+    inspect_redaction_leak_scan_bytes(&bytes, receipt_bytes.as_deref())
+}
+
+/// Builds a read-only redaction leak scan from bytes and optional receipt bytes.
+///
+/// # Errors
+///
+/// Returns an error if the byte stream does not begin with a PDF header.
+pub fn inspect_redaction_leak_scan_bytes(
+    bytes: &[u8],
+    receipt_bytes: Option<&[u8]>,
+) -> Result<PdfRedactionLeakScanSession, FeError> {
+    require_pdf_header(bytes)?;
+    Ok(inspect_redaction_leak_scan_with_bytes(bytes, receipt_bytes))
 }
 
 /// Sniffs PDF bytes without full parsing.
@@ -653,6 +759,152 @@ fn inspect_text_map_with_lopdf(bytes: &[u8], page_index: PageIndex) -> PdfTextMa
     }
 }
 
+fn inspect_timeline_with_bytes(bytes: &[u8]) -> PdfRevisionTimelineSession {
+    let fingerprint = DocumentFingerprint::from_bytes(bytes);
+    let session_id = format!("timeline-{}", &fingerprint.sha256_hex[..16]);
+    let haystack = String::from_utf8_lossy(bytes);
+    let startxref_offsets = find_all_offsets(bytes, b"startxref");
+    let prev_marker_count = find_all_offsets(bytes, b"/Prev").len();
+    let has_multiple_revisions = startxref_offsets.len() > 1 || prev_marker_count > 0;
+    let revisions = if startxref_offsets.is_empty() {
+        vec![PdfRevisionTimelineEntry {
+            revision_index: 0,
+            startxref_offset: 0,
+            incremental_update: false,
+            prev_marker: false,
+        }]
+    } else {
+        startxref_offsets
+            .iter()
+            .enumerate()
+            .map(|(index, offset)| PdfRevisionTimelineEntry {
+                revision_index: index as u32,
+                startxref_offset: *offset,
+                incremental_update: index > 0 || has_multiple_revisions,
+                prev_marker: index > 0 || prev_marker_count > 0,
+            })
+            .collect::<Vec<_>>()
+    };
+    let mut findings = Vec::new();
+    if has_multiple_revisions {
+        findings.push(PdfLabFinding {
+            severity: "info".to_string(),
+            code: "incremental_revision_timeline_smoke".to_string(),
+            message: "byte markers indicate incremental update history".to_string(),
+            object_id: None,
+            page_index: None,
+        });
+    } else {
+        findings.push(PdfLabFinding {
+            severity: "info".to_string(),
+            code: "single_revision_timeline_smoke".to_string(),
+            message: "no incremental revision markers were detected".to_string(),
+            object_id: None,
+            page_index: None,
+        });
+    }
+    if haystack.contains("/Sig") || haystack.contains("/ByteRange") {
+        findings.push(PdfLabFinding {
+            severity: "warning".to_string(),
+            code: "signature_invalidated_by_incremental_update".to_string(),
+            message:
+                "signature-like markers were observed; revision changes may invalidate signatures"
+                    .to_string(),
+            object_id: None,
+            page_index: None,
+        });
+    }
+    PdfRevisionTimelineSession {
+        session_id,
+        document_sha256: fingerprint.sha256_hex,
+        revisions,
+        findings,
+        error: None,
+    }
+}
+
+fn inspect_redaction_leak_scan_with_bytes(
+    bytes: &[u8],
+    receipt_bytes: Option<&[u8]>,
+) -> PdfRedactionLeakScanSession {
+    let fingerprint = DocumentFingerprint::from_bytes(bytes);
+    let session_id = format!("leak-scan-{}", &fingerprint.sha256_hex[..16]);
+    let receipt_sha256 = receipt_bytes.map(sha256_hex);
+    let mut residual_markers = Vec::new();
+    let mut findings = Vec::new();
+    let haystack = String::from_utf8_lossy(bytes);
+    for marker in ["SECRET", "CONFIDENTIAL", "TOP SECRET", "SSN", "PASSWORD"] {
+        if haystack.contains(marker) {
+            residual_markers.push(marker.to_string());
+        }
+    }
+    let extraction = extract_text_with_lopdf(bytes);
+    for marker in ["SECRET", "CONFIDENTIAL", "TOP SECRET", "SSN", "PASSWORD"] {
+        if extraction
+            .spans
+            .iter()
+            .any(|span| span.text.contains(marker))
+            && !residual_markers.iter().any(|value| value == marker)
+        {
+            residual_markers.push(marker.to_string());
+        }
+    }
+    if residual_markers.is_empty() {
+        findings.push(PdfLabFinding {
+            severity: "info".to_string(),
+            code: "redaction_leak_scan_clean".to_string(),
+            message: "no residual sensitive markers were detected in the scan path".to_string(),
+            object_id: None,
+            page_index: None,
+        });
+    } else {
+        findings.push(PdfLabFinding {
+            severity: "warning".to_string(),
+            code: "redaction_residual_marker_detected".to_string(),
+            message:
+                "residual sensitive markers were detected in the document bytes or extracted text"
+                    .to_string(),
+            object_id: None,
+            page_index: None,
+        });
+    }
+    if receipt_sha256.is_some() {
+        findings.push(PdfLabFinding {
+            severity: "info".to_string(),
+            code: "receipt_attached".to_string(),
+            message: "redaction receipt bytes were supplied and hashed for traceability"
+                .to_string(),
+            object_id: None,
+            page_index: None,
+        });
+    }
+    PdfRedactionLeakScanSession {
+        session_id,
+        document_sha256: fingerprint.sha256_hex,
+        receipt_sha256,
+        residual_markers,
+        findings,
+        error: None,
+    }
+}
+
+fn find_all_offsets(haystack: &[u8], needle: &[u8]) -> Vec<usize> {
+    if needle.is_empty() || haystack.len() < needle.len() {
+        return Vec::new();
+    }
+    let mut offsets = Vec::new();
+    let mut index = 0;
+    while index + needle.len() <= haystack.len() {
+        if &haystack[index..index + needle.len()] == needle {
+            offsets.push(index);
+            index += needle.len();
+        } else {
+            index += 1;
+        }
+    }
+    offsets
+}
+
 fn page_fallback_rect(document: &lopdf::Document, page_id: lopdf::ObjectId) -> Option<PdfRect> {
     page_box_rect(document, page_id, b"CropBox")
         .or_else(|| page_box_rect(document, page_id, b"MediaBox"))
@@ -786,6 +1038,51 @@ mod tests {
                 .iter()
                 .any(|finding| finding.code == "content_stream_text_map_smoke")
         );
+    }
+
+    #[test]
+    fn timeline_reports_incremental_markers() {
+        let mut bytes = lopdf_text_fixture("Fe Reader Timeline");
+        bytes.extend_from_slice(
+            b"\n% incremental update smoke\nstartxref\n12345\n/Prev 6789\n%%EOF\n",
+        );
+        let session = inspect_timeline_bytes(&bytes).unwrap();
+
+        assert!(!session.revisions.is_empty());
+        assert!(
+            session
+                .findings
+                .iter()
+                .any(|finding| finding.code == "incremental_revision_timeline_smoke")
+        );
+        assert!(
+            session
+                .revisions
+                .iter()
+                .any(|revision| revision.incremental_update)
+        );
+    }
+
+    #[test]
+    fn redaction_leak_scan_reports_residual_markers() {
+        let mut bytes = lopdf_text_fixture("Fe Reader Safe Content");
+        bytes.extend_from_slice(b"\n% hidden SECRET marker\n");
+        let receipt = br#"{"plan_id":"smoke"}"#;
+        let session = inspect_redaction_leak_scan_bytes(&bytes, Some(receipt)).unwrap();
+
+        assert!(
+            session
+                .residual_markers
+                .iter()
+                .any(|marker| marker == "SECRET")
+        );
+        assert!(
+            session
+                .findings
+                .iter()
+                .any(|finding| finding.code == "redaction_residual_marker_detected")
+        );
+        assert!(session.receipt_sha256.is_some());
     }
 
     #[test]

@@ -5,16 +5,33 @@ echo "== Fe Reader perf smoke =="
 mkdir -p artifacts/perf
 STATUS="advisory"
 DETAIL="perf smoke completed in advisory mode"
+
+run_fe_reader() {
+  if command -v fe-reader >/dev/null 2>&1; then
+    fe-reader "$@"
+  else
+    cargo run -p fe_reader_cli --bin fe-reader -- "$@"
+  fi
+}
+
 if command -v cargo >/dev/null 2>&1; then
   cargo bench --workspace --no-run || true
-  cargo run -p fe_reader_cli -- doctor >/tmp/fe-reader-perf-doctor.txt || true
+  cargo run -p fe_reader_cli --bin fe-reader -- doctor >/tmp/fe-reader-perf-doctor.txt || true
+  run_fe_reader --version >/tmp/fe-reader-perf-version.txt || true
+  run_fe_reader inspect fixtures/minimal/minimal.pdf --json >/tmp/fe-reader-perf-inspect.json || true
 fi
+
 if command -v hyperfine >/dev/null 2>&1 && command -v fe-reader >/dev/null 2>&1; then
   hyperfine --warmup 1 'fe-reader --version' || true
   DETAIL="hyperfine ran against installed fe-reader"
 else
   echo "hyperfine or fe-reader not installed; perf smoke advisory skip"
-  DETAIL="hyperfine or installed fe-reader unavailable; cargo doctor smoke used when possible"
+  DETAIL="hyperfine or installed fe-reader unavailable; cargo doctor/version/inspect smoke used when possible"
+fi
+
+if [[ "${CONDUCTOR_ADVISORY_PHASE_GATE:-0}" == "1" ]]; then
+  CONDUCTOR_SKIP_PERF_SMOKE=1 scripts/conductor_phase_gate.sh --phase N0 --auto-fix || true
+  DETAIL="$DETAIL; advisory conductor phase gate invoked"
 fi
 python3 - "$STATUS" "$DETAIL" <<'PY'
 import json

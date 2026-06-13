@@ -30,6 +30,54 @@
       },
       "decision": "require_interactive_approval",
       "reason": "secure redaction requires explicit review and verification"
+    },
+    {
+      "match": {
+        "risk_class": "PdfActiveContent",
+        "kind": "JavaScript"
+      },
+      "decision": "deny",
+      "reason": "PDF JavaScript is disabled by default"
+    },
+    {
+      "match": {
+        "risk_class": "PdfActiveContent",
+        "kind": "Launch"
+      },
+      "decision": "deny",
+      "reason": "PDF launch actions are disabled by default"
+    },
+    {
+      "match": {
+        "risk_class": "PdfActiveContent",
+        "kind": "RemoteUri"
+      },
+      "decision": "deny",
+      "reason": "PDF remote URI actions are disabled by default"
+    },
+    {
+      "match": {
+        "risk_class": "PdfActiveContent",
+        "kind": "RichMedia"
+      },
+      "decision": "deny",
+      "reason": "PDF RichMedia is disabled by default"
+    },
+    {
+      "match": {
+        "risk_class": "PdfActiveContent",
+        "kind": "EmbeddedExecutable"
+      },
+      "decision": "deny",
+      "reason": "embedded executables are disabled by default"
+    },
+    {
+      "match": {
+        "risk_class": "PdfActiveContent",
+        "kind": "SubmitForm"
+      },
+      "decision": "deny",
+      "reason": "PDF submit-form actions are disabled by default"
     }
   ]
 }

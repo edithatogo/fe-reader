@@ -28,6 +28,8 @@ export targets
 
 The project contract should support:
 
+- A `source_map` sidecar field that can point to the generated source-map artifact.
+
 - Open generated PDF and reveal source file/line for a selected page or object when available.
 - Rebuild PDF after source edits.
 - Export highlights/comments back to Markdown sidecars.

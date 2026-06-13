@@ -1,0 +1,4 @@
+Fe Reader Wave2 Chinese CJK placeholder
+Chinese: 简体中文 繁體中文
+Direction: mixed CJK coverage placeholder
+Expectation: record CJK font fallback risk only.

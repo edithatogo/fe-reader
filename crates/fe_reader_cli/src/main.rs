@@ -13,7 +13,12 @@ use fe_reader_metadata::{MetadataOperation, MetadataScrubMode};
 use fe_reader_prepress::PrepressReport;
 use fe_reader_render::RenderBackend;
 use fe_reader_search::{SearchQuery, build_search_index_records, search_spans};
+use fe_reader_security::{PdfActiveContentKind, evaluate_pdf_active_content_policy};
 use fe_reader_security::{PolicyAction, SecurityPolicy, evaluate_policy};
+
+#[cfg(feature = "mimalloc-allocator")]
+#[global_allocator]
+static GLOBAL_ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 /// Local-first PDF workflow platform CLI.
 #[derive(Debug, Parser)]
@@ -143,6 +148,9 @@ enum Command {
     Policy {
         /// Action to evaluate: read, plan, apply, export, external-tool, automation, plugin, network.
         action: String,
+        /// PDF active-content kind when action is `pdf-active-content`.
+        #[arg(long)]
+        kind: Option<String>,
         /// Source surface: ui, cli, mcp, automation, com, applescript, dbus,
         /// android-intent, ios-app-intent, web, browser-extension, local-api, plugin.
         #[arg(long, default_value = "cli")]
@@ -214,6 +222,25 @@ enum LabCommand {
         /// Zero-based page index.
         #[arg(long, default_value_t = 0)]
         page: u32,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Inspect incremental revision history without mutating the document.
+    Timeline {
+        /// Path to a PDF file.
+        path: String,
+        /// Emit JSON output.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Scan a redacted PDF for residual sensitive markers.
+    RedactionScan {
+        /// Path to a PDF file.
+        path: String,
+        /// Path to the associated receipt or plan artifact.
+        #[arg(long)]
+        receipt: String,
         /// Emit JSON output.
         #[arg(long)]
         json: bool,
@@ -678,6 +705,73 @@ fn main() -> Result<()> {
                     println!("plan_id={}", plan.plan_id.0);
                 }
             }
+            LabCommand::Timeline { path, json } => {
+                let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
+                let timeline = fe_reader_pdf_model::inspect_timeline_path(&path)?;
+                let intent = OperationIntent::new(
+                    OperationSource::Cli,
+                    summary.document_id.clone(),
+                    OperationKind::Custom("lab_timeline".to_string()),
+                    "lab_timeline",
+                    RiskLevel::ReadOnly,
+                )
+                .with_document_fingerprint(summary.fingerprint.clone());
+                let plan = PatchPlan::draft(
+                    &intent,
+                    format!("lab timeline {path}"),
+                    vec![PatchOperation::Noop],
+                );
+                if json {
+                    let value = serde_json::json!({
+                        "intent": intent,
+                        "plan": plan,
+                        "summary": summary,
+                        "timeline": timeline,
+                    });
+                    println!("{}", serde_json::to_string_pretty(&value)?);
+                } else {
+                    println!("revisions={}", timeline.revisions.len());
+                    println!("findings={}", timeline.findings.len());
+                    println!("parser_error={}", timeline.error.as_deref().unwrap_or(""));
+                    println!("plan_id={}", plan.plan_id.0);
+                }
+            }
+            LabCommand::RedactionScan {
+                path,
+                receipt,
+                json,
+            } => {
+                let summary = fe_reader_pdf_model::sniff_pdf_path(&path)?;
+                let scan =
+                    fe_reader_pdf_model::inspect_redaction_leak_scan_path(&path, Some(&receipt))?;
+                let intent = OperationIntent::new(
+                    OperationSource::Cli,
+                    summary.document_id.clone(),
+                    OperationKind::Custom("lab_redaction_scan".to_string()),
+                    "lab_redaction_scan",
+                    RiskLevel::ReadOnly,
+                )
+                .with_document_fingerprint(summary.fingerprint.clone());
+                let plan = PatchPlan::draft(
+                    &intent,
+                    format!("lab redaction-scan {path} receipt={receipt}"),
+                    vec![PatchOperation::Noop],
+                );
+                if json {
+                    let value = serde_json::json!({
+                        "intent": intent,
+                        "plan": plan,
+                        "summary": summary,
+                        "scan": scan,
+                    });
+                    println!("{}", serde_json::to_string_pretty(&value)?);
+                } else {
+                    println!("markers={}", scan.residual_markers.join(","));
+                    println!("findings={}", scan.findings.len());
+                    println!("receipt_sha256={}", scan.receipt_sha256.unwrap_or_default());
+                    println!("plan_id={}", plan.plan_id.0);
+                }
+            }
         },
         Command::Search {
             path,
@@ -809,16 +903,29 @@ fn main() -> Result<()> {
         Command::ValidateSchemas => {
             println!("schema validation is delegated to scripts/validate_schemas.py in Wave 0");
         }
-        Command::Policy { action, source } => {
-            let action = parse_policy_action(&action)?;
-            let source = parse_operation_source(&source)?;
-            let decision = evaluate_policy(
-                &SecurityPolicy::default(),
-                source,
-                action,
-                fe_reader_core::RiskLevel::HighRisk,
-            );
-            println!("{}", serde_json::to_string_pretty(&decision)?);
+        Command::Policy {
+            action,
+            kind,
+            source,
+        } => {
+            if action == "pdf-active-content" {
+                let kind = kind.as_deref().ok_or_else(|| {
+                    anyhow::anyhow!("policy action pdf-active-content requires --kind")
+                })?;
+                let kind = parse_pdf_active_content_kind(kind)?;
+                let decision = evaluate_pdf_active_content_policy(&SecurityPolicy::default(), kind);
+                println!("{}", serde_json::to_string_pretty(&decision)?);
+            } else {
+                let action = parse_policy_action(&action)?;
+                let source = parse_operation_source(&source)?;
+                let decision = evaluate_policy(
+                    &SecurityPolicy::default(),
+                    source,
+                    action,
+                    fe_reader_core::RiskLevel::HighRisk,
+                );
+                println!("{}", serde_json::to_string_pretty(&decision)?);
+            }
         }
     }
     Ok(())
@@ -859,6 +966,20 @@ fn parse_operation_source(source: &str) -> Result<OperationSource> {
     }
 }
 
+fn parse_pdf_active_content_kind(kind: &str) -> Result<PdfActiveContentKind> {
+    match kind {
+        "javascript" => Ok(PdfActiveContentKind::JavaScript),
+        "launch" => Ok(PdfActiveContentKind::Launch),
+        "remote-uri" | "remote_uri" => Ok(PdfActiveContentKind::RemoteUri),
+        "rich-media" | "rich_media" => Ok(PdfActiveContentKind::RichMedia),
+        "embedded-executable" | "embedded_executable" => {
+            Ok(PdfActiveContentKind::EmbeddedExecutable)
+        }
+        "submit-form" | "submit_form" => Ok(PdfActiveContentKind::SubmitForm),
+        _ => bail!("unknown PDF active-content kind: {kind}"),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -888,5 +1009,33 @@ mod tests {
                 OperationSource::Web
             );
         }
+    }
+
+    #[test]
+    fn policy_active_content_kind_aliases_cover_pdf_firewall_surface() {
+        assert_eq!(
+            parse_pdf_active_content_kind("javascript").unwrap(),
+            PdfActiveContentKind::JavaScript
+        );
+        assert_eq!(
+            parse_pdf_active_content_kind("launch").unwrap(),
+            PdfActiveContentKind::Launch
+        );
+        assert_eq!(
+            parse_pdf_active_content_kind("remote-uri").unwrap(),
+            PdfActiveContentKind::RemoteUri
+        );
+        assert_eq!(
+            parse_pdf_active_content_kind("rich-media").unwrap(),
+            PdfActiveContentKind::RichMedia
+        );
+        assert_eq!(
+            parse_pdf_active_content_kind("embedded-executable").unwrap(),
+            PdfActiveContentKind::EmbeddedExecutable
+        );
+        assert_eq!(
+            parse_pdf_active_content_kind("submit-form").unwrap(),
+            PdfActiveContentKind::SubmitForm
+        );
     }
 }

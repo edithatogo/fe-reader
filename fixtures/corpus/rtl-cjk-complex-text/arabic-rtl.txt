@@ -1,0 +1,4 @@
+Fe Reader Wave2 Arabic RTL placeholder
+Arabic: مرحبا بالعالم
+Direction: right-to-left
+Expectation: record RTL font fallback risk only.

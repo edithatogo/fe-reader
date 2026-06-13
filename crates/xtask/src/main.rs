@@ -1,8 +1,11 @@
 //! Fe Reader xtask Wave 0 harness.
 
-use anyhow::{Result, bail};
+mod perf;
+
+use anyhow::Result;
 use clap::{Parser, Subcommand};
 use fe_reader_render::RenderBackend;
+use perf::PerfTask;
 use std::process::Command;
 
 #[derive(Debug, Parser)]
@@ -18,6 +21,11 @@ enum Task {
     Wave0Check,
     /// Run formatting, clippy, tests and schema smoke checks where available.
     Review,
+    /// Performance and benchmark harness commands.
+    Perf {
+        #[command(subcommand)]
+        command: PerfTask,
+    },
     /// Validate JSON schemas.
     ValidateSchemas,
     /// Emit sample Document IR and transformation graph JSON.
@@ -33,6 +41,7 @@ fn main() -> Result<()> {
     match cli.command {
         Task::Wave0Check => run_script("scripts/wave0_bootstrap_check.sh"),
         Task::Review => run_script("scripts/conductor_phase_gate.sh"),
+        Task::Perf { command } => perf::run(command),
         Task::ValidateSchemas => run_script("scripts/validate_schemas.py"),
         Task::IrSmoke => run_ir_smoke(),
         Task::IrCompileSmoke => run_ir_compile_smoke(),
@@ -105,7 +114,7 @@ fn run_script(path: &str) -> Result<()> {
         Command::new("bash").arg(path).status()?
     };
     if !status.success() {
-        bail!("{path} failed with status {status}");
+        anyhow::bail!("{path} failed with status {status}");
     }
     Ok(())
 }

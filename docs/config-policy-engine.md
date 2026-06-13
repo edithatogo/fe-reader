@@ -23,6 +23,8 @@ Enterprise policy must override user settings for security-sensitive controls.
 disable MCP mutation tools
 disable plugins
 disable JavaScript actions
+disable launch actions
+disable RichMedia by default
 disable external network fetches
 require secure redaction verification
 require metadata scrub before external share

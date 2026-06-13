@@ -19,12 +19,30 @@ budgets:
     class: InteractiveP0
     hard_gate_wave: wave_2_annotation_metadata_pageops
     max_p95_ms: 30
+  - scenario_id: workflow.affidavit.apply_10_pages
+    class: WorkflowP1
+    hard_gate_wave: wave_3_workflows_verified_ops
+    max_p95_ms: 1000
+    max_peak_rss_mb: 256
   - scenario_id: workflow.affidavit.apply_100_pages
     class: WorkflowP1
     hard_gate_wave: wave_3_workflows_verified_ops
     max_p95_ms: 1000
     max_peak_rss_mb: 512
+  - scenario_id: workflow.affidavit.apply_500_pages
+    class: WorkflowP1
+    hard_gate_wave: wave_3_workflows_verified_ops
+    max_p95_ms: 2000
+    max_peak_rss_mb: 768
   - scenario_id: metadata.snapshot_diff_100_pages
+    class: WorkflowP1
+    hard_gate_wave: wave_2_annotation_metadata_pageops
+    max_p95_ms: 150
+  - scenario_id: metadata.scrub.clean_share
+    class: WorkflowP1
+    hard_gate_wave: wave_2_annotation_metadata_pageops
+    max_p95_ms: 150
+  - scenario_id: metadata.scrub.aggressive
     class: WorkflowP1
     hard_gate_wave: wave_2_annotation_metadata_pageops
     max_p95_ms: 150

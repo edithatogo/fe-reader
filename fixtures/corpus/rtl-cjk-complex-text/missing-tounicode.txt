@@ -1,0 +1,4 @@
+Fe Reader Wave2 missing-ToUnicode placeholder
+Glyphs: A B C 1 2 3
+Direction: missing ToUnicode coverage placeholder
+Expectation: record extraction limitation coverage only.

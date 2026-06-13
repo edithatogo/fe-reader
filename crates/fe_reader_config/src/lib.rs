@@ -37,6 +37,29 @@ pub enum TelemetryMode {
     ManagedUploadAllowed,
 }
 
+impl TelemetryMode {
+    /// Returns the relative restriction strength of the telemetry mode.
+    #[must_use]
+    fn restriction_score(self) -> u8 {
+        match self {
+            Self::Disabled => 0,
+            Self::LocalOnly => 1,
+            Self::UserApprovedBundleOnly => 2,
+            Self::ManagedUploadAllowed => 3,
+        }
+    }
+
+    /// Returns the more restrictive of two telemetry modes.
+    #[must_use]
+    fn more_restrictive(self, other: Self) -> Self {
+        if self.restriction_score() <= other.restriction_score() {
+            self
+        } else {
+            other
+        }
+    }
+}
+
 /// Enterprise policy matching `schemas/enterprise-policy.schema.json`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EnterprisePolicy {
@@ -222,6 +245,60 @@ impl EnterprisePolicy {
         }
     }
 
+    /// Applies a managed enterprise policy over a lower-precedence policy layer.
+    ///
+    /// Security-sensitive booleans are combined conservatively so that `false`
+    /// in either layer remains `false`. Deny-lists are unioned, and managed
+    /// allow-lists replace any lower-precedence allow-list.
+    #[must_use]
+    pub fn effective_overrides(&self, lower_precedence: &Self) -> Self {
+        if !self.managed {
+            return lower_precedence.clone();
+        }
+
+        let disabled_surfaces = lower_precedence
+            .disabled_surfaces
+            .iter()
+            .chain(self.disabled_surfaces.iter())
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect();
+        let disabled_features = lower_precedence
+            .disabled_features
+            .iter()
+            .chain(self.disabled_features.iter())
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect();
+        let allowed_update_channels = if self.allowed_update_channels.is_empty() {
+            lower_precedence.allowed_update_channels.clone()
+        } else {
+            self.allowed_update_channels.clone()
+        };
+
+        Self {
+            policy_version: self.policy_version.clone(),
+            managed: true,
+            disabled_surfaces,
+            disabled_features,
+            allow_plugins: lower_precedence.allow_plugins && self.allow_plugins,
+            allow_mcp: lower_precedence.allow_mcp && self.allow_mcp,
+            allow_external_converters: lower_precedence.allow_external_converters
+                && self.allow_external_converters,
+            require_redaction_verification: lower_precedence.require_redaction_verification
+                || self.require_redaction_verification,
+            require_metadata_clean_share_prompt: lower_precedence
+                .require_metadata_clean_share_prompt
+                || self.require_metadata_clean_share_prompt,
+            telemetry_mode: lower_precedence
+                .telemetry_mode
+                .more_restrictive(self.telemetry_mode),
+            allowed_update_channels,
+        }
+    }
+
     /// Returns true if the named integration surface is disabled.
     #[must_use]
     pub fn disables_surface(&self, surface: &str) -> bool {
@@ -279,6 +356,71 @@ mod tests {
         assert!(policy.disables_risky_integrations());
         assert!(policy.require_redaction_verification);
         assert_eq!(policy.telemetry_mode, TelemetryMode::LocalOnly);
+    }
+
+    #[test]
+    fn managed_enterprise_policy_overrides_permissive_lower_layers() {
+        let lower = EnterprisePolicy {
+            policy_version: "0.1".to_string(),
+            managed: false,
+            disabled_surfaces: vec!["legacy-websocket".to_string()],
+            disabled_features: vec!["experimental-cache".to_string()],
+            allow_plugins: true,
+            allow_mcp: true,
+            allow_external_converters: true,
+            require_redaction_verification: false,
+            require_metadata_clean_share_prompt: false,
+            telemetry_mode: TelemetryMode::ManagedUploadAllowed,
+            allowed_update_channels: vec!["beta".to_string(), "nightly".to_string()],
+        };
+        let effective = EnterprisePolicy::managed_lockdown().effective_overrides(&lower);
+
+        assert!(effective.managed);
+        assert!(!effective.allow_plugins);
+        assert!(!effective.allow_mcp);
+        assert!(!effective.allow_external_converters);
+        assert!(effective.require_redaction_verification);
+        assert!(effective.require_metadata_clean_share_prompt);
+        assert_eq!(effective.telemetry_mode, TelemetryMode::LocalOnly);
+        assert!(effective.disables_surface("mcp"));
+        assert!(effective.disables_surface("plugins"));
+        assert!(effective.disables_surface("legacy-websocket"));
+        assert!(
+            effective
+                .disabled_features
+                .iter()
+                .any(|feature| feature == "local_ml")
+        );
+        assert!(
+            effective
+                .disabled_features
+                .iter()
+                .any(|feature| feature == "experimental-cache")
+        );
+        assert!(
+            effective
+                .allowed_update_channels
+                .iter()
+                .any(|channel| channel == "stable")
+        );
+        assert!(
+            effective
+                .allowed_update_channels
+                .iter()
+                .any(|channel| channel == "lts-enterprise")
+        );
+        assert!(
+            !effective
+                .allowed_update_channels
+                .iter()
+                .any(|channel| channel == "beta")
+        );
+        assert!(
+            !effective
+                .allowed_update_channels
+                .iter()
+                .any(|channel| channel == "nightly")
+        );
     }
 
     #[test]
