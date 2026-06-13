@@ -1,0 +1,13 @@
+{
+  "track_id": "track-U-differential-oracles",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T03:24:14Z",
+  "description": "See the plan for phased implementation.",
+  "deliverables": [
+    "contracts/rust/differential_oracle.rs",
+    "schemas/differential-test-report.schema.json",
+    "scripts/differential_oracle_smoke.sh"
+  ]
+}
