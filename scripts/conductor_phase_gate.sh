@@ -43,6 +43,7 @@ python3 scripts/corpus_manifest_validate.py
 bash scripts/security_policy_check.sh
 python3 scripts/job_contract_smoke.py
 if [[ -x scripts/optimization_oracle_smoke.sh ]]; then scripts/optimization_oracle_smoke.sh; fi
+if [[ -x scripts/quality_dashboard_smoke.py ]]; then python3 scripts/quality_dashboard_smoke.py; fi
 if [[ -x scripts/source_linked_smoke.sh ]]; then scripts/source_linked_smoke.sh; fi
 if [[ -x scripts/cache_workspace_smoke.sh ]]; then scripts/cache_workspace_smoke.sh; fi
 
