@@ -1,0 +1,12 @@
+{
+  "track_id": "track-AG-errors-migrations-compatibility",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T00:00:00Z",
+  "updated_at": "2026-06-13T03:15:26Z",
+  "description": "Track for track-AG-errors-migrations-compatibility implementation and registry tracking.",
+  "deliverables": [
+    "/Volumes/PortableSSD/GitHub/fe-reader/conductor/tracks/track-AG-errors-migrations-compatibility/spec.md",
+    "/Volumes/PortableSSD/GitHub/fe-reader/conductor/tracks/track-AG-errors-migrations-compatibility/plan.md"
+  ]
+}
