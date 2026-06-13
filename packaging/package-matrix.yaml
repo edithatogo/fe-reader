@@ -17,3 +17,61 @@ targets:
     evaluate: [fdroid]
   ios:
     stores: [app_store, testflight]
+desktop_artifacts:
+  macos:
+    - kind: dmg
+      path_pattern: "target/release-artifacts/fe-reader-{version}-macos-universal.dmg"
+      checksum: "target/release-artifacts/fe-reader-{version}-macos-universal.dmg.sha256"
+      signing: developer_id
+      notarization: required
+      registries: [github_releases, homebrew]
+    - kind: pkg
+      path_pattern: "target/release-artifacts/fe-reader-{version}-macos-universal.pkg"
+      checksum: "target/release-artifacts/fe-reader-{version}-macos-universal.pkg.sha256"
+      signing: developer_id
+      notarization: required
+      registries: [github_releases]
+  windows:
+    - kind: msi
+      path_pattern: "target/release-artifacts/fe-reader-{version}-windows-x64.msi"
+      checksum: "target/release-artifacts/fe-reader-{version}-windows-x64.msi.sha256"
+      signing: authenticode
+      notarization: not_applicable
+      registries: [github_releases, winget, chocolatey]
+    - kind: msix
+      path_pattern: "target/release-artifacts/fe-reader-{version}-windows-x64.msix"
+      checksum: "target/release-artifacts/fe-reader-{version}-windows-x64.msix.sha256"
+      signing: authenticode
+      notarization: not_applicable
+      registries: [github_releases, microsoft_store]
+    - kind: portable_zip
+      path_pattern: "target/release-artifacts/fe-reader-{version}-windows-x64.zip"
+      checksum: "target/release-artifacts/fe-reader-{version}-windows-x64.zip.sha256"
+      signing: authenticode
+      notarization: not_applicable
+      registries: [github_releases, scoop]
+  linux:
+    - kind: appimage
+      path_pattern: "target/release-artifacts/fe-reader-{version}-linux-x86_64.AppImage"
+      checksum: "target/release-artifacts/fe-reader-{version}-linux-x86_64.AppImage.sha256"
+      signing: checksum_or_gpg
+      notarization: not_applicable
+      registries: [github_releases]
+    - kind: deb
+      path_pattern: "target/release-artifacts/fe-reader_{version}_amd64.deb"
+      checksum: "target/release-artifacts/fe-reader_{version}_amd64.deb.sha256"
+      signing: checksum_or_gpg
+      notarization: not_applicable
+      registries: [github_releases]
+    - kind: rpm
+      path_pattern: "target/release-artifacts/fe-reader-{version}-1.x86_64.rpm"
+      checksum: "target/release-artifacts/fe-reader-{version}-1.x86_64.rpm.sha256"
+      signing: checksum_or_gpg
+      notarization: not_applicable
+      registries: [github_releases]
+    - kind: tarball
+      path_pattern: "target/release-artifacts/fe-reader-{version}-linux-x86_64.tar.gz"
+      checksum: "target/release-artifacts/fe-reader-{version}-linux-x86_64.tar.gz.sha256"
+      signing: checksum_or_gpg
+      notarization: not_applicable
+      registries: [github_releases, aur]

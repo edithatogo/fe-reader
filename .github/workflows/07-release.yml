@@ -49,6 +49,7 @@ jobs:
       - run: bash scripts/sbom_audit.sh
       - run: bash scripts/generate_provenance_attestation.sh
       - run: bash scripts/signing_readiness_check.sh
+      - run: python3 scripts/desktop_packaging_signing_check.py
       - run: bash scripts/release_evidence_check.sh
       - run: python3 scripts/release_provenance_check.py
       - run: python3 scripts/release_matrix_check.py

@@ -48,6 +48,36 @@ for platform, subkeys in target_checks.items():
     if set(platform_targets) != subkeys:
         print(f"package matrix platform keys mismatch for {platform}: {sorted(platform_targets)}", file=sys.stderr)
         raise SystemExit(1)
+desktop_artifacts = matrix_doc.get("desktop_artifacts")
+if not isinstance(desktop_artifacts, dict):
+    print("package matrix missing desktop_artifacts mapping", file=sys.stderr)
+    raise SystemExit(1)
+required_desktop_kinds = {
+    "macos": {"dmg"},
+    "windows": {"msi", "msix"},
+    "linux": {"appimage", "deb", "rpm", "tarball"},
+}
+for platform, required_kinds in required_desktop_kinds.items():
+    entries = desktop_artifacts.get(platform)
+    if not isinstance(entries, list) or not entries:
+        print(f"package matrix missing desktop artifact definitions for {platform}", file=sys.stderr)
+        raise SystemExit(1)
+    seen = {entry.get("kind") for entry in entries if isinstance(entry, dict)}
+    missing = required_kinds - seen
+    if missing:
+        print(f"package matrix missing {platform} artifact kinds: {sorted(missing)}", file=sys.stderr)
+        raise SystemExit(1)
+    for entry in entries:
+        if not isinstance(entry, dict):
+            print(f"package matrix artifact for {platform} must be a mapping", file=sys.stderr)
+            raise SystemExit(1)
+        for key in ["kind", "path_pattern", "checksum", "signing", "notarization", "registries"]:
+            if key not in entry:
+                print(f"package matrix artifact for {platform} missing {key}", file=sys.stderr)
+                raise SystemExit(1)
+        if "{version}" not in entry["path_pattern"] or "{version}" not in entry["checksum"]:
+            print(f"package matrix artifact for {platform}/{entry['kind']} missing version placeholder", file=sys.stderr)
+            raise SystemExit(1)
 
 channel_checks = {
     "nightly": {"signing": "optional", "publishing": "github_prerelease", "notes": "developer/test only"},
@@ -81,6 +111,7 @@ report = {
     "required_files": files,
     "targets": ["windows", "macos", "linux", "android", "ios"],
     "channels": ["nightly", "preview", "stable"],
+    "desktop_artifact_platforms": ["macos", "windows", "linux"],
 }
 for entry in report["required_files"]:
     if set(entry) != {"path", "sha256", "bytes"}:
@@ -94,6 +125,9 @@ if report["targets"] != ["windows", "macos", "linux", "android", "ios"]:
     raise SystemExit(1)
 if report["channels"] != ["nightly", "preview", "stable"]:
     print("release matrix channel ordering mismatch", file=sys.stderr)
+    raise SystemExit(1)
+if report["desktop_artifact_platforms"] != ["macos", "windows", "linux"]:
+    print("desktop artifact platform ordering mismatch", file=sys.stderr)
     raise SystemExit(1)
 (evidence_dir / "release-matrix.json").write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
 print("release matrix: ok")

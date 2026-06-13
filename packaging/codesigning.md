@@ -42,3 +42,14 @@ release target list until their credentials and receipts exist.
 
 Real private keys, signing certificates, notarization credentials and upload
 keys must never be committed to the repository.
+
+Desktop artifact definitions and checksum paths are tracked in
+`packaging/package-matrix.yaml`. The local launch check is:
+
+```bash
+python3 scripts/desktop_packaging_signing_check.py
+```
+
+Stable desktop releases must configure `FE_RELEASE_CHANNEL=stable` and
+`FE_RELEASE_TARGETS=macos,windows,linux` so signing readiness is evaluated only
+for the desktop launch scope.

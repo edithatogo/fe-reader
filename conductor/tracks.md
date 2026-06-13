@@ -135,3 +135,33 @@ Native UX refinement rules:
 - AQ should use a SwiftUI-first shell with AppKit interop only for platform affordances that require it.
 - AQ should not continue any placeholder drawing path once the native shell is landed.
 - AR should begin once AQ has a stable shell and command surface, then verify Figma-to-runtime conformance, keyboard access, accessibility and responsive behavior.
+
+---
+
+- [x] **Track: Desktop Packaging and Signing**
+*Link: [./tracks/track-AS-desktop-packaging-signing/](./tracks/track-AS-desktop-packaging-signing/)*
+
+---
+
+- [ ] **Track: Stable Release Evidence Gates**
+*Link: [./tracks/track-AT-stable-release-evidence-gates/](./tracks/track-AT-stable-release-evidence-gates/)*
+
+---
+
+- [ ] **Track: Desktop Distribution Publication**
+*Link: [./tracks/track-AU-desktop-distribution-publication/](./tracks/track-AU-desktop-distribution-publication/)*
+
+---
+
+- [ ] **Track: Enterprise Operations Readiness**
+*Link: [./tracks/track-AV-enterprise-operations-readiness/](./tracks/track-AV-enterprise-operations-readiness/)*
+
+---
+
+- [ ] **Track: Launch QA, Documentation and Homepage**
+*Link: [./tracks/track-AW-launch-qa-docs-homepage/](./tracks/track-AW-launch-qa-docs-homepage/)*
+
+---
+
+- [ ] **Track: Advanced Roadmap Continuation**
+*Link: [./tracks/track-AX-advanced-roadmap-continuation/](./tracks/track-AX-advanced-roadmap-continuation/)*

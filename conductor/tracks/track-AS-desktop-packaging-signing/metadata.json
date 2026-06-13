@@ -1,0 +1,8 @@
+{
+  "track_id": "track-AS-desktop-packaging-signing",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T17:23:07Z",
+  "updated_at": "2026-06-13T17:23:07Z",
+  "description": "Desktop packaging and signing readiness for an enterprise-ready stable public launch."
+}

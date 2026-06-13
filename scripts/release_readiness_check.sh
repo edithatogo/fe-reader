@@ -49,7 +49,23 @@ PY
     exit 1
   fi
 fi
-python3 - "$CHANNEL" "$SBOM_STATUS" "$SBOM_DETAIL" "$PROVENANCE_STATUS" "$SIGNING_STATUS" "${REQUIRED[@]}" <<'PY'
+DESKTOP_PACKAGING_STATUS="advisory"
+if [[ -f target/release-evidence/desktop-packaging-signing.json ]]; then
+  DESKTOP_PACKAGING_STATUS="$(python3 - <<'PY'
+import json
+from pathlib import Path
+print(json.loads(Path("target/release-evidence/desktop-packaging-signing.json").read_text()).get("status", "unknown"))
+PY
+)"
+  if [[ "$DESKTOP_PACKAGING_STATUS" == "blocked" && ( "$CHANNEL" == "stable" || "$CHANNEL" == "lts" ) ]]; then
+    echo "desktop packaging/signing blocked for release channel: $CHANNEL" >&2
+    exit 1
+  fi
+elif [[ "$CHANNEL" == "stable" || "$CHANNEL" == "lts" ]]; then
+  echo "missing desktop packaging/signing evidence for release channel: $CHANNEL" >&2
+  exit 1
+fi
+python3 - "$CHANNEL" "$SBOM_STATUS" "$SBOM_DETAIL" "$PROVENANCE_STATUS" "$SIGNING_STATUS" "$DESKTOP_PACKAGING_STATUS" "${REQUIRED[@]}" <<'PY'
 import hashlib
 import json
 import sys
@@ -57,7 +73,7 @@ from pathlib import Path
 
 import yaml
 
-channel, sbom_status, sbom_detail, provenance_status, signing_status, *required = sys.argv[1:]
+channel, sbom_status, sbom_detail, provenance_status, signing_status, desktop_packaging_status, *required = sys.argv[1:]
 files = []
 for rel in required:
     path = Path(rel)
@@ -84,6 +100,7 @@ report = {
         {"name": "sbom_presence", "status": sbom_status, "detail": sbom_detail},
         {"name": "provenance_attestation", "status": provenance_status, "detail": "target/release-evidence/provenance.json"},
         {"name": "signing_readiness", "status": signing_status, "detail": "target/release-evidence/signing-readiness.json"},
+        {"name": "desktop_packaging_signing", "status": desktop_packaging_status, "detail": "target/release-evidence/desktop-packaging-signing.json"},
     ],
 }
 for artifact in report["required_files"]:
