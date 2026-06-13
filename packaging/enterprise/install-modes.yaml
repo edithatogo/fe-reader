@@ -1,0 +1,24 @@
+platforms:
+  macos:
+    offline_artifacts: [dmg, pkg]
+    per_user: ~/Applications
+    global: /Applications
+    validation: signed and notarized artifact required before stable enterprise rollout
+    blocker: FE_MACOS_DEVELOPER_ID_CERT and notarization profile required
+  windows:
+    offline_artifacts: [msi, msix, portable_zip]
+    per_user: LocalAppData install or portable zip
+    global: Program Files via MSI/MSIX
+    validation: Authenticode signed artifact required before stable enterprise rollout
+    blocker: FE_WINDOWS_SIGNING_CERT and FE_WINDOWS_SIGNING_PASSWORD required
+  linux:
+    offline_artifacts: [appimage, deb, rpm, tarball]
+    per_user: ~/.local/bin or AppImage
+    global: system package manager or /opt deployment
+    validation: checksum and optional GPG signature required before stable enterprise rollout
+    blocker: distro package signing and repository publication are not complete
+install_policy:
+  publication_requires: [signed_artifact, checksum, release_evidence, maintainer_approval]
+  per_user_must_not_require_admin: true
+  global_install_requires_admin_or_managed_deployment: true
+  credentials_in_repo: forbidden

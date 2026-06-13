@@ -1,0 +1,25 @@
+{
+  "policy_version": "0.1",
+  "managed": true,
+  "disabled_surfaces": [
+    "mcp",
+    "plugins",
+    "external_converters",
+    "web_postmessage",
+    "native_automation_apply"
+  ],
+  "disabled_features": [
+    "network",
+    "local_ml"
+  ],
+  "allow_plugins": false,
+  "allow_mcp": false,
+  "allow_external_converters": false,
+  "require_redaction_verification": true,
+  "require_metadata_clean_share_prompt": true,
+  "telemetry_mode": "local_only",
+  "allowed_update_channels": [
+    "stable",
+    "lts-enterprise"
+  ]
+}

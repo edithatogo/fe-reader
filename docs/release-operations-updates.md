@@ -74,6 +74,7 @@ release readiness check passes.
 - `scripts/release_readiness_check.sh` validates the release readiness bundle against the release evidence schema and packaging/channel definitions.
 - `scripts/stable_release_evidence_check.py` validates stable-only evidence classes and release-waiver shape.
 - `scripts/desktop_distribution_publication_check.py` validates GitHub Release inputs, desktop registry manifests, public links and publication blockers.
+- `scripts/enterprise_operations_readiness_check.py` validates offline install modes, managed policy templates, signed update/rollback fixtures and privacy-safe support bundle defaults.
 - `scripts/wave4_distribution_smoke.py` validates packaging matrix structure, manifest syntax and release evidence shape.
 - `scripts/semver_check.sh` records a local semver status artifact even when the comparison tool is unavailable.
 - Release claims should stay bound to generated evidence under `target/release-evidence/`.

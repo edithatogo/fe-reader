@@ -1,0 +1,23 @@
+{
+  "manifest_version": "1",
+  "app_version": "0.1.0-preview.1",
+  "channel": "lts-enterprise",
+  "min_supported_version": "0.1.0-preview.1",
+  "rollback": true,
+  "artifacts": [
+    {
+      "platform": "linux",
+      "arch": "x86_64",
+      "installer_kind": "tarball",
+      "url": "https://github.com/edithatogo/fe-reader/releases/download/v0.1.0-preview.1/fe-reader-0.1.0-preview.1-linux-x86_64.tar.gz",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "size_bytes": 1,
+      "signature": "dev-fixture-rollback-signature",
+      "provenance_path": "target/release-evidence/provenance.json",
+      "signing_receipt_path": "target/release-evidence/signing-readiness.json"
+    }
+  ],
+  "manifest_signature": "dev-fixture-rollback-manifest-signature",
+  "provenance_path": "target/release-evidence/provenance.json",
+  "signing_readiness_path": "target/release-evidence/signing-readiness.json"
+}

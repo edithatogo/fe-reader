@@ -1,0 +1,23 @@
+{
+  "manifest_version": "1",
+  "app_version": "0.1.0-preview.1",
+  "channel": "stable",
+  "min_supported_version": "0.1.0-preview.1",
+  "rollback": false,
+  "artifacts": [
+    {
+      "platform": "macos",
+      "arch": "universal",
+      "installer_kind": "dmg",
+      "url": "https://github.com/edithatogo/fe-reader/releases/download/v0.1.0-preview.1/fe-reader-0.1.0-preview.1-macos-universal.dmg",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "size_bytes": 1,
+      "signature": "dev-fixture-signature",
+      "provenance_path": "target/release-evidence/provenance.json",
+      "signing_receipt_path": "target/release-evidence/signing-readiness.json"
+    }
+  ],
+  "manifest_signature": "dev-fixture-manifest-signature",
+  "provenance_path": "target/release-evidence/provenance.json",
+  "signing_readiness_path": "target/release-evidence/signing-readiness.json"
+}

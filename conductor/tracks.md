@@ -153,7 +153,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Enterprise Operations Readiness**
+- [x] **Track: Enterprise Operations Readiness**
 *Link: [./tracks/track-AV-enterprise-operations-readiness/](./tracks/track-AV-enterprise-operations-readiness/)*
 
 ---

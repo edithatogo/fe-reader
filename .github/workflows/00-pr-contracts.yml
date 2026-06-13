@@ -29,4 +29,5 @@ jobs:
       - run: python3 scripts/frontier_ci_check.py
       - run: python3 scripts/ci_policy_check.py
       - run: python3 scripts/version_consistency_check.py
+      - run: python3 scripts/enterprise_operations_readiness_check.py
       - run: python3 scripts/wave0_acceptance_check.py

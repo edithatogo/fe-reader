@@ -1,0 +1,29 @@
+bundle_version: 0.1
+default_collection: local_only
+requires_preview_before_export: true
+requires_user_approval: true
+allowed:
+  - app_version
+  - operating_system
+  - architecture
+  - enabled_feature_flags
+  - policy_summary
+  - error_classes
+  - redacted_crash_stack
+  - dependency_versions
+  - release_evidence_digests
+  - performance_counters
+forbidden:
+  - raw_pdf
+  - document_text
+  - rendered_page_images
+  - search_index_contents
+  - credentials
+  - access_tokens
+  - private_keys
+  - full_file_paths
+  - usernames
+redaction:
+  path_strategy: basename_or_hash
+  user_identifier_strategy: salted_hash
+  document_title_strategy: omitted_by_default
