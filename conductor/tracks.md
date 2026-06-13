@@ -143,7 +143,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Stable Release Evidence Gates**
+- [x] **Track: Stable Release Evidence Gates**
 *Link: [./tracks/track-AT-stable-release-evidence-gates/](./tracks/track-AT-stable-release-evidence-gates/)*
 
 ---

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Validate desktop stable packaging and signing definitions."""
+"""Validate desktop stable packaging and signing definitions.
+
+Writes target/release-evidence/desktop-packaging-signing.json.
+"""
 
 from __future__ import annotations
 

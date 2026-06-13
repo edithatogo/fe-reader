@@ -24,6 +24,8 @@ if workflow:
         "bash scripts/sbom_audit.sh",
         "bash scripts/generate_provenance_attestation.sh",
         "bash scripts/signing_readiness_check.sh",
+        "python3 scripts/desktop_packaging_signing_check.py",
+        "python3 scripts/stable_release_evidence_check.py",
         "bash scripts/release_evidence_check.sh",
         "python3 scripts/release_provenance_check.py",
         "python3 scripts/release_matrix_check.py",
@@ -39,6 +41,8 @@ for script in [
     "scripts/sbom_audit.sh",
     "scripts/generate_provenance_attestation.sh",
     "scripts/signing_readiness_check.sh",
+    "scripts/desktop_packaging_signing_check.py",
+    "scripts/stable_release_evidence_check.py",
     "scripts/release_evidence_check.sh",
     "scripts/release_readiness_check.sh",
 ]:
@@ -133,7 +137,14 @@ if evidence_dir.exists():
         else:
             checks = release_readiness.get("checks", [])
             names = {check.get("name") for check in checks if isinstance(check, dict)}
-            for check_name in ["required_release_files", "sbom_presence", "provenance_attestation", "signing_readiness"]:
+            for check_name in [
+                "required_release_files",
+                "sbom_presence",
+                "provenance_attestation",
+                "signing_readiness",
+                "desktop_packaging_signing",
+                "stable_release_evidence",
+            ]:
                 if check_name not in names:
                     failures.append(f"release readiness missing check: {check_name}")
             if release_readiness.get("channel") != release_channel:

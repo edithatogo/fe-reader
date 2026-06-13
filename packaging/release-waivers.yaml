@@ -1,0 +1,4 @@
+version: 1
+policy: stable release waivers require owner, expiry, rationale and rollback path
+waivers: []
+
