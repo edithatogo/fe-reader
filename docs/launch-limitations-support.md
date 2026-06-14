@@ -6,7 +6,7 @@ This document keeps public launch claims aligned with implemented evidence.
 
 - Stable desktop release remains blocked until signed artifacts, checksums and release evidence exist for each target platform.
 - Mobile support is advisory: Android emulator and iOS simulator/binding checks exist, but mobile store packages are not launch-ready. The `mobile_public_launch` feature gate and [`docs/mobile-public-launch-readiness.md`](mobile-public-launch-readiness.md) track this status separately from desktop release readiness.
-- ML/RAG features are deferred. Early waves intentionally keep local ML, RAG and local LLM features disabled.
+- ML/RAG features are deferred. Early waves intentionally keep local ML, RAG and local LLM features disabled. The `frontier_intelligence_preview` gate and [`docs/frontier-intelligence-governance.md`](frontier-intelligence-governance.md) define the future opt-in, privacy and promotion rules.
 - cloud collaboration is deferred. Fe Reader remains local-first and must not silently upload, sync or collect analytics.
 - Registry manifests are present for several package surfaces, but package publication is deferred until credentials, artifacts, signatures and maintainer approval are available.
 

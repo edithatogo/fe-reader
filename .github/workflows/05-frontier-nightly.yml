@@ -29,4 +29,5 @@ jobs:
       - run: bash scripts/sanitizer_smoke.sh
       - run: bash scripts/fuzz_smoke.sh
       - run: bash scripts/gpu_frontier_smoke.sh
+      - run: python3 scripts/frontier_intelligence_governance_check.py
       - run: bash scripts/differential_oracle_smoke.sh

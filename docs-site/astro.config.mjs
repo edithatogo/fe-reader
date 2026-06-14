@@ -25,6 +25,7 @@ export default defineConfig({
             { label: 'Stable Desktop Release', slug: 'stable-desktop-release' },
             { label: 'PDF Baseline Parity', slug: 'pdf-baseline-parity' },
             { label: 'Mobile Public Launch', slug: 'mobile-public-launch' },
+            { label: 'Frontier Intelligence', slug: 'frontier-intelligence-governance' },
             { label: 'Automation Safety', slug: 'automation-safety' },
           ],
         },

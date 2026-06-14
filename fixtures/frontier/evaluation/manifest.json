@@ -1,0 +1,24 @@
+{
+  "version": "0.1.0",
+  "privacy_policy": "synthetic_or_public_only",
+  "no_private_documents": true,
+  "no_private_prompts": true,
+  "no_credentials": true,
+  "network_required": false,
+  "fixtures": [
+    {
+      "fixture_id": "synthetic-clinical-admin-policy",
+      "source": "synthetic",
+      "license": "CC0-1.0",
+      "contains_private_data": false,
+      "expected_evidence": ["page", "span", "bounding_box", "source_fixture"]
+    },
+    {
+      "fixture_id": "synthetic-contract-review",
+      "source": "synthetic",
+      "license": "CC0-1.0",
+      "contains_private_data": false,
+      "expected_evidence": ["page", "span", "bounding_box", "source_fixture"]
+    }
+  ]
+}

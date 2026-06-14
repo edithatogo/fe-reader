@@ -178,7 +178,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Frontier Intelligence Governance**
+- [x] **Track: Frontier Intelligence Governance**
 *Link: [./tracks/track-BA-frontier-intelligence-governance/](./tracks/track-BA-frontier-intelligence-governance/)*
 
 ---

@@ -61,6 +61,7 @@ if frontier:
             "bash scripts/sanitizer_smoke.sh",
             "bash scripts/fuzz_smoke.sh",
             "bash scripts/gpu_frontier_smoke.sh",
+            "python3 scripts/frontier_intelligence_governance_check.py",
             "bash scripts/differential_oracle_smoke.sh",
         ]:
             if command not in step_runs:
@@ -105,6 +106,7 @@ if matrix:
         "frontier_sanitizers",
         "frontier_fuzz",
         "frontier_gpu",
+        "frontier_intelligence_governance",
         "frontier_toolchain_experiments",
         "performance_smoke_advisory",
     ]:
@@ -120,6 +122,7 @@ for script in [
     "scripts/sanitizer_smoke.sh",
     "scripts/fuzz_smoke.sh",
     "scripts/gpu_frontier_smoke.sh",
+    "scripts/frontier_intelligence_governance_check.py",
     "scripts/toolchain_experiment_smoke.sh",
 ]:
     text = read(script)

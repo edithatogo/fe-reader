@@ -1,0 +1,70 @@
+{
+  "contract": "frontier_intelligence_governance",
+  "version": "0.1.0",
+  "stability": "preview",
+  "feature_gate": "frontier_intelligence_preview",
+  "owner": "frontier-maintainers",
+  "launch_blocking": false,
+  "default_state": "disabled",
+  "network_default": "disabled",
+  "telemetry_default": "disabled",
+  "model_download_default": "disabled",
+  "mutation_policy": "no_high_risk_auto_mutation",
+  "privacy_policy": "local_only_no_private_eval_corpus",
+  "deterministic_fallback": [
+    "deterministic_extraction",
+    "deterministic_search",
+    "workflow_packs"
+  ],
+  "user_controls": [
+    "explicit_opt_in_ui",
+    "explicit_opt_in_cli",
+    "disable_switch",
+    "purge_local_models",
+    "purge_local_indexes"
+  ],
+  "preview_features": [
+    {
+      "flag_id": "frontier_intelligence_preview.local_suggestions",
+      "category": "local_ml",
+      "default_enabled": false,
+      "requires_policy_check": true,
+      "requires_local_model_provenance": true,
+      "requires_evidence_citations": true,
+      "forbids_high_risk_auto_mutation": true
+    },
+    {
+      "flag_id": "frontier_intelligence_preview.grounded_qa",
+      "category": "rag",
+      "default_enabled": false,
+      "requires_policy_check": true,
+      "requires_local_model_provenance": true,
+      "requires_evidence_citations": true,
+      "forbids_high_risk_auto_mutation": true
+    }
+  ],
+  "promotion_requires": [
+    "privacy_review",
+    "security_review",
+    "synthetic_or_public_eval_report",
+    "resource_budget_report",
+    "explicit_opt_in_ui_cli",
+    "adr_approval",
+    "rollback_plan"
+  ],
+  "resource_budgets": {
+    "cpu_sustained_seconds_without_user_action": 0,
+    "network_requests_without_user_action": 0,
+    "private_document_text_in_logs": 0,
+    "private_document_text_in_eval_fixtures": 0
+  },
+  "rollback": {
+    "strategy": "disable_frontier_flags_and_use_deterministic_fallbacks",
+    "required_actions": [
+      "disable frontier_intelligence_preview",
+      "purge local model cache",
+      "purge local vector indexes",
+      "fall back to deterministic extraction/search/workflows"
+    ]
+  }
+}

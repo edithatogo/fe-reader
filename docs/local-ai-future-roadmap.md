@@ -1,6 +1,6 @@
 # Local Intelligence Future Roadmap
 
-Local ML, local LLMs, and RAG are deliberately **not early priorities**. Fe Reader should be valuable without them.
+Local ML, local LLMs, and RAG are deliberately **not early priorities**. Fe Reader should be valuable without them. The `frontier_intelligence_preview` gate keeps these features disabled by default until synthetic or public evaluation evidence, privacy review, security review and resource-budget evidence justify a preview.
 
 ## Wave 0-5: prepare only
 
@@ -35,3 +35,5 @@ fe_reader_local_qa
 - Model provenance must be displayed.
 - Model outputs are suggestions, not authority.
 - High-risk suggestions must produce patch plans and require approval.
+- Preview evaluation fixtures must be synthetic or public; private document text, private prompts, credentials and support bundles are forbidden.
+- The disable switch must fall back to deterministic extraction, deterministic search and workflow packs.

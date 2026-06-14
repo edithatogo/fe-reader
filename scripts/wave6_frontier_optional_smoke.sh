@@ -6,5 +6,6 @@ cargo test -q -p fe_reader_render_gpu
 bash scripts/gpu_frontier_smoke.sh
 bash scripts/toolchain_experiment_smoke.sh
 python3 scripts/wave6_frontier_optional_smoke.py
+python3 scripts/frontier_intelligence_governance_check.py
 
 echo "wave6 frontier optional smoke passed"

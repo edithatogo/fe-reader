@@ -136,6 +136,12 @@ Mobile public launch readiness is tracked separately behind the
 Run `python3 scripts/mobile_public_launch_check.py` before changing Android or
 iOS publishing status.
 
+Optional local ML/RAG work remains disabled by default behind the
+`frontier_intelligence_preview` feature gate. Governance lives in
+[`docs/frontier-intelligence-governance.md`](docs/frontier-intelligence-governance.md);
+run `python3 scripts/frontier_intelligence_governance_check.py` before changing
+frontier intelligence defaults or promotion criteria.
+
 ## Documentation
 
 The docs site lives in `docs-site/` and uses Astro with Starlight:
