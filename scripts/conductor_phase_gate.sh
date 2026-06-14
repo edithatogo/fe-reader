@@ -21,6 +21,7 @@ cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-features
 python3 scripts/strict_contract_check.py
+python3 scripts/contract_matrix_check.py
 python3 scripts/repository_ci_cd_check.py
 python3 scripts/frontier_ci_check.py
 python3 scripts/ci_policy_check.py

@@ -184,6 +184,7 @@ if pr_contracts.exists():
         failures.append('00-pr-contracts.yml must install Python CI requirements')
     for command in [
         'python3 scripts/validate_schemas.py',
+        'python3 scripts/contract_matrix_check.py',
         'python3 scripts/v8_static_contract_check.py',
         'python3 scripts/strict_contract_check.py',
         'python3 scripts/strict_mutation_contract_check.py',

@@ -132,6 +132,7 @@ if failures:
         print(f' - {f}')
     sys.exit(1)
 subprocess.run([sys.executable, 'scripts/strict_mutation_contract_check.py'], cwd=ROOT, check=True)
+subprocess.run([sys.executable, 'scripts/contract_matrix_check.py'], cwd=ROOT, check=True)
 subprocess.run([sys.executable, 'scripts/repository_ci_cd_check.py'], cwd=ROOT, check=True)
 subprocess.run([sys.executable, 'scripts/frontier_ci_check.py'], cwd=ROOT, check=True)
 subprocess.run([sys.executable, 'scripts/release_provenance_check.py'], cwd=ROOT, check=True)

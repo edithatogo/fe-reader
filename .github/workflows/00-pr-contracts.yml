@@ -23,6 +23,7 @@ jobs:
           python-version: "3.x"
       - run: python3 -m pip install -r requirements-ci.txt
       - run: python3 scripts/validate_schemas.py
+      - run: python3 scripts/contract_matrix_check.py
       - run: python3 scripts/v8_static_contract_check.py
       - run: python3 scripts/strict_contract_check.py
       - run: python3 scripts/strict_mutation_contract_check.py
