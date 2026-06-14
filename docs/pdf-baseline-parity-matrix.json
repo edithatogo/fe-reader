@@ -1,0 +1,171 @@
+{
+  "matrix_version": "0.1.0",
+  "feature_gate": "advanced_pdf_baseline",
+  "launch_blocking": false,
+  "governance": {
+    "mutation_pipeline": "OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt",
+    "rollback": "Remove unsupported claims from release docs and disable incomplete workflow packs.",
+    "exit_criteria": "Every baseline capability claim has a fixture, contract smoke, differential oracle, visual regression report or documented limitation."
+  },
+  "claims": [
+    {
+      "id": "open-basic-pdf",
+      "family": "reading",
+      "public_claim": "Open and inspect generated baseline PDFs.",
+      "support_level": "supported-preview",
+      "evidence": [
+        "fixtures/corpus/basic/minimal-v1_0.pdf",
+        "fixtures/corpus/basic/minimal-v2_0.pdf",
+        "scripts/v8_cli_smoke.sh",
+        "scripts/pdf_model_contract_check.py"
+      ],
+      "limitation": ""
+    },
+    {
+      "id": "malformed-safe-open",
+      "family": "reading",
+      "public_claim": "Treat malformed PDFs as expected input and report parser diagnostics without mutating bytes.",
+      "support_level": "supported-preview",
+      "evidence": [
+        "fixtures/corpus/malformed-adversarial/truncated-catalog.pdf",
+        "scripts/pdf_repair_smoke.sh",
+        "scripts/pdf_lab_inspect_smoke.sh"
+      ],
+      "limitation": ""
+    },
+    {
+      "id": "text-search",
+      "family": "search",
+      "public_claim": "Build deterministic text/search evidence for simple generated PDFs.",
+      "support_level": "supported-preview",
+      "evidence": [
+        "fixtures/corpus/basic/text-search-fixture.pdf",
+        "fixtures/expected/search/text-search-fixture.search-index.json",
+        "scripts/search_index_smoke.sh",
+        "scripts/search_compatibility_report.py"
+      ],
+      "limitation": "Complex glyph shaping, OCR and missing ToUnicode cases remain documented corpus placeholders until generated PDF fixtures and oracle results are accepted."
+    },
+    {
+      "id": "rendering-visual-regression",
+      "family": "rendering",
+      "public_claim": "Run deterministic render smoke and visual regression comparison for the current null-renderer baseline.",
+      "support_level": "supported-preview",
+      "evidence": [
+        "fixtures/expected/rendered/text-search-fixture/metadata.json",
+        "scripts/wave1_render_smoke.sh",
+        "scripts/visual_regression_compare.py"
+      ],
+      "limitation": "The current stable evidence is a deterministic null-renderer smoke baseline; production renderer parity must remain a post-launch claim until reference-renderer oracle results are accepted."
+    },
+    {
+      "id": "page-organization",
+      "family": "page-organization",
+      "public_claim": "Plan page operations through the mutation pipeline without auto-approval.",
+      "support_level": "plan-only",
+      "evidence": [
+        "scripts/page_ops_contract_check.py",
+        "crates/fe_reader_core/src/lib.rs"
+      ],
+      "limitation": "Apply/save paths and UI page organization remain gated until transaction apply and audit receipts are end-to-end verified.",
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "annotations",
+      "family": "annotations",
+      "public_claim": "Plan annotation operations through core contracts without bypassing policy.",
+      "support_level": "plan-only",
+      "evidence": [
+        "scripts/annotation_contract_smoke.py",
+        "crates/fe_reader_core/src/lib.rs"
+      ],
+      "limitation": "Editable annotation preservation and renderer/UI round trips need additional fixtures before public parity claims.",
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "forms-acroform",
+      "family": "forms",
+      "public_claim": "Plan AcroForm fill/flatten operations with policy-visible write modes.",
+      "support_level": "plan-only",
+      "evidence": [
+        "scripts/forms_contract_smoke.sh",
+        "crates/fe_reader_forms/src/lib.rs"
+      ],
+      "limitation": "XFA and JavaScript execution are recognized as compatibility gaps and remain disabled or warning-only until sandboxed execution is separately approved.",
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "metadata-xmp",
+      "family": "metadata",
+      "public_claim": "Inspect and plan metadata/XMP changes with explicit scrub policies.",
+      "support_level": "supported-preview",
+      "evidence": [
+        "scripts/metadata_wave2_smoke.sh",
+        "scripts/prepress_smoke.sh",
+        "crates/fe_reader_metadata/src/lib.rs"
+      ],
+      "limitation": "Standards-grade PDF/A, PDF/UA and PDF/X conformance claims require external oracle reports before public parity claims.",
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "secure-redaction",
+      "family": "redaction",
+      "public_claim": "Require sanitizing rewrite and verification receipts for secure redaction plans.",
+      "support_level": "plan-and-verify",
+      "evidence": [
+        "fixtures/corpus/redaction/secure-redaction-smoke.recipe.json",
+        "scripts/redaction_verification_smoke.sh",
+        "scripts/pdf_lab_redaction_scan_smoke.sh",
+        "docs/adr/0004-secure-redaction-full-rewrite.json"
+      ],
+      "limitation": "No public claim should imply applied redaction is complete until rewritten output is verified against text/object/OCR oracles.",
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "conversion-source-pipelines",
+      "family": "conversion",
+      "public_claim": "Expose conversion and source-pipeline planning with capability discovery and clear failure modes.",
+      "support_level": "plan-only",
+      "evidence": [
+        "scripts/conversion_contract_smoke.sh",
+        "scripts/source_linked_smoke.sh",
+        "crates/fe_reader_conversion/src/lib.rs"
+      ],
+      "limitation": "External converters such as Typst, Quarto, Tectonic, LaTeX, Pandoc and LibreOffice require provider discovery, policy approval and fixtures before output fidelity claims.",
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "signed-documents",
+      "family": "signatures",
+      "public_claim": "Track signed-document compatibility as a documented limitation.",
+      "support_level": "documented-limitation",
+      "evidence": [
+        "fixtures/corpus/signed/README.md",
+        "fixtures/corpus/manifest.json"
+      ],
+      "limitation": "Signature preservation, validation and signing are not public baseline claims until signed fixtures, provenance and oracle expectations are accepted."
+    },
+    {
+      "id": "portfolio-attachments",
+      "family": "attachments-portfolios",
+      "public_claim": "Track portfolio and attachment workflows as documented limitations.",
+      "support_level": "documented-limitation",
+      "evidence": [
+        "fixtures/corpus/attachments-portfolios/README.md",
+        "fixtures/corpus/manifest.json"
+      ],
+      "limitation": "Portfolio extraction, attachment preservation and embedded-file mutation are not public baseline claims until fixtures and policy contracts land."
+    },
+    {
+      "id": "scanned-ocr",
+      "family": "ocr",
+      "public_claim": "Track OCR/searchable-PDF workflows as documented limitations.",
+      "support_level": "documented-limitation",
+      "evidence": [
+        "fixtures/corpus/scanned-ocr/README.md",
+        "scripts/ocr_searchable_pdf_contract_smoke.py"
+      ],
+      "limitation": "OCR is not enabled in early waves; searchable-PDF conversion remains provider-gated and opt-in."
+    }
+  ]
+}

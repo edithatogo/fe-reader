@@ -23,6 +23,7 @@ export default defineConfig({
             { label: 'Release Quality', slug: 'release-quality' },
             { label: 'Release Pipeline', slug: 'release-pipeline' },
             { label: 'Stable Desktop Release', slug: 'stable-desktop-release' },
+            { label: 'PDF Baseline Parity', slug: 'pdf-baseline-parity' },
             { label: 'Automation Safety', slug: 'automation-safety' },
           ],
         },

@@ -168,7 +168,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Post-launch PDF Baseline Parity**
+- [x] **Track: Post-launch PDF Baseline Parity**
 *Link: [./tracks/track-AY-post-launch-pdf-baseline-parity/](./tracks/track-AY-post-launch-pdf-baseline-parity/)*
 
 ---

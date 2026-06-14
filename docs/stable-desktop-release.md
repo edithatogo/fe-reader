@@ -68,11 +68,22 @@ python3 scripts/launch_qa_check.py
 
 The command writes `target/release-evidence/launch-qa.json` and summarizes desktop packaging, registry publication state, enterprise operations readiness, release matrix checks, release readiness, accessibility smoke evidence and public documentation alignment.
 
+## PDF Capability Claims
+
+Post-launch PDF baseline parity is governed by `advanced_pdf_baseline` and does not block desktop stable launch. Capability claims must stay aligned with `docs/pdf-baseline-parity-matrix.md` and `docs/pdf-baseline-parity-matrix.json`.
+
+Validate the claim boundary with:
+
+```bash
+python3 scripts/pdf_baseline_parity_check.py
+```
+
 ## Related Evidence
 
 - `docs/desktop-release-packaging.md`
 - `docs/desktop-distribution-publication.md`
 - `docs/enterprise-operations-readiness.md`
+- `docs/pdf-baseline-parity-matrix.md`
 - `packaging/registry-status.yaml`
 - `packaging/desktop-distribution.yaml`
 - `target/release-evidence/release-readiness.json`

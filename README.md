@@ -125,6 +125,11 @@ Known launch limitations and support routes are documented in
 [`docs/launch-limitations-support.md`](docs/launch-limitations-support.md),
 [`SUPPORT.md`](SUPPORT.md) and [`SECURITY.md`](SECURITY.md).
 
+Post-launch PDF baseline parity claims are evidence-gated in
+[`docs/pdf-baseline-parity-matrix.md`](docs/pdf-baseline-parity-matrix.md).
+Run `python3 scripts/pdf_baseline_parity_check.py` before expanding public
+PDF capability claims.
+
 ## Documentation
 
 The docs site lives in `docs-site/` and uses Astro with Starlight:

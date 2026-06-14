@@ -351,6 +351,51 @@
         "rewrite_claims_not_supported": true
       },
       "notes": "Incremental-update placeholder text for manifest coverage only."
+    },
+    {
+      "id": "attachments-portfolios-placeholder",
+      "fixture_id": "attachments-portfolios-placeholder",
+      "path": "fixtures/corpus/attachments-portfolios/README.md",
+      "category": "attachments-portfolios",
+      "source_kind": "placeholder",
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "expected_features": [
+        "portfolio_attachment_limitation_documented"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "attachments",
+        "portfolio"
+      ],
+      "expected_behavior": {
+        "portfolio_capability_claim_allowed": false,
+        "attachment_mutation_claim_allowed": false
+      },
+      "notes": "Placeholder only; portfolio and attachment parity require accepted fixtures and oracle expectations."
+    },
+    {
+      "id": "scanned-ocr-placeholder",
+      "fixture_id": "scanned-ocr-placeholder",
+      "path": "fixtures/corpus/scanned-ocr/README.md",
+      "category": "scanned-ocr",
+      "source_kind": "placeholder",
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "expected_features": [
+        "ocr_limitation_documented",
+        "searchable_pdf_provider_gate"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "ocr",
+        "provider-gated"
+      ],
+      "expected_behavior": {
+        "ocr_enabled_by_default": false,
+        "searchable_pdf_claim_allowed": false
+      },
+      "notes": "Placeholder only; OCR/searchable PDF parity requires fixtures, provider discovery and oracle expectations."
     }
   ]
 }
