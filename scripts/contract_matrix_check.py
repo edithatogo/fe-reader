@@ -46,6 +46,7 @@ required_entries = {
     "repository_ci_cd",
     "frontier_ci_policy",
     "schemas",
+    "contract_matrix",
     "release_matrix",
     "release_readiness",
     "security_policy",

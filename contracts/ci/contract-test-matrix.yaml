@@ -15,6 +15,9 @@ matrix:
   schemas:
     command: python3 scripts/validate_schemas.py
     gate: P0
+  contract_matrix:
+    command: python3 scripts/contract_matrix_check.py
+    gate: P0
   requirements_traceability:
     command: python3 scripts/requirements_traceability_check.py
     gate: P0
