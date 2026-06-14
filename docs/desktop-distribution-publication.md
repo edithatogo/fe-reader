@@ -8,15 +8,17 @@ Before any stable desktop package is published:
 
 1. Build the desktop artifacts listed in `packaging/package-matrix.yaml`.
 2. Produce detached SHA-256 files beside each artifact.
-3. Run the release workflow or the local release evidence checks.
-4. Confirm `target/release-evidence/stable-release-evidence.json` passes for the release channel.
-5. Confirm `target/release-evidence/desktop-distribution-publication.json` passes.
-6. Obtain explicit maintainer approval for publication.
+3. Run `python3 scripts/release_artifact_inventory_check.py` to record which artifacts and checksums are present.
+4. Run the release workflow or the local release evidence checks.
+5. Confirm `target/release-evidence/stable-release-evidence.json` passes for the release channel.
+6. Confirm `target/release-evidence/desktop-distribution-publication.json` passes.
+7. Obtain explicit maintainer approval for publication.
 
 ## Local Validation
 
 ```bash
 python3 scripts/desktop_distribution_publication_check.py
+python3 scripts/release_artifact_inventory_check.py
 ```
 
 For a stable publication rehearsal:

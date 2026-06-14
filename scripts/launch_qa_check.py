@@ -18,6 +18,7 @@ STRICT_CHANNELS = {"stable", "lts", "store_submission"}
 COMMANDS: list[list[str]] = [
     ["bash", "scripts/smoke_cli_contract.sh"],
     ["python3", "scripts/desktop_packaging_signing_check.py"],
+    ["python3", "scripts/release_artifact_inventory_check.py"],
     ["python3", "scripts/stable_release_evidence_check.py"],
     ["python3", "scripts/desktop_distribution_publication_check.py"],
     ["python3", "scripts/enterprise_operations_readiness_check.py"],
@@ -35,6 +36,7 @@ EVIDENCE_CHECKS = {
     "release_readiness": "target/release-evidence/release-readiness.json",
     "release_matrix": "target/release-evidence/release-matrix.json",
     "desktop_packaging_signing": "target/release-evidence/desktop-packaging-signing.json",
+    "release_artifact_inventory": "target/release-evidence/release-artifact-inventory.json",
     "desktop_distribution_publication": "target/release-evidence/desktop-distribution-publication.json",
     "enterprise_operations_readiness": "target/release-evidence/enterprise-operations-readiness.json",
     "mobile_public_launch": "target/release-evidence/mobile-public-launch.json",

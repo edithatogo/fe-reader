@@ -21,6 +21,7 @@ REQUIRED_STABLE_EVIDENCE = {
     "provenance": "target/release-evidence/provenance.json",
     "signing_readiness": "target/release-evidence/signing-readiness.json",
     "desktop_packaging_signing": "target/release-evidence/desktop-packaging-signing.json",
+    "release_artifact_inventory": "target/release-evidence/release-artifact-inventory.json",
     "release_readiness": "target/release-evidence/release-readiness.json",
     "compatibility_corpus": "target/compatibility-corpus-report.json",
     "search_compatibility": "target/search-compatibility-report.json",
@@ -99,6 +100,8 @@ def main() -> int:
         failures.append("stable release requires signing-readiness status pass")
     if strict and status_for(ROOT / "target/release-evidence/desktop-packaging-signing.json") != "pass":
         failures.append("stable release requires desktop-packaging-signing status pass")
+    if strict and status_for(ROOT / "target/release-evidence/release-artifact-inventory.json") != "pass":
+        failures.append("stable release requires release-artifact-inventory status pass")
 
     report = {
         "check": "stable_release_evidence",

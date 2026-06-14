@@ -12,6 +12,7 @@ Each desktop release should publish:
 
 - platform artifacts for macOS, Windows and Linux;
 - `SHA256SUMS` and signatures for every artifact;
+- `target/release-evidence/release-artifact-inventory.json` proving expected artifacts and checksums exist;
 - release notes;
 - the `release-evidence` bundle from GitHub Actions.
 
@@ -86,5 +87,6 @@ python3 scripts/pdf_baseline_parity_check.py
 - `docs/pdf-baseline-parity-matrix.md`
 - `packaging/registry-status.yaml`
 - `packaging/desktop-distribution.yaml`
+- `target/release-evidence/release-artifact-inventory.json`
 - `target/release-evidence/release-readiness.json`
 - `target/release-evidence/launch-qa.json`
