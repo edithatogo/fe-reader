@@ -180,6 +180,8 @@ for wf in workflow_dir.glob('*.yml'):
 pr_contracts = workflow_dir / '00-pr-contracts.yml'
 if pr_contracts.exists():
     txt = pr_contracts.read_text(encoding='utf-8')
+    if 'python3 -m pip install -r requirements-ci.txt' not in txt:
+        failures.append('00-pr-contracts.yml must install Python CI requirements')
     for command in [
         'python3 scripts/validate_schemas.py',
         'python3 scripts/v8_static_contract_check.py',
@@ -202,6 +204,7 @@ stable_commands = {
         'cargo clippy --workspace --all-targets --all-features -- -D warnings',
     ],
     '02-security-supply-chain.yml': [
+        'python3 -m pip install -r requirements-ci.txt',
         'bash scripts/security_policy_check.sh',
         'bash scripts/actions_security_gate.sh',
         'bash scripts/supply_chain_gate.sh',
@@ -222,6 +225,7 @@ stable_commands = {
         'docs-site/package-lock.json',
     ],
     '09-platform-tests.yml': [
+        'python3 -m pip install -r requirements-ci.txt',
         'bash scripts/linux_container_smoke.sh',
         'bash scripts/android_emulator_smoke.sh',
         'cargo check -p fe_reader_cli --target x86_64-apple-darwin',

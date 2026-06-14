@@ -45,6 +45,7 @@ jobs:
       - uses: actions/setup-python@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
         with:
           python-version: "3.x"
+      - run: python3 -m pip install -r requirements-ci.txt
       - run: cargo install cargo-cyclonedx --locked
       - run: bash scripts/sbom_audit.sh
       - run: bash scripts/generate_provenance_attestation.sh
