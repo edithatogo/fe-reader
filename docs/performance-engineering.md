@@ -220,3 +220,7 @@ The summary must include:
 - binary size by target;
 - regressions since previous baseline;
 - accepted performance-risk exceptions.
+
+## Rendering promotion gate
+
+Rendering and GPU performance claims are governed by the `rendering_performance_promotion` feature gate. The gate is disabled by default and requires visual regression, differential oracle, budget and platform evidence before claims are promoted. CPU/PDFium-safe fallback remains mandatory for every promoted renderer path.

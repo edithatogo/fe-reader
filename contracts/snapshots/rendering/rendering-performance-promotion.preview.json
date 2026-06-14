@@ -1,0 +1,100 @@
+{
+  "contract": "rendering_performance_promotion",
+  "stability": "preview",
+  "feature_gate": "rendering_performance_promotion",
+  "owner": "rendering-maintainers",
+  "launch_blocking": false,
+  "default_state": "disabled",
+  "cpu_fallback_required": true,
+  "gpu_default": "disabled",
+  "frontier_renderer_default": "disabled",
+  "ml_rendering_allowed": false,
+  "promotion_policy": "evidence_required_before_claims",
+  "rollback": {
+    "strategy": "disable_optional_gpu_and_frontier_renderers",
+    "fallback": "cpu_pdfium_safe_rendering",
+    "retains": [
+      "cpu_renderer",
+      "visual_regression_fixtures",
+      "differential_oracle_reports",
+      "performance_budget_reports"
+    ]
+  },
+  "required_evidence": [
+    "cpu_render_smoke",
+    "visual_regression_smoke",
+    "differential_oracle_smoke",
+    "performance_budget_manifest",
+    "platform_startup_memory_power_summary",
+    "gpu_frontier_smoke_if_gpu_claimed"
+  ],
+  "budget_classes": [
+    {
+      "scenario_id": "render.first_page.150dpi",
+      "class": "InteractiveP0",
+      "max_p95_ms": 600,
+      "max_peak_rss_mb": 256,
+      "fallback": "cpu_pdfium_safe_rendering"
+    },
+    {
+      "scenario_id": "render.tile.512_2x_warm",
+      "class": "InteractiveP0",
+      "max_p95_ms": 40,
+      "max_peak_rss_mb": 512,
+      "fallback": "cpu_pdfium_safe_rendering"
+    },
+    {
+      "scenario_id": "app.cold_start.desktop",
+      "class": "InteractiveP0",
+      "max_p95_ms": 1500,
+      "fallback": "native_shell_without_gpu_promotion"
+    },
+    {
+      "scenario_id": "power.thermal.desktop_render_loop",
+      "class": "FrontierP3",
+      "max_p95_ms": null,
+      "max_peak_rss_mb": 768,
+      "fallback": "disable_gpu_compositing"
+    }
+  ],
+  "gpu_promotion_requires": [
+    "feature_flag_disabled_by_default",
+    "cpu_fallback",
+    "platform_specific_smoke_linux",
+    "platform_specific_smoke_macos",
+    "platform_specific_smoke_windows",
+    "visual_regression_report",
+    "differential_oracle_report",
+    "memory_budget_report",
+    "power_thermal_budget_report",
+    "rollback_plan"
+  ],
+  "platform_targets": [
+    {
+      "platform": "linux",
+      "required_summary": "artifacts/perf/platform/linux/summary.md",
+      "required_script": "scripts/perf_profile_linux.sh",
+      "status": "planned"
+    },
+    {
+      "platform": "macos",
+      "required_summary": "artifacts/perf/platform/macos/summary.md",
+      "required_script": "scripts/perf_profile_macos.sh",
+      "status": "planned"
+    },
+    {
+      "platform": "windows",
+      "required_summary": "artifacts/perf/platform/windows/summary.md",
+      "required_script": "scripts/perf_profile_windows.ps1",
+      "status": "planned"
+    }
+  ],
+  "exit_criteria": [
+    "cpu_rendering_budget_passes",
+    "visual_regression_baseline_reviewed",
+    "differential_oracle_alignment_documented",
+    "startup_memory_power_budgets_documented",
+    "gpu_paths_remain_optional",
+    "rollback_to_cpu_safe_renderer_documented"
+  ]
+}

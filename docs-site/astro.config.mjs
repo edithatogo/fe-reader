@@ -27,6 +27,7 @@ export default defineConfig({
             { label: 'Mobile Public Launch', slug: 'mobile-public-launch' },
             { label: 'Frontier Intelligence', slug: 'frontier-intelligence-governance' },
             { label: 'Opt-in Collaboration', slug: 'opt-in-collaboration-sync' },
+            { label: 'Rendering Performance', slug: 'rendering-performance-promotion' },
             { label: 'Automation Safety', slug: 'automation-safety' },
           ],
         },

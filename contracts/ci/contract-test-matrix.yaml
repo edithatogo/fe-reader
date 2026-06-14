@@ -57,6 +57,13 @@ matrix:
     promotion_requires_adr: true
     baseline_required: true
     baseline_artifact: target/release-evidence/opt-in-collaboration-sync.json
+  rendering_performance_promotion:
+    command: python3 scripts/rendering_performance_promotion_check.py
+    gate: advisory_post_launch
+    blocks_pr: false
+    promotion_requires_adr: true
+    baseline_required: true
+    baseline_artifact: target/release-evidence/rendering-performance-promotion.json
   ocr_searchable_pdf_contract:
     command: python3 scripts/ocr_searchable_pdf_contract_smoke.py
     gate: advisory_until_ocr_provider_baseline

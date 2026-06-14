@@ -1,0 +1,36 @@
+{
+  "fixture_id": "rendering-performance-platform-summary-preview",
+  "privacy_policy": "synthetic_no_private_documents",
+  "feature_gate": "rendering_performance_promotion",
+  "platforms": [
+    {
+      "platform": "linux",
+      "startup_budget_ms": 1500,
+      "peak_rss_budget_mb": 512,
+      "power_budget_status": "planned",
+      "gpu_promotion_status": "disabled_until_evidence"
+    },
+    {
+      "platform": "macos",
+      "startup_budget_ms": 1500,
+      "peak_rss_budget_mb": 512,
+      "power_budget_status": "planned",
+      "gpu_promotion_status": "disabled_until_evidence"
+    },
+    {
+      "platform": "windows",
+      "startup_budget_ms": 1500,
+      "peak_rss_budget_mb": 512,
+      "power_budget_status": "planned",
+      "gpu_promotion_status": "disabled_until_evidence"
+    }
+  ],
+  "evidence_sources": [
+    "benchmarks/budgets/performance-budgets.yaml",
+    "scripts/wave1_render_smoke.sh",
+    "scripts/visual_regression_compare.py",
+    "scripts/differential_oracle_smoke.sh",
+    "scripts/perf_smoke.sh",
+    "scripts/gpu_frontier_smoke.sh"
+  ]
+}

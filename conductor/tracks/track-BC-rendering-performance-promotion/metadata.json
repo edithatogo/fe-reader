@@ -1,9 +1,9 @@
 {
   "track_id": "track-BC-rendering-performance-promotion",
   "type": "feature",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-06-13T23:59:02Z",
-  "updated_at": "2026-06-13T23:59:02Z",
+  "updated_at": "2026-06-14T01:18:00Z",
   "description": "Rendering and performance promotion after CPU baseline evidence, optional GPU governance and platform budgets.",
   "launch_blocking": false,
   "feature_gate": "rendering_performance_promotion",

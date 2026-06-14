@@ -148,6 +148,12 @@ Opt-in collaboration and sync remains disabled by default behind the
 run `python3 scripts/opt_in_collaboration_sync_check.py` before changing
 collaboration defaults, provider behavior or support-bundle exclusions.
 
+Rendering and GPU performance promotion remains disabled by default behind the
+`rendering_performance_promotion` feature gate. Governance lives in
+[`docs/rendering-performance-promotion.md`](docs/rendering-performance-promotion.md);
+run `python3 scripts/rendering_performance_promotion_check.py` before expanding
+rendering, GPU or performance claims.
+
 ## Documentation
 
 The docs site lives in `docs-site/` and uses Astro with Starlight:

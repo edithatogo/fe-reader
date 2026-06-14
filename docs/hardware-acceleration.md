@@ -34,5 +34,6 @@ See `contracts/rust/render_backend.rs`.
 ## Safety
 
 - Hardware acceleration is optional.
+- The `rendering_performance_promotion` feature gate is disabled by default until visual, differential, memory, power and platform evidence exists.
 - Rendering bugs must not affect document mutation.
 - Rendered pixels must never be used as the only proof of redaction; verification must inspect saved content.

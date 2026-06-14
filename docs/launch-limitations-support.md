@@ -8,6 +8,7 @@ This document keeps public launch claims aligned with implemented evidence.
 - Mobile support is advisory: Android emulator and iOS simulator/binding checks exist, but mobile store packages are not launch-ready. The `mobile_public_launch` feature gate and [`docs/mobile-public-launch-readiness.md`](mobile-public-launch-readiness.md) track this status separately from desktop release readiness.
 - ML/RAG features are deferred. Early waves intentionally keep local ML, RAG and local LLM features disabled. The `frontier_intelligence_preview` gate and [`docs/frontier-intelligence-governance.md`](frontier-intelligence-governance.md) define the future opt-in, privacy and promotion rules.
 - cloud collaboration is deferred. Fe Reader remains local-first and must not silently upload, sync or collect analytics. The `opt_in_collaboration_sync` gate and [`docs/opt-in-collaboration-sync.md`](opt-in-collaboration-sync.md) define the future explicit opt-in, provider discovery, rollback and support-bundle exclusion rules.
+- GPU and expanded rendering performance claims remain advisory. The `rendering_performance_promotion` gate and [`docs/rendering-performance-promotion.md`](rendering-performance-promotion.md) require CPU fallback, visual regression, differential oracle, budget and platform evidence before promotion.
 - Registry manifests are present for several package surfaces, but package publication is deferred until credentials, artifacts, signatures and maintainer approval are available.
 
 ## Support Route
@@ -37,6 +38,12 @@ Opt-in collaboration and sync governance is checked with:
 
 ```bash
 python3 scripts/opt_in_collaboration_sync_check.py
+```
+
+Rendering performance promotion governance is checked with:
+
+```bash
+python3 scripts/rendering_performance_promotion_check.py
 ```
 
 For stable release readiness, run:

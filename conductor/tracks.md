@@ -188,7 +188,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Rendering Performance Promotion**
+- [x] **Track: Rendering Performance Promotion**
 *Link: [./tracks/track-BC-rendering-performance-promotion/](./tracks/track-BC-rendering-performance-promotion/)*
 
 ---
