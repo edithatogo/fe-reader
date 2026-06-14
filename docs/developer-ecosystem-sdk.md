@@ -57,3 +57,5 @@ Mobile smoke bindings are preview contract evidence for Android intent/Documents
 ## Rule
 
 SDK examples must never bypass `OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt`.
+
+The `ecosystem_integrations_marketplace` feature gate is disabled by default until SDK, plugin, workflow-pack and integration publication have compatibility snapshots, support/security links, provenance, signed artifacts where applicable and maintainer approval.

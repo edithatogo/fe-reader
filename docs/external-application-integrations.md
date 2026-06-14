@@ -45,3 +45,5 @@ fe-reader://receipt?receipt_id=<id>
 - Extension identifies embedded PDF or link to PDF.
 - Extension offers “Open in Fe Reader”, “Open in Fe Reader Web Local”, “Extract metadata”, “Send to workflow”.
 - Web extension cannot mutate local files directly; it must hand off to native app, web local with user-selected file, or self-hosted endpoint.
+
+Marketplace expansion is governed by `ecosystem_integrations_marketplace`, which keeps integrations read-only or plan-only by default and requires compatibility snapshots, provenance and maintainer approval before public marketplace claims.

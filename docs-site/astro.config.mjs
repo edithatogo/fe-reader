@@ -28,6 +28,7 @@ export default defineConfig({
             { label: 'Frontier Intelligence', slug: 'frontier-intelligence-governance' },
             { label: 'Opt-in Collaboration', slug: 'opt-in-collaboration-sync' },
             { label: 'Rendering Performance', slug: 'rendering-performance-promotion' },
+            { label: 'Ecosystem Marketplace', slug: 'ecosystem-integrations-marketplace' },
             { label: 'Automation Safety', slug: 'automation-safety' },
           ],
         },

@@ -193,5 +193,5 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Ecosystem Integrations and Marketplace**
+- [x] **Track: Ecosystem Integrations and Marketplace**
 *Link: [./tracks/track-BD-ecosystem-integrations-marketplace/](./tracks/track-BD-ecosystem-integrations-marketplace/)*

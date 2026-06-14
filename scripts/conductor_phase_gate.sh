@@ -48,6 +48,7 @@ if [[ -x scripts/source_linked_smoke.sh ]]; then scripts/source_linked_smoke.sh;
 if [[ -x scripts/cache_workspace_smoke.sh ]]; then scripts/cache_workspace_smoke.sh; fi
 python3 scripts/opt_in_collaboration_sync_check.py
 python3 scripts/rendering_performance_promotion_check.py
+python3 scripts/ecosystem_integrations_marketplace_check.py
 
 if [[ -x scripts/sbom_audit.sh ]]; then scripts/sbom_audit.sh || echo "SBOM audit advisory skip/failure before tooling hardening"; fi
 if [[ -x scripts/perf_smoke.sh && "${CONDUCTOR_SKIP_PERF_SMOKE:-0}" != "1" ]]; then scripts/perf_smoke.sh || echo "perf smoke advisory skip"; fi

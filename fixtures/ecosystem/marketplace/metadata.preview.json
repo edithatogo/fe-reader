@@ -1,0 +1,24 @@
+{
+  "fixture_id": "ecosystem-marketplace-metadata-preview",
+  "feature_gate": "ecosystem_integrations_marketplace",
+  "privacy_policy": "no_private_documents",
+  "homepage": "https://edithatogo.github.io/fe-reader/",
+  "support": "SUPPORT.md",
+  "security": "SECURITY.md",
+  "license": "Apache-2.0 OR MIT",
+  "publication_status": "deferred",
+  "surfaces": [
+    "plugin_registry",
+    "workflow_pack_gallery",
+    "sdk_packages",
+    "external_integrations"
+  ],
+  "required_evidence": [
+    "signed_artifacts",
+    "sbom",
+    "provenance",
+    "compatibility_report",
+    "maintainer_approval"
+  ],
+  "automation_safety": "read_only_or_plan_only_by_default"
+}

@@ -64,6 +64,13 @@ matrix:
     promotion_requires_adr: true
     baseline_required: true
     baseline_artifact: target/release-evidence/rendering-performance-promotion.json
+  ecosystem_integrations_marketplace:
+    command: python3 scripts/ecosystem_integrations_marketplace_check.py
+    gate: advisory_post_launch
+    blocks_pr: false
+    promotion_requires_maintainer_approval: true
+    baseline_required: true
+    baseline_artifact: target/release-evidence/ecosystem-integrations-marketplace.json
   ocr_searchable_pdf_contract:
     command: python3 scripts/ocr_searchable_pdf_contract_smoke.py
     gate: advisory_until_ocr_provider_baseline

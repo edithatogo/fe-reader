@@ -154,6 +154,12 @@ Rendering and GPU performance promotion remains disabled by default behind the
 run `python3 scripts/rendering_performance_promotion_check.py` before expanding
 rendering, GPU or performance claims.
 
+SDK, plugin, workflow-pack and marketplace expansion remains disabled by default
+behind the `ecosystem_integrations_marketplace` feature gate. Governance lives
+in [`docs/ecosystem-integrations-marketplace.md`](docs/ecosystem-integrations-marketplace.md);
+run `python3 scripts/ecosystem_integrations_marketplace_check.py` before
+expanding ecosystem publication claims.
+
 ## Documentation
 
 The docs site lives in `docs-site/` and uses Astro with Starlight:

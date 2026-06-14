@@ -9,6 +9,7 @@ This document keeps public launch claims aligned with implemented evidence.
 - ML/RAG features are deferred. Early waves intentionally keep local ML, RAG and local LLM features disabled. The `frontier_intelligence_preview` gate and [`docs/frontier-intelligence-governance.md`](frontier-intelligence-governance.md) define the future opt-in, privacy and promotion rules.
 - cloud collaboration is deferred. Fe Reader remains local-first and must not silently upload, sync or collect analytics. The `opt_in_collaboration_sync` gate and [`docs/opt-in-collaboration-sync.md`](opt-in-collaboration-sync.md) define the future explicit opt-in, provider discovery, rollback and support-bundle exclusion rules.
 - GPU and expanded rendering performance claims remain advisory. The `rendering_performance_promotion` gate and [`docs/rendering-performance-promotion.md`](rendering-performance-promotion.md) require CPU fallback, visual regression, differential oracle, budget and platform evidence before promotion.
+- SDK, plugin, workflow-pack and marketplace publication remain deferred. The `ecosystem_integrations_marketplace` gate and [`docs/ecosystem-integrations-marketplace.md`](ecosystem-integrations-marketplace.md) require compatibility snapshots, provenance, support/security links and maintainer approval before publication claims.
 - Registry manifests are present for several package surfaces, but package publication is deferred until credentials, artifacts, signatures and maintainer approval are available.
 
 ## Support Route
@@ -44,6 +45,12 @@ Rendering performance promotion governance is checked with:
 
 ```bash
 python3 scripts/rendering_performance_promotion_check.py
+```
+
+Ecosystem integration and marketplace governance is checked with:
+
+```bash
+python3 scripts/ecosystem_integrations_marketplace_check.py
 ```
 
 For stable release readiness, run:

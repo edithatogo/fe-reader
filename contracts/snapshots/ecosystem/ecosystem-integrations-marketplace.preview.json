@@ -1,0 +1,84 @@
+{
+  "contract": "ecosystem_integrations_marketplace",
+  "stability": "preview",
+  "feature_gate": "ecosystem_integrations_marketplace",
+  "owner": "ecosystem-maintainers",
+  "launch_blocking": false,
+  "default_state": "disabled",
+  "publication_default": "deferred",
+  "mutation_policy": "read_only_or_plan_only_by_default",
+  "unsafe_plugin_runtime_allowed": false,
+  "required_compatibility_snapshots": [
+    "contracts/snapshots/cli/fe_reader_cli.commands.preview.json",
+    "contracts/snapshots/mcp/fe_reader_mcp.tools.preview.json",
+    "contracts/snapshots/plugin-abi/fe_reader_plugin_host.preview.json",
+    "contracts/snapshots/uniffi/fe_reader_uniffi.facade.json",
+    "contracts/snapshots/c-abi/fe_reader_c_abi.facade.json",
+    "contracts/snapshots/dotnet/FeReader.Native.facade.json"
+  ],
+  "publication_requires": [
+    "signed_artifacts",
+    "sbom",
+    "provenance",
+    "compatibility_report",
+    "security_policy_link",
+    "support_policy_link",
+    "maintainer_approval",
+    "rollback_plan"
+  ],
+  "marketplace_surfaces": [
+    {
+      "surface": "plugin_registry",
+      "status": "deferred",
+      "mutation_policy": "proposal_only",
+      "requires_signature": true
+    },
+    {
+      "surface": "workflow_pack_gallery",
+      "status": "metadata_preview",
+      "mutation_policy": "plan_only_until_approved",
+      "requires_provenance": true
+    },
+    {
+      "surface": "sdk_packages",
+      "status": "deferred",
+      "mutation_policy": "read_only_or_plan_only_examples",
+      "requires_compatibility_snapshot": true
+    },
+    {
+      "surface": "external_integrations",
+      "status": "metadata_preview",
+      "mutation_policy": "read_only_or_plan_only_by_default",
+      "requires_user_grant": true
+    }
+  ],
+  "required_checks": [
+    "plugin_contract_smoke",
+    "workflow_pack_smoke",
+    "public_api_snapshot_check",
+    "c_abi_snapshot_check",
+    "nuget_wrapper_check",
+    "strict_mutation_contract_check"
+  ],
+  "rollback": {
+    "strategy": "disable_publication_and_remove_marketplace_claims",
+    "retains": [
+      "compatibility_snapshots",
+      "read_only_integrations",
+      "plan_only_workflow_packs"
+    ],
+    "disables": [
+      "plugin_runtime_publication",
+      "marketplace_submission",
+      "unsigned_package_publication"
+    ]
+  },
+  "exit_criteria": [
+    "api_snapshots_current",
+    "plugin_runtime_publication_deferred_or_signed",
+    "workflow_pack_provenance_documented",
+    "marketplace_metadata_links_support_and_security",
+    "automation_safety_unchanged",
+    "maintainer_approval_required"
+  ]
+}
