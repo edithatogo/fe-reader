@@ -163,5 +163,35 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Advanced Roadmap Continuation**
+- [x] **Track: Advanced Roadmap Continuation**
 *Link: [./tracks/track-AX-advanced-roadmap-continuation/](./tracks/track-AX-advanced-roadmap-continuation/)*
+
+---
+
+- [ ] **Track: Post-launch PDF Baseline Parity**
+*Link: [./tracks/track-AY-post-launch-pdf-baseline-parity/](./tracks/track-AY-post-launch-pdf-baseline-parity/)*
+
+---
+
+- [ ] **Track: Mobile Public Launch**
+*Link: [./tracks/track-AZ-mobile-public-launch/](./tracks/track-AZ-mobile-public-launch/)*
+
+---
+
+- [ ] **Track: Frontier Intelligence Governance**
+*Link: [./tracks/track-BA-frontier-intelligence-governance/](./tracks/track-BA-frontier-intelligence-governance/)*
+
+---
+
+- [ ] **Track: Opt-in Collaboration and Sync**
+*Link: [./tracks/track-BB-opt-in-collaboration-sync/](./tracks/track-BB-opt-in-collaboration-sync/)*
+
+---
+
+- [ ] **Track: Rendering Performance Promotion**
+*Link: [./tracks/track-BC-rendering-performance-promotion/](./tracks/track-BC-rendering-performance-promotion/)*
+
+---
+
+- [ ] **Track: Ecosystem Integrations and Marketplace**
+*Link: [./tracks/track-BD-ecosystem-integrations-marketplace/](./tracks/track-BD-ecosystem-integrations-marketplace/)*

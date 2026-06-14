@@ -1,0 +1,13 @@
+{
+  "track_id": "track-BC-rendering-performance-promotion",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-06-13T23:59:02Z",
+  "updated_at": "2026-06-13T23:59:02Z",
+  "description": "Rendering and performance promotion after CPU baseline evidence, optional GPU governance and platform budgets.",
+  "launch_blocking": false,
+  "feature_gate": "rendering_performance_promotion",
+  "owner": "rendering-maintainers",
+  "rollback_plan": "Disable optional GPU/frontier renderer paths and fall back to CPU/pdfium-safe rendering.",
+  "exit_criteria": "Rendering quality, memory, startup and platform performance budgets pass with documented fallback behavior."
+}
