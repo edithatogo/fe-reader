@@ -24,6 +24,7 @@ export default defineConfig({
             { label: 'Release Pipeline', slug: 'release-pipeline' },
             { label: 'Stable Desktop Release', slug: 'stable-desktop-release' },
             { label: 'PDF Baseline Parity', slug: 'pdf-baseline-parity' },
+            { label: 'Mobile Public Launch', slug: 'mobile-public-launch' },
             { label: 'Automation Safety', slug: 'automation-safety' },
           ],
         },

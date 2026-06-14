@@ -2,24 +2,24 @@
 
 ## Phase AZ1 - Mobile launch gap audit
 
-- [ ] Task: Audit Android and iOS launch blockers.
-    - [ ] Review emulator, simulator, signing and store checklist evidence.
-    - [ ] Confirm the feature gate `mobile_public_launch` is documented.
-    - [ ] Record rollback and exit criteria.
-- [ ] Task: Run `scripts/conductor_phase_gate.sh --phase AZ1 --auto-fix`.
+- [x] Task: Audit Android and iOS launch blockers.
+    - [x] Review emulator, simulator, signing and store checklist evidence.
+    - [x] Confirm the feature gate `mobile_public_launch` is documented.
+    - [x] Record rollback and exit criteria.
+- [x] Task: Run `scripts/conductor_phase_gate.sh --phase AZ1 --auto-fix`.
 
 ## Phase AZ2 - Mobile release evidence
 
-- [ ] Task: Add mobile release evidence checks.
-    - [ ] Validate Android artifact and Play/F-Droid readiness.
-    - [ ] Validate iOS/TestFlight/App Store readiness.
-    - [ ] Keep mobile automation mutations gated.
-- [ ] Task: Run `scripts/conductor_phase_gate.sh --phase AZ2 --auto-fix`.
+- [x] Task: Add mobile release evidence checks.
+    - [x] Validate Android artifact and Play/F-Droid readiness.
+    - [x] Validate iOS/TestFlight/App Store readiness.
+    - [x] Keep mobile automation mutations gated.
+- [x] Task: Run `scripts/conductor_phase_gate.sh --phase AZ2 --auto-fix`.
 
 ## Phase AZ3 - Store publication readiness
 
-- [ ] Task: Prepare store-facing docs.
-    - [ ] Document privacy declarations.
-    - [ ] Document accessibility and power evidence.
-    - [ ] Keep this track non-blocking for desktop stable.
-- [ ] Task: Run `scripts/conductor_phase_gate.sh --phase AZ3 --auto-fix`.
+- [x] Task: Prepare store-facing docs.
+    - [x] Document privacy declarations.
+    - [x] Document accessibility and power evidence.
+    - [x] Keep this track non-blocking for desktop stable.
+- [x] Task: Run `scripts/conductor_phase_gate.sh --phase AZ3 --auto-fix`.

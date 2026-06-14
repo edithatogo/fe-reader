@@ -1,0 +1,74 @@
+{
+  "version": "0.1.0-preview.1",
+  "feature_gate": "mobile_public_launch",
+  "desktop_launch_blocking": false,
+  "status": "deferred",
+  "policy": {
+    "automation_mutation_policy": "read_only_or_plan_only",
+    "supports_apply": false,
+    "required_mutation_guards": [
+      "patch_plan_id",
+      "document_hash_match",
+      "policy_allow_rule",
+      "approval_token",
+      "audit_receipt"
+    ]
+  },
+  "rollback": {
+    "strategy": "keep_mobile_packages_deferred",
+    "release_note": "Ship desktop-only release notes until Android and iOS public-launch evidence is complete."
+  },
+  "exit_criteria": [
+    "signed Android AAB or equivalent public artifact exists",
+    "Android store privacy, data safety and review evidence exists",
+    "signed iOS archive or equivalent public artifact exists",
+    "iOS privacy manifest, TestFlight and App Store review evidence exists",
+    "mobile smoke, accessibility and power evidence is attached to the release"
+  ],
+  "platforms": {
+    "android": {
+      "status": "deferred",
+      "channels": ["google_play", "fdroid_evaluation"],
+      "required_artifacts": ["signed_aab", "sha256sum", "store_listing"],
+      "required_evidence": [
+        "packaging/android/play/play-publishing-checklist.md",
+        "packaging/codesigning.md",
+        "docs/platform-test-workflows.md",
+        "docs/platform-performance-playbooks.md",
+        "docs/ux-accessibility-human-factors.md",
+        ".github/workflows/09-platform-tests.yml",
+        "scripts/android_emulator_smoke.sh",
+        "scripts/mobile_smoke_bindings_check.py"
+      ],
+      "blockers": [
+        "signed Android app bundle missing",
+        "Play Console access and release track evidence missing",
+        "F-Droid reproducible-build review not complete",
+        "Android privacy/data safety declaration not approved",
+        "real-device accessibility and power evidence not attached"
+      ]
+    },
+    "ios": {
+      "status": "deferred",
+      "channels": ["testflight", "app_store"],
+      "required_artifacts": ["signed_archive", "exported_ipa_or_store_archive", "store_listing"],
+      "required_evidence": [
+        "packaging/ios/appstore/app-store-checklist.md",
+        "packaging/codesigning.md",
+        "docs/platform-test-workflows.md",
+        "docs/platform-performance-playbooks.md",
+        "docs/ux-accessibility-human-factors.md",
+        ".github/workflows/09-platform-tests.yml",
+        "scripts/ios_share_shortcuts_smoke.py",
+        "scripts/mobile_smoke_bindings_check.py"
+      ],
+      "blockers": [
+        "Apple Developer Program verification incomplete",
+        "signed iOS archive missing",
+        "TestFlight review evidence missing",
+        "App Store privacy manifest not approved",
+        "real-device accessibility and power evidence not attached"
+      ]
+    }
+  }
+}

@@ -130,6 +130,12 @@ Post-launch PDF baseline parity claims are evidence-gated in
 Run `python3 scripts/pdf_baseline_parity_check.py` before expanding public
 PDF capability claims.
 
+Mobile public launch readiness is tracked separately behind the
+`mobile_public_launch` feature gate in
+[`docs/mobile-public-launch-readiness.md`](docs/mobile-public-launch-readiness.md).
+Run `python3 scripts/mobile_public_launch_check.py` before changing Android or
+iOS publishing status.
+
 ## Documentation
 
 The docs site lives in `docs-site/` and uses Astro with Starlight:

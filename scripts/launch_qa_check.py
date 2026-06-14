@@ -21,6 +21,7 @@ COMMANDS: list[list[str]] = [
     ["python3", "scripts/stable_release_evidence_check.py"],
     ["python3", "scripts/desktop_distribution_publication_check.py"],
     ["python3", "scripts/enterprise_operations_readiness_check.py"],
+    ["python3", "scripts/mobile_public_launch_check.py"],
     ["python3", "scripts/release_matrix_check.py"],
     ["python3", "scripts/release_provenance_check.py"],
     ["bash", "scripts/release_readiness_check.sh"],
@@ -34,6 +35,7 @@ EVIDENCE_CHECKS = {
     "desktop_packaging_signing": "target/release-evidence/desktop-packaging-signing.json",
     "desktop_distribution_publication": "target/release-evidence/desktop-distribution-publication.json",
     "enterprise_operations_readiness": "target/release-evidence/enterprise-operations-readiness.json",
+    "mobile_public_launch": "target/release-evidence/mobile-public-launch.json",
     "visual_regression": "target/visual-regression/text-search-fixture/comparison.json",
     "compatibility_corpus": "target/compatibility-corpus-report.json",
     "search_compatibility": "target/search-compatibility-report.json",
@@ -47,6 +49,7 @@ DOC_TOKENS = {
         "docs/launch-limitations-support.md",
         "SHA256SUMS",
         "SECURITY.md",
+        "docs/mobile-public-launch-readiness.md",
     ],
     "docs/stable-desktop-release.md": [
         "macOS",
@@ -58,6 +61,7 @@ DOC_TOKENS = {
     ],
     "docs/launch-limitations-support.md": [
         "mobile",
+        "mobile_public_launch",
         "ML/RAG",
         "cloud collaboration",
         "SECURITY.md",

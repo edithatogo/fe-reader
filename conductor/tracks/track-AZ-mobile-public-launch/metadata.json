@@ -1,9 +1,9 @@
 {
   "track_id": "track-AZ-mobile-public-launch",
   "type": "feature",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-06-13T23:59:02Z",
-  "updated_at": "2026-06-13T23:59:02Z",
+  "updated_at": "2026-06-14T00:25:00Z",
   "description": "Post-launch Android and iOS public launch readiness separate from desktop stable release.",
   "launch_blocking": false,
   "feature_gate": "mobile_public_launch",
