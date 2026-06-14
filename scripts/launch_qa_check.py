@@ -22,6 +22,7 @@ COMMANDS: list[list[str]] = [
     ["python3", "scripts/desktop_distribution_publication_check.py"],
     ["python3", "scripts/enterprise_operations_readiness_check.py"],
     ["python3", "scripts/mobile_public_launch_check.py"],
+    ["python3", "scripts/local_install_check.py"],
     ["python3", "scripts/release_matrix_check.py"],
     ["python3", "scripts/release_provenance_check.py"],
     ["bash", "scripts/release_readiness_check.sh"],
