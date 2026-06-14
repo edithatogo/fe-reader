@@ -183,7 +183,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Opt-in Collaboration and Sync**
+- [x] **Track: Opt-in Collaboration and Sync**
 *Link: [./tracks/track-BB-opt-in-collaboration-sync/](./tracks/track-BB-opt-in-collaboration-sync/)*
 
 ---

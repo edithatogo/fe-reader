@@ -1,0 +1,52 @@
+{
+  "fixture_id": "collaboration-provider-capabilities-preview",
+  "privacy_policy": "synthetic_no_private_documents",
+  "providers": [
+    {
+      "provider_id": "local_folder",
+      "available": true,
+      "requires_auth": false,
+      "network_required": false,
+      "default_enabled": false,
+      "failure_modes": [
+        "path_missing",
+        "permission_denied",
+        "hash_mismatch"
+      ]
+    },
+    {
+      "provider_id": "git_folder",
+      "available": false,
+      "requires_auth": false,
+      "network_required": false,
+      "default_enabled": false,
+      "failure_modes": [
+        "git_missing",
+        "dirty_worktree",
+        "merge_conflict"
+      ]
+    },
+    {
+      "provider_id": "webdav_nextcloud_future",
+      "available": false,
+      "requires_auth": true,
+      "network_required": true,
+      "default_enabled": false,
+      "failure_modes": [
+        "offline",
+        "auth_required",
+        "quota_exceeded",
+        "conflict_requires_manual_packet_merge"
+      ]
+    }
+  ],
+  "support_bundle_exclusions": [
+    "document_bytes",
+    "document_text",
+    "review_packet_bodies",
+    "cache_entry_payloads",
+    "provider_tokens",
+    "provider_account_ids",
+    "sync_remote_paths"
+  ]
+}

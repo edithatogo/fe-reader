@@ -22,3 +22,5 @@ Real-time cloud collaboration is not an early priority. Local-first collaboratio
 ## Rule
 
 Collaboration never weakens redaction, metadata scrub or automation policy. A shared bundle must not expose hidden source content unless explicitly included by the user.
+
+Cloud collaboration remains behind the `opt_in_collaboration_sync` feature gate, disabled by default. Sync providers must not silently upload, sync, collect analytics or phone home; they start unavailable until the user explicitly opts in and provider capability discovery succeeds.

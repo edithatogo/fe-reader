@@ -1,0 +1,118 @@
+{
+  "contract": "opt_in_collaboration_sync",
+  "stability": "preview",
+  "feature_gate": "opt_in_collaboration_sync",
+  "owner": "collaboration-maintainers",
+  "launch_blocking": false,
+  "default_state": "disabled",
+  "local_only_default": true,
+  "network_default": "disabled",
+  "telemetry_default": "disabled",
+  "analytics_default": "disabled",
+  "silent_upload_allowed": false,
+  "sync_without_user_action_allowed": false,
+  "mutation_policy": "plan_only_until_user_approval",
+  "privacy_policy": "privacy_sensitive_packets_caches_quality_signals",
+  "required_user_controls": [
+    "explicit_opt_in_ui",
+    "explicit_opt_in_cli",
+    "provider_disable_switch",
+    "forget_workspace",
+    "purge_sync_metadata",
+    "export_local_review_packet",
+    "revoke_provider_token"
+  ],
+  "required_mutation_guards": [
+    "document_hash_match",
+    "patch_plan_id",
+    "policy_evaluation",
+    "approval_token_or_interactive_confirmation",
+    "audit_receipt"
+  ],
+  "provider_discovery": {
+    "capability_probe_required": true,
+    "auth_required_state": "unavailable_until_user_connects",
+    "offline_failure_mode": "local_only_queue_disabled_by_default",
+    "auth_failure_mode": "read_only_provider_unavailable",
+    "conflict_failure_mode": "manual_review_packet_merge",
+    "default_upload_mode": "never"
+  },
+  "privacy_boundaries": {
+    "review_packets": "privacy_sensitive_untrusted_input",
+    "cache_entries": "privacy_sensitive_local_only",
+    "quality_signals": "privacy_sensitive_opt_in_local",
+    "support_bundles_exclude": [
+      "document_bytes",
+      "document_text",
+      "review_packet_bodies",
+      "cache_entry_payloads",
+      "provider_tokens",
+      "provider_account_ids",
+      "sync_remote_paths"
+    ]
+  },
+  "supported_preview_providers": [
+    {
+      "provider_id": "local_folder",
+      "kind": "filesystem",
+      "default_enabled": false,
+      "requires_explicit_opt_in": true,
+      "requires_capability_discovery": true,
+      "network_required": false,
+      "supports_upload": false,
+      "supports_analytics": false
+    },
+    {
+      "provider_id": "git_folder",
+      "kind": "filesystem",
+      "default_enabled": false,
+      "requires_explicit_opt_in": true,
+      "requires_capability_discovery": true,
+      "network_required": false,
+      "supports_upload": false,
+      "supports_analytics": false
+    },
+    {
+      "provider_id": "webdav_nextcloud_future",
+      "kind": "network_future",
+      "default_enabled": false,
+      "requires_explicit_opt_in": true,
+      "requires_capability_discovery": true,
+      "network_required": true,
+      "supports_upload": false,
+      "supports_analytics": false,
+      "promotion_requires_adr": true
+    }
+  ],
+  "promotion_requires": [
+    "privacy_review",
+    "security_review",
+    "provider_capability_report",
+    "support_bundle_redaction_test",
+    "explicit_opt_in_ui_cli",
+    "offline_auth_failure_tests",
+    "rollback_plan",
+    "adr_approval_for_network_providers"
+  ],
+  "rollback": {
+    "strategy": "disable_sync_providers_and_keep_local_workspaces",
+    "retains": [
+      "local_workspaces",
+      "review_packets",
+      "audit_receipts"
+    ],
+    "purges": [
+      "provider_tokens",
+      "sync_metadata",
+      "remote_path_hints"
+    ]
+  },
+  "exit_criteria": [
+    "collaboration_packets_privacy_reviewed",
+    "cache_entries_privacy_reviewed",
+    "provider_discovery_failure_modes_documented",
+    "support_bundle_exclusions_tested",
+    "local_only_default_validated",
+    "rollback_reversible_without_remote_account"
+  ]
+}

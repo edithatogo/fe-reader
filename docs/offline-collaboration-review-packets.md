@@ -53,3 +53,7 @@ The review packet is a sidecar artifact, not a hidden cloud document.
 ## Optional future
 
 Later versions can support local-network peer review, WebDAV/Nextcloud-hosted packets, Git-backed review folders and signed reviewer identities.
+
+## Sync boundary
+
+Any future sync behavior is governed by `opt_in_collaboration_sync`, which is disabled by default. provider tokens, provider account IDs, sync remote paths, review-packet bodies and cache payloads are privacy-sensitive and excluded from support bundles unless the user explicitly includes them.

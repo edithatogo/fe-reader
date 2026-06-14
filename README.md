@@ -142,6 +142,12 @@ Optional local ML/RAG work remains disabled by default behind the
 run `python3 scripts/frontier_intelligence_governance_check.py` before changing
 frontier intelligence defaults or promotion criteria.
 
+Opt-in collaboration and sync remains disabled by default behind the
+`opt_in_collaboration_sync` feature gate. Governance lives in
+[`docs/opt-in-collaboration-sync.md`](docs/opt-in-collaboration-sync.md);
+run `python3 scripts/opt_in_collaboration_sync_check.py` before changing
+collaboration defaults, provider behavior or support-bundle exclusions.
+
 ## Documentation
 
 The docs site lives in `docs-site/` and uses Astro with Starlight:

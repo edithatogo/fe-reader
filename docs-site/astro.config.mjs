@@ -26,6 +26,7 @@ export default defineConfig({
             { label: 'PDF Baseline Parity', slug: 'pdf-baseline-parity' },
             { label: 'Mobile Public Launch', slug: 'mobile-public-launch' },
             { label: 'Frontier Intelligence', slug: 'frontier-intelligence-governance' },
+            { label: 'Opt-in Collaboration', slug: 'opt-in-collaboration-sync' },
             { label: 'Automation Safety', slug: 'automation-safety' },
           ],
         },

@@ -28,6 +28,7 @@ jobs:
       - run: python3 scripts/repository_ci_cd_check.py
       - run: python3 scripts/frontier_ci_check.py
       - run: python3 scripts/frontier_intelligence_governance_check.py
+      - run: python3 scripts/opt_in_collaboration_sync_check.py
       - run: python3 scripts/ci_policy_check.py
       - run: python3 scripts/version_consistency_check.py
       - run: python3 scripts/enterprise_operations_readiness_check.py
