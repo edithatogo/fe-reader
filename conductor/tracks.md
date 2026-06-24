@@ -205,9 +205,6 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Reader, Render, Search and Accessibility Parity**
-*Link: [./tracks/track-BJ-reader-render-search-accessibility-parity/](./tracks/track-BJ-reader-render-search-accessibility-parity/)*
-
 ---
 
 - [ ] **Track: Professional Workflow Parity**

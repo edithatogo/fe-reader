@@ -4,7 +4,7 @@ This document keeps public launch claims aligned with implemented evidence.
 
 ## Known Launch Limitations
 
-- Stable reader marketing remains gated by `scripts/stable_reader_readiness_check.py`; broad marketing claims must not outrun reader, accessibility, search and release evidence.
+- Stable reader marketing remains gated by `scripts/stable_reader_readiness_check.py`; broad marketing claims must not outrun reader navigation, accessibility, search, performance and release evidence.
 - Stable desktop release remains blocked until signed artifacts, checksums and release evidence exist for each target platform.
 - Mobile support is advisory: Android emulator and iOS simulator/binding checks exist, but mobile store packages are not launch-ready. The `mobile_public_launch` feature gate and [`docs/mobile-public-launch-readiness.md`](mobile-public-launch-readiness.md) track this status separately from desktop release readiness.
 - ML/RAG features are deferred. Early waves intentionally keep local ML, RAG and local LLM features disabled. The `frontier_intelligence_preview` gate and [`docs/frontier-intelligence-governance.md`](frontier-intelligence-governance.md) define the future opt-in, privacy and promotion rules.

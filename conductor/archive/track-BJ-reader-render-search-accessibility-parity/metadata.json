@@ -1,0 +1,8 @@
+{
+  "track_id": "track-BJ-reader-render-search-accessibility-parity",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-24T00:00:00Z",
+  "updated_at": "2026-06-24T00:00:00Z",
+  "description": "Implement reader, rendering, search and accessibility parity with stable-reader and launch-quality evidence gates."
+}

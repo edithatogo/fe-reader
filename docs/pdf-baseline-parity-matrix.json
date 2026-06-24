@@ -23,6 +23,19 @@
       "limitation": ""
     },
     {
+      "id": "reader-navigation",
+      "family": "reading",
+      "public_claim": "Navigate pages, zoom, fit, rotate, inspect thumbnails and restore the current reader session for the baseline PDF experience.",
+      "support_level": "supported-preview",
+      "evidence": [
+        "scripts/v8_cli_smoke.sh",
+        "scripts/wave1_render_smoke.sh",
+        "scripts/wave5_integration_smoke.sh",
+        "docs/stable-reader-readiness.md"
+      ],
+      "limitation": "Navigation surfaces remain limited to the baseline reader workflow until dedicated UI automation and wider corpus coverage land."
+    },
+    {
       "id": "malformed-safe-open",
       "family": "reading",
       "public_claim": "Treat malformed PDFs as expected input and report parser diagnostics without mutating bytes.",
@@ -48,6 +61,19 @@
       "limitation": "Complex glyph shaping, OCR and missing ToUnicode cases remain documented corpus placeholders until generated PDF fixtures and oracle results are accepted."
     },
     {
+      "id": "text-diagnostics",
+      "family": "search",
+      "public_claim": "Surface deterministic text extraction diagnostics, missing ToUnicode warnings and geometry fallbacks for search and accessibility workflows.",
+      "support_level": "supported-preview",
+      "evidence": [
+        "scripts/metadata_wave2_smoke.sh",
+        "scripts/pdf_lab_text_map_smoke.sh",
+        "scripts/search_index_smoke.sh",
+        "scripts/stable_reader_readiness_check.py"
+      ],
+      "limitation": "CJK, RTL and ligature shaping remain corpus-dependent until expanded text fixtures and oracle coverage land."
+    },
+    {
       "id": "rendering-visual-regression",
       "family": "rendering",
       "public_claim": "Run deterministic render smoke and visual regression comparison for the current null-renderer baseline.",
@@ -58,6 +84,18 @@
         "scripts/visual_regression_compare.py"
       ],
       "limitation": "The current stable evidence is a deterministic null-renderer smoke baseline; production renderer parity must remain a post-launch claim until reference-renderer oracle results are accepted."
+    },
+    {
+      "id": "accessibility-reader-parity",
+      "family": "accessibility",
+      "public_claim": "Provide keyboard and screen-reader accessibility reports for the reader baseline and tagged-PDF inspection workflows.",
+      "support_level": "supported-preview",
+      "evidence": [
+        "scripts/accessibility_audit_smoke.py",
+        "scripts/stable_reader_readiness_check.py",
+        "target/accessibility-reports/smoke.json"
+      ],
+      "limitation": "Tagged-PDF and PDF/UA oracle coverage remains limited to available local adapters and documented limitations."
     },
     {
       "id": "page-organization",
@@ -167,6 +205,18 @@
         "scripts/ocr_searchable_pdf_contract_smoke.py"
       ],
       "limitation": "OCR is not enabled in early waves; searchable-PDF conversion remains provider-gated and opt-in."
+    },
+    {
+      "id": "searchable-pdf-gating",
+      "family": "ocr",
+      "public_claim": "Keep OCR-backed searchable-PDF planning provider-gated and opt-in until quality evidence lands.",
+      "support_level": "documented-limitation",
+      "evidence": [
+        "scripts/ocr_searchable_pdf_contract_smoke.py",
+        "docs/scanning-ocr-ingestion.md",
+        "docs/stable-reader-readiness.md"
+      ],
+      "limitation": "Cloud OCR is not enabled by default and local OCR remains a later provider-gated workflow."
     }
   ]
 }

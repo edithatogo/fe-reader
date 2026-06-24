@@ -75,6 +75,8 @@ commands = [
     ["cargo", "run", "-q", "-p", "fe_reader_cli", "--", "metadata", "fixtures/minimal/minimal.pdf", "--json"],
     ["cargo", "run", "-q", "-p", "fe_reader_cli", "--", "search", "fixtures/corpus/basic/text-search-fixture.pdf", "Reader", "--case-sensitive", "--json"],
     ["cargo", "run", "-q", "-p", "fe_reader_cli", "--", "accessibility", "fixtures/minimal/minimal.pdf", "--json"],
+    ["bash", "scripts/wave1_render_smoke.sh"],
+    ["bash", "scripts/perf_smoke.sh"],
 ]
 command_reports = [run(command) for command in commands]
 for report in command_reports:
@@ -123,6 +125,18 @@ claims = [
         "limitation": "",
     },
     {
+        "id": "reader-navigation",
+        "support_level": "supported-preview",
+        "summary": "Navigate pages, zoom, fit, rotate, thumbnails and session state through the baseline reader workflow.",
+        "evidence": [
+            "scripts/v8_cli_smoke.sh",
+            "scripts/wave1_render_smoke.sh",
+            "scripts/wave5_integration_smoke.sh",
+            "docs/pdf-baseline-parity-matrix.md",
+        ],
+        "limitation": "Navigation surfaces remain limited to the baseline reader workflow until broader UI automation lands.",
+    },
+    {
         "id": "metadata-search-safe-open",
         "support_level": "supported-preview",
         "summary": "Inspect metadata, search deterministically and surface safe-open diagnostics.",
@@ -135,6 +149,17 @@ claims = [
         "limitation": "",
     },
     {
+        "id": "text-diagnostics",
+        "support_level": "supported-preview",
+        "summary": "Surface text extraction diagnostics, missing ToUnicode warnings and geometry fallbacks.",
+        "evidence": [
+            "scripts/metadata_wave2_smoke.sh",
+            "scripts/pdf_lab_text_map_smoke.sh",
+            "scripts/search_index_smoke.sh",
+        ],
+        "limitation": "CJK, RTL and ligature shaping remain corpus-dependent until expanded text fixtures and oracle coverage land.",
+    },
+    {
         "id": "accessibility-and-reader-navigation",
         "support_level": "supported-preview",
         "summary": "Expose keyboard and accessibility evidence for the reader baseline.",
@@ -143,6 +168,17 @@ claims = [
             "docs/ux-accessibility-human-factors.md",
         ],
         "limitation": "",
+    },
+    {
+        "id": "accessibility-reader-parity",
+        "support_level": "supported-preview",
+        "summary": "Provide keyboard and screen-reader accessibility reports for the reader baseline and tagged-PDF inspection workflows.",
+        "evidence": [
+            "scripts/accessibility_audit_smoke.py",
+            "target/accessibility-reports/smoke.json",
+            "docs/pdf-baseline-parity-matrix.md",
+        ],
+        "limitation": "Tagged-PDF and PDF/UA oracle coverage remains limited to available local adapters and documented limitations.",
     },
     {
         "id": "professional-workflow-boundary",
@@ -167,6 +203,16 @@ claims = [
             "docs/launch-limitations-support.md",
         ],
         "limitation": "Broad marketing still requires signed artifacts, checksums, release evidence and registry approval.",
+    },
+    {
+        "id": "searchable-pdf-gating",
+        "support_level": "documented-limitation",
+        "summary": "Keep OCR-backed searchable-PDF planning provider-gated and opt-in.",
+        "evidence": [
+            "scripts/ocr_searchable_pdf_contract_smoke.py",
+            "docs/scanning-ocr-ingestion.md",
+        ],
+        "limitation": "Cloud OCR is not enabled by default and local OCR remains a later provider-gated workflow.",
     },
 ]
 
