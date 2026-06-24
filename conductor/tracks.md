@@ -207,7 +207,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Professional Workflow Parity**
+- [x] **Track: Professional Workflow Parity**
 *Link: [./tracks/track-BK-professional-workflows-parity/](./tracks/track-BK-professional-workflows-parity/)*
 
 ---
