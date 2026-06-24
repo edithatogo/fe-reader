@@ -29,3 +29,4 @@ The corpus/oracle evidence factory contract is documented in `docs/corpus-oracle
 The reader/render/search/accessibility parity contract is documented in `docs/reader-render-search-accessibility-parity-contract.md`.
 The professional workflow parity contract is documented in `docs/professional-workflow-parity-contract.md`.
 The advanced PDF family parity contract is documented in `docs/advanced-pdf-family-parity-contract.md`.
+The marketing claim governance contract is documented in `docs/marketing-claim-governance-contract.md`.

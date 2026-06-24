@@ -38,6 +38,7 @@ This baseline is the contract that makes the product a usable stable bleeding-ed
 - `docs/reader-render-search-accessibility-parity-contract.md`
 - `docs/professional-workflow-parity-contract.md`
 - `docs/advanced-pdf-family-parity-contract.md`
+- `docs/marketing-claim-governance-contract.md`
 
 ## Marketing boundary
 

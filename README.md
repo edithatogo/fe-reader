@@ -134,6 +134,9 @@ The contract is enforced by `scripts/professional_workflow_parity_check.py`.
 The advanced PDF family parity contract is documented in
 [`docs/advanced-pdf-family-parity-contract.md`](docs/advanced-pdf-family-parity-contract.md).
 The contract is enforced by `scripts/advanced_pdf_family_parity_check.py`.
+The marketing claim governance contract is documented in
+[`docs/marketing-claim-governance-contract.md`](docs/marketing-claim-governance-contract.md).
+The contract is enforced by `scripts/marketing_claim_governance_check.py`.
 
 Marketing readiness levels and claim boundaries are documented in
 [`docs/marketing-readiness.md`](docs/marketing-readiness.md) and validated by
