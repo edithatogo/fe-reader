@@ -12,6 +12,7 @@ REPORT = EVIDENCE_DIR / "advanced-roadmap.json"
 REQUIRED = [
     "docs/v2-roadmap-foundation.md",
     "docs/post-launch-advanced-roadmap.md",
+    "docs/v2-roadmap-implementation-foundation-contract.md",
     "docs/stable-reader-readiness.md",
     "docs/marketing-readiness.md",
     "docs/pdf-parity-registry.md",
@@ -21,7 +22,8 @@ REQUIRED = [
 
 TOKENS = {
     "docs/v2-roadmap-foundation.md": ["Entry Gates", "v2 Themes", "Exit Criteria", "feature-gated"],
-    "docs/post-launch-advanced-roadmap.md": ["track-BA-frontier-intelligence-governance", "track-BB-opt-in-collaboration-sync"],
+    "docs/post-launch-advanced-roadmap.md": ["track-BA-frontier-intelligence-governance", "track-BB-opt-in-collaboration-sync", "track-BO-v2-roadmap-implementation-foundation"],
+    "docs/v2-roadmap-implementation-foundation-contract.md": ["v2 Roadmap Implementation Foundation Contract", "docs/post-launch-advanced-roadmap.md", "target/release-evidence/advanced-roadmap.json"],
     "docs/stable-reader-readiness.md": ["Stable publication still requires signed artifacts", "release evidence"],
     "docs/marketing-readiness.md": ["technical preview", "stable desktop", "v2 roadmap"],
 }

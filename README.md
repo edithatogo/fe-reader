@@ -140,6 +140,9 @@ The contract is enforced by `scripts/marketing_claim_governance_check.py`.
 The stable release cutover and registries contract is documented in
 [`docs/stable-release-cutover-registries-contract.md`](docs/stable-release-cutover-registries-contract.md).
 The contract is enforced by `scripts/stable_release_cutover_registries_check.py`.
+The v2 roadmap implementation foundation contract is documented in
+[`docs/v2-roadmap-implementation-foundation-contract.md`](docs/v2-roadmap-implementation-foundation-contract.md).
+The contract is enforced by `scripts/v2_roadmap_implementation_foundation_check.py`.
 
 Marketing readiness levels and claim boundaries are documented in
 [`docs/marketing-readiness.md`](docs/marketing-readiness.md) and validated by

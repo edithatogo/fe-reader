@@ -1,6 +1,6 @@
 # v2 Roadmap Foundation
 
-Fe Reader v2 work begins only after a usable, stable, bleeding-edge PDF reader release is published. The purpose of this document is to keep v2 expansion from weakening the stable launch baseline.
+Fe Reader v2 work begins only after a usable, stable, bleeding-edge PDF reader release is published. The purpose of this document is to keep v2 expansion from weakening the stable launch baseline and to keep the post-launch advanced roadmap aligned with that boundary.
 
 ## Entry Gates
 
@@ -41,4 +41,5 @@ Fe Reader v2 work begins only after a usable, stable, bleeding-edge PDF reader r
 - `docs/marketing-readiness.md`
 - `docs/pdf-parity-registry.md`
 - `docs/post-launch-advanced-roadmap.md`
+- `docs/v2-roadmap-implementation-foundation-contract.md`
 - `scripts/advanced_roadmap_check.py`

@@ -3,6 +3,7 @@
 Fe Reader uses evidence-backed marketing readiness levels. Public copy must not outpace the evidence in `docs/stable-reader-readiness.md`, `docs/pdf-parity-registry.md` or the release evidence bundle.
 The permitted readiness labels are technical preview, public beta, stable desktop, mature stable and v2 roadmap.
 The marketing claim governance contract is documented in `docs/marketing-claim-governance-contract.md`.
+The v2 roadmap implementation foundation contract is documented in `docs/v2-roadmap-implementation-foundation-contract.md`.
 
 ## Readiness Levels
 

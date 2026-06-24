@@ -11,6 +11,7 @@ The reader/render/search/accessibility parity contract is documented in `docs/re
 The advanced PDF family parity contract is documented in `docs/advanced-pdf-family-parity-contract.md`.
 The marketing claim governance contract is documented in `docs/marketing-claim-governance-contract.md`.
 The stable release cutover and registries contract is documented in `docs/stable-release-cutover-registries-contract.md`.
+The v2 roadmap implementation foundation contract is documented in `docs/v2-roadmap-implementation-foundation-contract.md`.
 
 ## Release Index
 
@@ -107,3 +108,4 @@ python3 scripts/pdf_baseline_parity_check.py
 - `docs/windows-linux-beta-installers-contract.md`
 - `docs/exhaustive-pdf-parity-taxonomy-contract.md`
 - `docs/corpus-oracle-evidence-factory-contract.md`
+- `docs/v2-roadmap-implementation-foundation-contract.md`

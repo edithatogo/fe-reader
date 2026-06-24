@@ -20,6 +20,7 @@ Desktop stable launch remains governed by tracks AS through AW. The tracks below
 - Mobile public launch remains separate from desktop stable release readiness.
 - Advanced tracks must preserve `fe_reader_core` purity and the mutation pipeline.
 - v2 roadmap work must stay behind stable launch gates and marketing readiness checks.
+- The v2 roadmap implementation foundation contract is documented in `docs/v2-roadmap-implementation-foundation-contract.md`.
 
 ## Validation
 
