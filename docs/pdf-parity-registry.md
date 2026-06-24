@@ -27,3 +27,4 @@ Any public doc, release note or homepage claim about PDF capability should link
 back to this registry or use the exact claim ids defined here.
 The corpus/oracle evidence factory contract is documented in `docs/corpus-oracle-evidence-factory-contract.md`.
 The reader/render/search/accessibility parity contract is documented in `docs/reader-render-search-accessibility-parity-contract.md`.
+The professional workflow parity contract is documented in `docs/professional-workflow-parity-contract.md`.

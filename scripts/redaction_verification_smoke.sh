@@ -30,6 +30,25 @@ assert recipe["regions"][0]["region"].startswith("bbox:")
 if jsonschema is not None:
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     jsonschema.validate(recipe, schema)
+
+report_path = Path("target/release-evidence/redaction-verification-smoke.json")
+report_path.parent.mkdir(parents=True, exist_ok=True)
+report_path.write_text(
+    json.dumps(
+        {
+            "check": "redaction_verification_smoke",
+            "status": "pass",
+            "recipe_path": str(recipe_path),
+            "schema_path": str(schema_path),
+            "security_level": recipe["security_level"],
+            "requires_human_review": recipe["requires_human_review"],
+            "verification": recipe["verification"],
+        },
+        sort_keys=True,
+    )
+    + "\n",
+    encoding="utf-8",
+)
 PY
 
 echo "redaction verification smoke passed"

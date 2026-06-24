@@ -36,6 +36,7 @@ This baseline is the contract that makes the product a usable stable bleeding-ed
 - `docs/launch-limitations-support.md`
 - `docs/usable-stable-bleeding-edge-pdf-reader-contract.md`
 - `docs/reader-render-search-accessibility-parity-contract.md`
+- `docs/professional-workflow-parity-contract.md`
 
 ## Marketing boundary
 
