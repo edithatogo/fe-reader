@@ -1,8 +1,0 @@
-{
-  "track_id": "track-BH-exhaustive-pdf-parity-taxonomy-contracts",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-06-23T17:18:58Z",
-  "updated_at": "2026-06-23T17:18:58Z",
-  "description": "Exhaustively define PDF parity and create contracts for every supported, preview, plan-only and limitation claim."
-}
