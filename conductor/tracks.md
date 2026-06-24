@@ -205,11 +205,6 @@ Native UX refinement rules:
 
 ---
 
-- [x] **Track: Exhaustive PDF Parity Taxonomy and Contracts**
-*Link: [./tracks/track-BH-exhaustive-pdf-parity-taxonomy-contracts/](./tracks/track-BH-exhaustive-pdf-parity-taxonomy-contracts/)*
-
----
-
 - [ ] **Track: PDF Corpus and Oracle Factory**
 *Link: [./tracks/track-BI-pdf-corpus-oracle-factory/](./tracks/track-BI-pdf-corpus-oracle-factory/)*
 
