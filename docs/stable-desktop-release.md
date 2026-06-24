@@ -5,6 +5,7 @@ Marketing readiness is tracked in `docs/marketing-readiness.md`.
 The usable stable bleeding-edge PDF reader contract is documented in `docs/usable-stable-bleeding-edge-pdf-reader-contract.md`.
 The macOS public-quality signed/notarized launch contract is documented in `docs/macos-public-quality-signed-notarized-launch-contract.md`.
 The Windows/Linux beta installers contract is documented in `docs/windows-linux-beta-installers-contract.md`.
+The exhaustive PDF parity taxonomy and contracts are documented in `docs/exhaustive-pdf-parity-taxonomy-contract.md`.
 
 ## Release Index
 
@@ -99,3 +100,4 @@ python3 scripts/pdf_baseline_parity_check.py
 - `target/release-evidence/launch-qa.json`
 - `docs/macos-public-quality-signed-notarized-launch-contract.md`
 - `docs/windows-linux-beta-installers-contract.md`
+- `docs/exhaustive-pdf-parity-taxonomy-contract.md`

@@ -7,6 +7,7 @@ Fe Reader stable desktop releases are evidence-gated. A release is not stable-re
 The usable stable bleeding-edge PDF reader contract is documented in `docs/usable-stable-bleeding-edge-pdf-reader-contract.md`.
 The macOS public-quality signed/notarized launch contract is documented in `docs/macos-public-quality-signed-notarized-launch-contract.md`.
 The Windows/Linux beta installers contract is documented in `docs/windows-linux-beta-installers-contract.md`.
+The exhaustive PDF parity taxonomy and contracts are documented in `docs/exhaustive-pdf-parity-taxonomy-contract.md`.
 
 Marketing claims for this line are governed by `docs/marketing-readiness.md` and should remain aligned with the technical preview, public beta or stable desktop evidence level that actually exists.
 

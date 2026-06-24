@@ -119,6 +119,9 @@ The macOS public-quality signed/notarized launch contract is documented in
 The Windows/Linux beta installers contract is documented in
 [`docs/windows-linux-beta-installers-contract.md`](docs/windows-linux-beta-installers-contract.md).
 The contract is enforced by `scripts/windows_linux_beta_installers_check.py`.
+The exhaustive PDF parity taxonomy and contracts are documented in
+[`docs/exhaustive-pdf-parity-taxonomy-contract.md`](docs/exhaustive-pdf-parity-taxonomy-contract.md).
+The contract is enforced by `scripts/exhaustive_pdf_parity_taxonomy_check.py`.
 
 Marketing readiness levels and claim boundaries are documented in
 [`docs/marketing-readiness.md`](docs/marketing-readiness.md) and validated by
