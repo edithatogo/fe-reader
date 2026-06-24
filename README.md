@@ -94,7 +94,7 @@ gated on signed artifacts, release evidence and registry credentials.
 | Rust crates | crates.io | crate manifests exist; publishing deferred |
 | Native .NET wrapper | NuGet | preview package metadata exists; publishing deferred |
 | Windows | winget, Chocolatey, Scoop, MSIX/MSI/NSIS | manifests/checklists exist; publishing deferred |
-| macOS | Homebrew Cask, DMG, Mac App Store | cask/notarization notes exist; Apple credentials deferred |
+| macOS | Homebrew Cask, DMG, Mac App Store | signed and notarized DMG evidence required before public registry publication |
 | Linux | Flatpak, Snap, AUR, distro packages, AppImage | manifests/checklists exist; publishing deferred |
 | Android | Google Play, F-Droid evaluation | checklist and emulator CI exist; publishing deferred |
 | iOS | TestFlight, App Store | checklist and simulator target CI exist; publishing deferred |

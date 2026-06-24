@@ -199,10 +199,6 @@ Native UX refinement rules:
 ---
 
 
-- [ ] **Track: macOS Public Quality Release**
-*Link: [./tracks/track-BF-macos-public-quality-release/](./tracks/track-BF-macos-public-quality-release/)*
-
----
 
 - [ ] **Track: Windows and Linux Beta Installers**
 *Link: [./tracks/track-BG-windows-linux-beta-installers/](./tracks/track-BG-windows-linux-beta-installers/)*
