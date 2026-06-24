@@ -28,6 +28,7 @@ COMMANDS: list[list[str]] = [
     ["python3", "scripts/release_readiness_v7_check.py"],
     ["python3", "scripts/release_matrix_check.py"],
     ["python3", "scripts/release_provenance_check.py"],
+    ["python3", "scripts/marketing_claim_evidence_governance_check.py"],
     ["bash", "scripts/release_readiness_check.sh"],
     ["bash", "scripts/security_policy_check.sh"],
     ["python3", "scripts/accessibility_audit_smoke.py"],
@@ -42,6 +43,7 @@ EVIDENCE_CHECKS = {
     "desktop_distribution_publication": "target/release-evidence/desktop-distribution-publication.json",
     "enterprise_operations_readiness": "target/release-evidence/enterprise-operations-readiness.json",
     "mobile_public_launch": "target/release-evidence/mobile-public-launch.json",
+    "marketing_readiness": "target/release-evidence/marketing-readiness.json",
     "visual_regression": "target/visual-regression/text-search-fixture/comparison.json",
     "compatibility_corpus": "target/compatibility-corpus-report.json",
     "search_compatibility": "target/search-compatibility-report.json",
@@ -58,6 +60,7 @@ DOC_TOKENS = {
         "SHA256SUMS",
         "SECURITY.md",
         "docs/mobile-public-launch-readiness.md",
+        "docs/marketing-readiness.md",
     ],
     "docs/stable-desktop-release.md": [
         "macOS",
@@ -67,6 +70,7 @@ DOC_TOKENS = {
         "SHA256SUMS",
         "scripts/launch_qa_check.py",
         "scripts/stable_reader_readiness_check.py",
+        "docs/marketing-readiness.md",
     ],
     "docs/launch-limitations-support.md": [
         "mobile",
@@ -75,6 +79,7 @@ DOC_TOKENS = {
         "cloud collaboration",
         "SECURITY.md",
         "SUPPORT.md",
+        "docs/marketing-readiness.md",
     ],
     "docs-site/src/content/docs/stable-desktop-release.md": [
         "Stable Desktop Release",
@@ -83,6 +88,7 @@ DOC_TOKENS = {
         "Known launch limitations",
         "stable-reader readiness",
         "scripts/stable_reader_readiness_check.py",
+        "docs/marketing-readiness.md",
     ],
 }
 

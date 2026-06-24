@@ -217,7 +217,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Marketing Claim Evidence Governance**
+- [x] **Track: Marketing Claim Evidence Governance**
 *Link: [./tracks/track-BM-marketing-claim-evidence-governance/](./tracks/track-BM-marketing-claim-evidence-governance/)*
 
 ---

@@ -5,6 +5,8 @@ description: Evidence-backed baseline for the stable Fe Reader reader experience
 
 Fe Reader stable reader readiness is evidence-gated. It tracks the reader-first baseline, professional workflow boundary, and the release evidence needed before broad marketing.
 
+Broad marketing claims still require the separate marketing readiness gate in `docs/marketing-readiness.md`.
+
 ## Evidence
 
 - `scripts/stable_reader_readiness_check.py`

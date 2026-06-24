@@ -4,11 +4,11 @@ Fe Reader is a local-first PDF workflow platform focused on privacy,
 verification, metadata transparency, automation safety and cross-platform native
 integration.
 
-The repository is currently a preview implementation checkpoint. It contains a
-headless Rust core, executable Wave 0 contracts, platform automation contracts,
-release-evidence tooling, package manifests and an Astro/Starlight documentation
-site. It is not yet a production PDF application or a published app-store
-package.
+The repository is currently a technical preview implementation checkpoint. It
+contains a headless Rust core, executable Wave 0 contracts, platform automation
+contracts, release-evidence tooling, package manifests and an Astro/Starlight
+documentation site. It is not yet a production PDF application or a published
+app-store package.
 
 ## Status
 
@@ -112,6 +112,10 @@ homepage claims are treated as authoritative.
 Stable reader readiness is tracked separately in
 [`docs/stable-reader-readiness.md`](docs/stable-reader-readiness.md) and
 validated by `scripts/stable_reader_readiness_check.py`.
+
+Marketing readiness levels and claim boundaries are documented in
+[`docs/marketing-readiness.md`](docs/marketing-readiness.md) and validated by
+`scripts/marketing_claim_evidence_governance_check.py`.
 
 Desktop distribution gates are documented in
 [`docs/desktop-distribution-publication.md`](docs/desktop-distribution-publication.md),

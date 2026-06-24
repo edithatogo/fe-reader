@@ -1,6 +1,7 @@
 # Stable Desktop Release
 
 Fe Reader desktop release documentation is evidence-first. The stable desktop channel must not be treated as ready until signed artifacts, checksums, release evidence and maintainer approval exist for the target platform.
+Marketing readiness is tracked in `docs/marketing-readiness.md`.
 
 ## Release Index
 

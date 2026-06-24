@@ -1,6 +1,6 @@
 # Launch Limitations and Support
 
-This document keeps public launch claims aligned with implemented evidence.
+This document keeps public launch claims aligned with implemented evidence and `docs/marketing-readiness.md`.
 
 ## Known Launch Limitations
 

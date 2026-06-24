@@ -7,6 +7,8 @@ Fe Reader is a local-first PDF workflow platform built around privacy, verificat
 
 The project is implementation-first: contracts compile, smoke tests run, and every capability claim must eventually be backed by fixtures, differential oracles, visual evidence, or a documented limitation.
 
+Marketing readiness is governed separately in `docs/marketing-readiness.md`; public copy should stay at the technical preview boundary until the matching evidence exists.
+
 ## Current edge
 
 - Pure `fe_reader_core` document and workflow contracts.
@@ -16,6 +18,7 @@ The project is implementation-first: contracts compile, smoke tests run, and eve
 - Starlight docs site pages for release quality and release pipeline evidence artifacts.
 - Stable desktop release guidance with install, verification, support and known limitation links.
 - Release provenance scaffolding with SBOM status, signing readiness, and public-channel policy checks.
+- Marketing claim governance with readiness levels and claim-scanner evidence.
 - Render backend scaffolding with validated tile requests, stable cache keys, PDFium adapter boundaries, and conservative GPU policy flags. See `docs/pdf-parity-registry.md`.
 - Read-only transaction journal inspection and recovery listing for sidecars that need crash-recovery review.
 - Read-only metadata diagnostics for document-info fields, trailer keys, XMP stream length, XMP SHA-256, safe previews, and non-fatal parser/decode errors.
