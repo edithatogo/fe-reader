@@ -1,6 +1,7 @@
 # Stable Reader Readiness
 
 Fe Reader is a local-first PDF workflow platform with a reader-first stable baseline that is evidence-gated rather than marketing-gated.
+This baseline is the contract that makes the product a usable stable bleeding-edge PDF reader.
 
 ## Reader baseline
 
@@ -33,6 +34,7 @@ Fe Reader is a local-first PDF workflow platform with a reader-first stable base
 - `target/release-evidence/stable-release-evidence.json`
 - `docs/pdf-baseline-parity-matrix.md`
 - `docs/launch-limitations-support.md`
+- `docs/usable-stable-bleeding-edge-pdf-reader-contract.md`
 
 ## Marketing boundary
 

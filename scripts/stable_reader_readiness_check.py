@@ -89,6 +89,7 @@ docs = {
         "README.md",
         "docs/stable-desktop-release.md",
         "docs/stable-reader-readiness.md",
+        "docs/usable-stable-bleeding-edge-pdf-reader-contract.md",
         "docs/launch-limitations-support.md",
         "docs/pdf-baseline-parity-matrix.md",
         "docs/ux-accessibility-human-factors.md",
@@ -99,6 +100,11 @@ for rel, tokens in {
     "README.md": ["docs/stable-reader-readiness.md", "scripts/stable_reader_readiness_check.py"],
     "docs/stable-desktop-release.md": ["stable-reader readiness", "target/release-evidence/stable-reader-readiness.json"],
     "docs/stable-reader-readiness.md": ["Stable Reader Readiness", "stable_reader_readiness_check.py"],
+    "docs/usable-stable-bleeding-edge-pdf-reader-contract.md": [
+        "usable stable bleeding-edge PDF reader",
+        "stable-reader-readiness",
+        "launch-qa",
+    ],
     "docs/launch-limitations-support.md": ["stable-reader readiness", "marketing"],
     "docs/pdf-baseline-parity-matrix.md": ["advanced_pdf_baseline", "OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt"],
 }.items():
