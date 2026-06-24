@@ -114,6 +114,8 @@ Stable reader readiness is tracked separately in
 validated by `scripts/stable_reader_readiness_check.py`.
 The usable stable bleeding-edge PDF reader contract is documented in
 [`docs/usable-stable-bleeding-edge-pdf-reader-contract.md`](docs/usable-stable-bleeding-edge-pdf-reader-contract.md).
+The macOS public-quality signed/notarized launch contract is documented in
+[`docs/macos-public-quality-signed-notarized-launch-contract.md`](docs/macos-public-quality-signed-notarized-launch-contract.md).
 
 Marketing readiness levels and claim boundaries are documented in
 [`docs/marketing-readiness.md`](docs/marketing-readiness.md) and validated by

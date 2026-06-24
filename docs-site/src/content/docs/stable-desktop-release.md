@@ -5,6 +5,7 @@ description: Install, verification, launch QA and known limitation guidance for 
 
 Fe Reader stable desktop releases are evidence-gated. A release is not stable-ready until signed artifacts, checksums, release evidence, stable-reader readiness evidence and maintainer approval exist for each target platform. PDF capability claims remain tied to `docs/pdf-parity-registry.md`.
 The usable stable bleeding-edge PDF reader contract is documented in `docs/usable-stable-bleeding-edge-pdf-reader-contract.md`.
+The macOS public-quality signed/notarized launch contract is documented in `docs/macos-public-quality-signed-notarized-launch-contract.md`.
 
 Marketing claims for this line are governed by `docs/marketing-readiness.md` and should remain aligned with the technical preview, public beta or stable desktop evidence level that actually exists.
 

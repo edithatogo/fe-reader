@@ -42,6 +42,7 @@ EVIDENCE_CHECKS = {
     "release_artifact_inventory": "target/release-evidence/release-artifact-inventory.json",
     "stable_reader_readiness": "target/release-evidence/stable-reader-readiness.json",
     "usable_stable_bleeding_edge_pdf_reader_contract": "docs/usable-stable-bleeding-edge-pdf-reader-contract.md",
+    "macos_public_quality_signed_notarized_launch_contract": "docs/macos-public-quality-signed-notarized-launch-contract.md",
     "desktop_distribution_publication": "target/release-evidence/desktop-distribution-publication.json",
     "enterprise_operations_readiness": "target/release-evidence/enterprise-operations-readiness.json",
     "mobile_public_launch": "target/release-evidence/mobile-public-launch.json",
@@ -60,6 +61,7 @@ DOC_TOKENS = {
         "docs/stable-desktop-release.md",
         "docs/stable-reader-readiness.md",
         "docs/usable-stable-bleeding-edge-pdf-reader-contract.md",
+        "docs/macos-public-quality-signed-notarized-launch-contract.md",
         "docs/launch-limitations-support.md",
         "SHA256SUMS",
         "SECURITY.md",
@@ -76,6 +78,7 @@ DOC_TOKENS = {
         "scripts/launch_qa_check.py",
         "scripts/stable_reader_readiness_check.py",
         "docs/usable-stable-bleeding-edge-pdf-reader-contract.md",
+        "docs/macos-public-quality-signed-notarized-launch-contract.md",
         "docs/marketing-readiness.md",
     ],
     "docs/launch-limitations-support.md": [
@@ -95,6 +98,7 @@ DOC_TOKENS = {
         "stable-reader readiness",
         "scripts/stable_reader_readiness_check.py",
         "docs/usable-stable-bleeding-edge-pdf-reader-contract.md",
+        "docs/macos-public-quality-signed-notarized-launch-contract.md",
         "docs/marketing-readiness.md",
     ],
 }

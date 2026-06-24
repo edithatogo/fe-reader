@@ -3,6 +3,7 @@
 Fe Reader desktop release documentation is evidence-first. The stable desktop channel must not be treated as ready until signed artifacts, checksums, release evidence and maintainer approval exist for the target platform.
 Marketing readiness is tracked in `docs/marketing-readiness.md`.
 The usable stable bleeding-edge PDF reader contract is documented in `docs/usable-stable-bleeding-edge-pdf-reader-contract.md`.
+The macOS public-quality signed/notarized launch contract is documented in `docs/macos-public-quality-signed-notarized-launch-contract.md`.
 
 ## Release Index
 
@@ -95,3 +96,4 @@ python3 scripts/pdf_baseline_parity_check.py
 - `target/release-evidence/stable-reader-readiness.json`
 - `target/release-evidence/release-readiness.json`
 - `target/release-evidence/launch-qa.json`
+- `docs/macos-public-quality-signed-notarized-launch-contract.md`
