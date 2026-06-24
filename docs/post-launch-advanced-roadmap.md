@@ -10,6 +10,7 @@ Desktop stable launch remains governed by tracks AS through AW. The tracks below
 4. `track-BD-ecosystem-integrations-marketplace` - expand SDK, plugin and integration surfaces after safety gates remain intact.
 5. `track-BB-opt-in-collaboration-sync` - explore local-first collaboration and sync only as explicit opt-in work.
 6. `track-BA-frontier-intelligence-governance` - evaluate frontier intelligence after deterministic workflow features and privacy gates are mature.
+7. `track-BO-v2-roadmap-implementation-foundation` - define v2 sequencing and gates only after a usable stable bleeding-edge reader release is published.
 
 ## Governance
 
@@ -18,6 +19,7 @@ Desktop stable launch remains governed by tracks AS through AW. The tracks below
 - cloud collaboration is opt-in and must never silently upload, sync, phone home or collect analytics.
 - Mobile public launch remains separate from desktop stable release readiness.
 - Advanced tracks must preserve `fe_reader_core` purity and the mutation pipeline.
+- v2 roadmap work must stay behind stable launch gates and marketing readiness checks.
 
 ## Validation
 

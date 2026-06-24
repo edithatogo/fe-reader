@@ -12,6 +12,7 @@ This document keeps public launch claims aligned with implemented evidence and `
 - GPU and expanded rendering performance claims remain advisory. The `rendering_performance_promotion` gate and [`docs/rendering-performance-promotion.md`](rendering-performance-promotion.md) require CPU fallback, visual regression, differential oracle, budget and platform evidence before promotion.
 - SDK, plugin, workflow-pack and marketplace publication remain deferred. The `ecosystem_integrations_marketplace` gate and [`docs/ecosystem-integrations-marketplace.md`](ecosystem-integrations-marketplace.md) require compatibility snapshots, provenance, support/security links and maintainer approval before publication claims.
 - Registry manifests are present for several package surfaces, but package publication is deferred until credentials, artifacts, signatures and maintainer approval are available.
+- v2 roadmap work is deferred until the stable reader baseline, marketing readiness and installable release evidence are all present.
 
 ## Support Route
 

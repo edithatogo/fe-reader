@@ -222,10 +222,10 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Stable Launch Cutover and Registries**
+- [~] **Track: Stable Launch Cutover and Registries**
 *Link: [./tracks/track-BN-stable-launch-cutover-registries/](./tracks/track-BN-stable-launch-cutover-registries/)*
 
 ---
 
-- [ ] **Track: v2 Roadmap Implementation Foundation**
+- [x] **Track: v2 Roadmap Implementation Foundation**
 *Link: [./tracks/track-BO-v2-roadmap-implementation-foundation/](./tracks/track-BO-v2-roadmap-implementation-foundation/)*

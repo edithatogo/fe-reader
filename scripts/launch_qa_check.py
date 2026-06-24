@@ -29,6 +29,7 @@ COMMANDS: list[list[str]] = [
     ["python3", "scripts/release_matrix_check.py"],
     ["python3", "scripts/release_provenance_check.py"],
     ["python3", "scripts/marketing_claim_evidence_governance_check.py"],
+    ["python3", "scripts/advanced_roadmap_check.py"],
     ["bash", "scripts/release_readiness_check.sh"],
     ["bash", "scripts/security_policy_check.sh"],
     ["python3", "scripts/accessibility_audit_smoke.py"],
@@ -44,6 +45,7 @@ EVIDENCE_CHECKS = {
     "enterprise_operations_readiness": "target/release-evidence/enterprise-operations-readiness.json",
     "mobile_public_launch": "target/release-evidence/mobile-public-launch.json",
     "marketing_readiness": "target/release-evidence/marketing-readiness.json",
+    "advanced_roadmap": "target/release-evidence/advanced-roadmap.json",
     "visual_regression": "target/visual-regression/text-search-fixture/comparison.json",
     "compatibility_corpus": "target/compatibility-corpus-report.json",
     "search_compatibility": "target/search-compatibility-report.json",
@@ -61,6 +63,7 @@ DOC_TOKENS = {
         "SECURITY.md",
         "docs/mobile-public-launch-readiness.md",
         "docs/marketing-readiness.md",
+        "docs/v2-roadmap-foundation.md",
     ],
     "docs/stable-desktop-release.md": [
         "macOS",

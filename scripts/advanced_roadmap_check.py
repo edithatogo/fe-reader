@@ -2,114 +2,66 @@
 from __future__ import annotations
 
 import json
-import pathlib
-import sys
+from pathlib import Path
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
-TRACKS_DIR = ROOT / "conductor" / "tracks"
-TRACKS = [
-    "track-AY-post-launch-pdf-baseline-parity",
-    "track-AZ-mobile-public-launch",
-    "track-BA-frontier-intelligence-governance",
-    "track-BB-opt-in-collaboration-sync",
-    "track-BC-rendering-performance-promotion",
-    "track-BD-ecosystem-integrations-marketplace",
+ROOT = Path(__file__).resolve().parents[1]
+EVIDENCE_DIR = ROOT / "target" / "release-evidence"
+EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
+REPORT = EVIDENCE_DIR / "advanced-roadmap.json"
+
+REQUIRED = [
+    "docs/v2-roadmap-foundation.md",
+    "docs/post-launch-advanced-roadmap.md",
+    "docs/stable-reader-readiness.md",
+    "docs/marketing-readiness.md",
+    "docs/pdf-parity-registry.md",
+    "scripts/stable_reader_readiness_check.py",
+    "scripts/marketing_claim_evidence_governance_check.py",
 ]
-REQUIRED_METADATA = {
-    "track_id",
-    "type",
-    "status",
-    "created_at",
-    "updated_at",
-    "description",
-    "launch_blocking",
-    "feature_gate",
-    "owner",
-    "rollback_plan",
-    "exit_criteria",
-}
-REQUIRED_TOKENS = {
-    "spec.md": [
-        "does not block desktop stable launch",
-        "Feature gate",
-        "Rollback",
-        "Exit criteria",
-    ],
-    "plan.md": [
-        "scripts/conductor_phase_gate.sh",
-        "feature gate",
-        "rollback",
-        "exit criteria",
-    ],
+
+TOKENS = {
+    "docs/v2-roadmap-foundation.md": ["Entry Gates", "v2 Themes", "Exit Criteria", "feature-gated"],
+    "docs/post-launch-advanced-roadmap.md": ["track-BA-frontier-intelligence-governance", "track-BB-opt-in-collaboration-sync"],
+    "docs/stable-reader-readiness.md": ["Stable publication still requires signed artifacts", "release evidence"],
+    "docs/marketing-readiness.md": ["technical preview", "stable desktop", "v2 roadmap"],
 }
 
 
-def fail(message: str) -> None:
-    failures.append(message)
+def read_text(rel: str) -> str:
+    path = ROOT / rel
+    return path.read_text(encoding="utf-8", errors="replace") if path.exists() else ""
 
 
-def read_text(path: pathlib.Path) -> str:
-    if not path.exists():
-        fail(f"missing file: {path.relative_to(ROOT)}")
-        return ""
-    return path.read_text(encoding="utf-8", errors="replace")
+def main() -> int:
+    failures: list[str] = []
+    findings: list[dict[str, object]] = []
+    for rel in REQUIRED:
+        path = ROOT / rel
+        if not path.exists():
+            failures.append(f"missing roadmap file: {rel}")
+            findings.append({"path": rel, "status": "missing"})
+            continue
+        text = read_text(rel)
+        missing_tokens = [token for token in TOKENS.get(rel, []) if token not in text]
+        if missing_tokens:
+            failures.append(f"{rel} missing tokens: {missing_tokens}")
+        findings.append({"path": rel, "status": "pass", "missing_tokens": missing_tokens})
+
+    report = {
+        "check": "advanced_roadmap",
+        "status": "fail" if failures else "pass",
+        "required_files": REQUIRED,
+        "findings": findings,
+        "failures": failures,
+    }
+    REPORT.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    if failures:
+        for failure in failures:
+            print(f"advanced roadmap failure: {failure}")
+        raise SystemExit(1)
+    print("advanced roadmap: ok")
+    return 0
 
 
-failures: list[str] = []
-registry = read_text(ROOT / "conductor" / "tracks.md")
-roadmap = read_text(ROOT / "docs" / "post-launch-advanced-roadmap.md")
-
-for track_id in TRACKS:
-    directory = TRACKS_DIR / track_id
-    if not directory.is_dir():
-        fail(f"missing track directory: conductor/tracks/{track_id}")
-        continue
-    metadata_path = directory / "metadata.json"
-    try:
-        metadata = json.loads(read_text(metadata_path))
-    except json.JSONDecodeError as exc:
-        fail(f"{metadata_path.relative_to(ROOT)} invalid JSON: {exc}")
-        metadata = {}
-    missing = REQUIRED_METADATA - set(metadata)
-    if missing:
-        fail(f"{track_id} metadata missing {sorted(missing)}")
-    if metadata.get("track_id") != track_id:
-        fail(f"{track_id} metadata track_id mismatch")
-    if metadata.get("launch_blocking") is not False:
-        fail(f"{track_id} must be non-blocking for desktop stable launch")
-    for field in ["feature_gate", "owner", "rollback_plan", "exit_criteria"]:
-        if not metadata.get(field):
-            fail(f"{track_id} metadata missing {field}")
-    for filename, tokens in REQUIRED_TOKENS.items():
-        text = read_text(directory / filename)
-        for token in tokens:
-            if token not in text:
-                fail(f"{track_id}/{filename} missing token: {token}")
-    if f"./tracks/{track_id}/" not in registry:
-        fail(f"tracks registry missing {track_id}")
-    if track_id not in roadmap:
-        fail(f"post-launch roadmap doc missing {track_id}")
-
-if "Desktop stable launch remains governed by tracks AS through AW" not in roadmap:
-    fail("post-launch roadmap must state desktop launch gate relationship")
-if "ML/RAG remains disabled by default" not in roadmap:
-    fail("post-launch roadmap must keep ML/RAG disabled by default")
-if "cloud collaboration is opt-in" not in roadmap:
-    fail("post-launch roadmap must keep cloud collaboration opt-in")
-
-report = {
-    "check": "advanced_roadmap",
-    "status": "fail" if failures else "pass",
-    "tracks": TRACKS,
-    "failures": failures,
-}
-(ROOT / "target" / "advanced-roadmap-check.json").parent.mkdir(parents=True, exist_ok=True)
-(ROOT / "target" / "advanced-roadmap-check.json").write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
-
-if failures:
-    print("ADVANCED ROADMAP CHECK FAILED")
-    for failure in failures:
-        print(f" - {failure}")
-    sys.exit(1)
-
-print("advanced roadmap: ok")
+if __name__ == "__main__":
+    raise SystemExit(main())

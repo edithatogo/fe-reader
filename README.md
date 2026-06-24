@@ -117,6 +117,10 @@ Marketing readiness levels and claim boundaries are documented in
 [`docs/marketing-readiness.md`](docs/marketing-readiness.md) and validated by
 `scripts/marketing_claim_evidence_governance_check.py`.
 
+The v2 roadmap foundation is documented in
+[`docs/v2-roadmap-foundation.md`](docs/v2-roadmap-foundation.md) and validated
+by `scripts/advanced_roadmap_check.py`.
+
 Desktop distribution gates are documented in
 [`docs/desktop-distribution-publication.md`](docs/desktop-distribution-publication.md),
 with machine-readable state in
