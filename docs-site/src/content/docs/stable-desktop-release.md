@@ -9,6 +9,7 @@ The macOS public-quality signed/notarized launch contract is documented in `docs
 The Windows/Linux beta installers contract is documented in `docs/windows-linux-beta-installers-contract.md`.
 The exhaustive PDF parity taxonomy and contracts are documented in `docs/exhaustive-pdf-parity-taxonomy-contract.md`.
 The corpus/oracle evidence factory is documented in `docs/corpus-oracle-evidence-factory-contract.md`.
+The reader/render/search/accessibility parity contract is documented in `docs/reader-render-search-accessibility-parity-contract.md`.
 
 Marketing claims for this line are governed by `docs/marketing-readiness.md` and should remain aligned with the technical preview, public beta or stable desktop evidence level that actually exists.
 

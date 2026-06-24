@@ -17,6 +17,7 @@ Broad marketing claims still require the separate marketing readiness gate in `d
 - `docs/pdf-parity-registry.md`
 - `docs/pdf-baseline-parity-matrix.md`
 - `docs/launch-limitations-support.md`
+- `docs/reader-render-search-accessibility-parity-contract.md`
 
 ## Reader baseline
 
