@@ -3,7 +3,7 @@ title: Stable Desktop Release
 description: Install, verification, launch QA and known limitation guidance for desktop releases.
 ---
 
-Fe Reader stable desktop releases are evidence-gated. A release is not stable-ready until signed artifacts, checksums, release evidence, stable-reader readiness evidence and maintainer approval exist for each target platform.
+Fe Reader stable desktop releases are evidence-gated. A release is not stable-ready until signed artifacts, checksums, release evidence, stable-reader readiness evidence and maintainer approval exist for each target platform. PDF capability claims remain tied to `docs/pdf-parity-registry.md`.
 
 ## Install Sources
 

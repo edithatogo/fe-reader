@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/edithatogo/fe-reader/schemas/pdf-parity-claim.schema.json",
+  "title": "PdfParityClaim",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "family",
+    "public_claim",
+    "support_level",
+    "evidence",
+    "oracle_requirements",
+    "fixtures",
+    "limitations",
+    "requires_mutation_pipeline"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "family": {
+      "type": "string",
+      "minLength": 1
+    },
+    "public_claim": {
+      "type": "string",
+      "minLength": 1
+    },
+    "support_level": {
+      "type": "string",
+      "enum": [
+        "stable",
+        "beta",
+        "preview",
+        "plan_only",
+        "oracle_only",
+        "blocked",
+        "documented_limitation"
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "oracle_requirements": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "fixtures": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "requires_mutation_pipeline": {
+      "type": "boolean"
+    }
+  }
+}

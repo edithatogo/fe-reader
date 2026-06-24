@@ -1,0 +1,660 @@
+{
+  "registry_version": "1.0.0",
+  "feature_gate": "pdf_parity_registry",
+  "mutation_pipeline": "OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt",
+  "support_levels": [
+    "stable",
+    "beta",
+    "preview",
+    "plan_only",
+    "oracle_only",
+    "blocked",
+    "documented_limitation"
+  ],
+  "evidence_classes": [
+    "fixture",
+    "contract_smoke",
+    "schema_validation",
+    "visual_regression",
+    "differential_oracle",
+    "documented_limitation",
+    "release_gate"
+  ],
+  "oracle_requirements": [
+    "qpdf",
+    "veraPDF",
+    "PDFium",
+    "Poppler",
+    "MuPDF",
+    "Ghostscript",
+    "Pandoc",
+    "LibreOffice"
+  ],
+  "families": [
+    {
+      "id": "reading-navigation",
+      "title": "Reading and navigation",
+      "description": "Open PDFs, inspect them safely, navigate page structure, and keep malformed documents in the safe-open path.",
+      "default_support_level": "preview"
+    },
+    {
+      "id": "search-text-extraction",
+      "title": "Search and text extraction",
+      "description": "Deterministic substring search, reading-order hints, and text extraction evidence.",
+      "default_support_level": "preview"
+    },
+    {
+      "id": "rendering-images",
+      "title": "Rendering and images",
+      "description": "Tile rendering, image XObjects, thumbnailing and visual comparison evidence.",
+      "default_support_level": "preview"
+    },
+    {
+      "id": "fonts-color",
+      "title": "Fonts and color",
+      "description": "Font diagnostics, fallback handling, color fidelity and prepress reporting.",
+      "default_support_level": "oracle_only"
+    },
+    {
+      "id": "metadata-preflight",
+      "title": "Metadata and preflight",
+      "description": "XMP metadata inspection, preflight policy checks and scrub-planning claims.",
+      "default_support_level": "preview"
+    },
+    {
+      "id": "annotations-comments",
+      "title": "Annotations and comments",
+      "description": "Annotation objects, review comments and collaboration sidecars.",
+      "default_support_level": "plan_only"
+    },
+    {
+      "id": "forms-active-content",
+      "title": "Forms and active content",
+      "description": "AcroForms, XFA warnings, JavaScript restrictions and other active-content policy gates.",
+      "default_support_level": "plan_only"
+    },
+    {
+      "id": "signatures-encryption-permissions",
+      "title": "Signatures, encryption and permissions",
+      "description": "Signed-document compatibility, encryption, permission bits and signature-preservation limits.",
+      "default_support_level": "documented_limitation"
+    },
+    {
+      "id": "attachments-portfolios-layers-multimedia",
+      "title": "Attachments, portfolios, layers and multimedia",
+      "description": "Embedded files, portfolios, optional content groups and rich-media limits.",
+      "default_support_level": "documented_limitation"
+    },
+    {
+      "id": "tagged-accessibility-standards",
+      "title": "Tagged PDFs, accessibility and standards",
+      "description": "Tagged structure, reading order, accessibility, PDF/A, PDF/UA, PDF/X and PDF 2.0 claims.",
+      "default_support_level": "oracle_only"
+    },
+    {
+      "id": "redaction",
+      "title": "Redaction",
+      "description": "Sanitizing rewrite, leak verification and redaction receipts.",
+      "default_support_level": "preview"
+    },
+    {
+      "id": "page-organization",
+      "title": "Page organization",
+      "description": "Page insert, delete, reorder, rotate and split/merge planning through the mutation pipeline.",
+      "default_support_level": "plan_only"
+    },
+    {
+      "id": "optimization-linearization",
+      "title": "Optimization and linearization",
+      "description": "Safe optimization, compression, dedupe, linearization and savings receipts.",
+      "default_support_level": "oracle_only"
+    },
+    {
+      "id": "repair-incremental-updates",
+      "title": "Repair and incremental updates",
+      "description": "Safe-open, repair planning, incremental revision handling and recovery receipts.",
+      "default_support_level": "preview"
+    },
+    {
+      "id": "ocr-searchable-pdfs",
+      "title": "OCR and searchable PDFs",
+      "description": "OCR-assisted searchable-PDF workflows and provider-gated extraction.",
+      "default_support_level": "documented_limitation"
+    },
+    {
+      "id": "conversion-printing-export",
+      "title": "Conversion, printing and export",
+      "description": "Source conversion, print/export and adapter-backed output claims.",
+      "default_support_level": "plan_only"
+    }
+  ],
+  "claims": [
+    {
+      "id": "open-basic-pdf",
+      "family": "reading-navigation",
+      "public_claim": "Open and inspect generated baseline PDFs.",
+      "support_level": "preview",
+      "evidence": [
+        "fixtures/corpus/basic/minimal-v1_0.pdf",
+        "fixtures/corpus/basic/minimal-v2_0.pdf",
+        "scripts/v8_cli_smoke.sh",
+        "scripts/pdf_model_contract_check.py"
+      ],
+      "oracle_requirements": [
+        "qpdf"
+      ],
+      "fixtures": [
+        "fixtures/corpus/basic/minimal-v1_0.pdf",
+        "fixtures/corpus/basic/minimal-v2_0.pdf"
+      ],
+      "limitations": [
+        "This is a baseline reader claim, not a guarantee for every PDF class."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "malformed-safe-open",
+      "family": "reading-navigation",
+      "public_claim": "Treat malformed PDFs as expected input and report parser diagnostics without mutating bytes.",
+      "support_level": "preview",
+      "evidence": [
+        "fixtures/corpus/malformed-adversarial/truncated-catalog.pdf",
+        "scripts/pdf_repair_smoke.sh",
+        "scripts/pdf_lab_inspect_smoke.sh"
+      ],
+      "oracle_requirements": [
+        "qpdf",
+        "veraPDF"
+      ],
+      "fixtures": [
+        "fixtures/corpus/malformed-adversarial/truncated-catalog.pdf"
+      ],
+      "limitations": [
+        "Safe-open is diagnostic-first and does not promise successful repair."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "navigation-outline",
+      "family": "reading-navigation",
+      "public_claim": "Navigation, outlines and page-jump behavior remain tracked as a governed baseline rather than a marketing promise.",
+      "support_level": "documented_limitation",
+      "evidence": [
+        "docs/native-macos-interaction-model.md",
+        "docs/native-macos-handoff-notes.md",
+        "docs/native-macos-architecture.md"
+      ],
+      "oracle_requirements": [],
+      "fixtures": [],
+      "limitations": [
+        "Navigation and outline fidelity remain adapter-owned and may vary by surface."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "text-search",
+      "family": "search-text-extraction",
+      "public_claim": "Build deterministic text/search evidence for simple generated PDFs.",
+      "support_level": "preview",
+      "evidence": [
+        "fixtures/corpus/basic/text-search-fixture.pdf",
+        "fixtures/expected/search/text-search-fixture.search-index.json",
+        "scripts/search_index_smoke.sh",
+        "scripts/search_compatibility_report.py"
+      ],
+      "oracle_requirements": [
+        "qpdf"
+      ],
+      "fixtures": [
+        "fixtures/corpus/basic/text-search-fixture.pdf"
+      ],
+      "limitations": [
+        "Complex glyph shaping, OCR and missing ToUnicode cases remain documented corpus placeholders."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "text-extraction-geometry",
+      "family": "search-text-extraction",
+      "public_claim": "Text extraction preserves page geometry, reading order hints and safe diagnostics.",
+      "support_level": "preview",
+      "evidence": [
+        "scripts/pdf_lab_text_map_smoke.sh",
+        "scripts/pdf_lab_inspect_smoke.sh",
+        "docs/pdf-engineering-lab.md"
+      ],
+      "oracle_requirements": [
+        "qpdf",
+        "Poppler"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Geometry and ordering claims remain bounded by corpus fixtures and parser adapters."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "rendering-visual-regression",
+      "family": "rendering-images",
+      "public_claim": "Run deterministic render smoke and visual regression comparison for the current baseline renderer.",
+      "support_level": "preview",
+      "evidence": [
+        "fixtures/expected/rendered/text-search-fixture/metadata.json",
+        "scripts/wave1_render_smoke.sh",
+        "scripts/visual_regression_compare.py"
+      ],
+      "oracle_requirements": [
+        "PDFium",
+        "Poppler",
+        "MuPDF"
+      ],
+      "fixtures": [
+        "fixtures/expected/rendered/text-search-fixture/metadata.json"
+      ],
+      "limitations": [
+        "Production renderer parity must remain a post-launch claim until reference-renderer oracle results are accepted."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "image-content",
+      "family": "rendering-images",
+      "public_claim": "Image XObjects and image-heavy PDFs are tracked through the renderer and corpus-governance boundaries.",
+      "support_level": "documented_limitation",
+      "evidence": [
+        "docs/compatibility-corpus-governance.md",
+        "docs/pdf-engineering-lab.md"
+      ],
+      "oracle_requirements": [
+        "PDFium",
+        "Poppler",
+        "MuPDF"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Image fidelity claims need corpus fixtures and renderer comparisons before they become public promises."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "font-diagnostics",
+      "family": "fonts-color",
+      "public_claim": "Font diagnostics surface missing embeds, substitutions and extraction risks.",
+      "support_level": "preview",
+      "evidence": [
+        "docs/color-prepress-fonts-advanced.md",
+        "scripts/prepress_smoke.sh"
+      ],
+      "oracle_requirements": [
+        "veraPDF",
+        "Ghostscript"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Font fidelity claims remain evidence-backed, not universal."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "metadata-xmp",
+      "family": "metadata-preflight",
+      "public_claim": "Inspect and plan metadata and XMP changes with explicit scrub policies.",
+      "support_level": "preview",
+      "evidence": [
+        "scripts/metadata_wave2_smoke.sh",
+        "scripts/prepress_smoke.sh",
+        "crates/fe_reader_metadata/src/lib.rs"
+      ],
+      "oracle_requirements": [
+        "veraPDF",
+        "qpdf"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Standards-grade PDF/A, PDF/UA and PDF/X conformance claims require external oracle reports before public parity claims."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "color-prepress",
+      "family": "fonts-color",
+      "public_claim": "Color fidelity, output intents and prepress diagnostics are oracle-backed rather than assumed.",
+      "support_level": "oracle_only",
+      "evidence": [
+        "docs/color-prepress-fonts-advanced.md",
+        "scripts/prepress_smoke.sh",
+        "docs/pdf-optimization-linearization-compression.md"
+      ],
+      "oracle_requirements": [
+        "veraPDF",
+        "Ghostscript",
+        "PDFium"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Claims beyond diagnostics require differential oracle results and standards validation."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "annotations",
+      "family": "annotations-comments",
+      "public_claim": "Plan annotation operations through core contracts without bypassing policy.",
+      "support_level": "plan_only",
+      "evidence": [
+        "scripts/annotation_contract_smoke.py",
+        "crates/fe_reader_core/src/lib.rs"
+      ],
+      "oracle_requirements": [],
+      "fixtures": [],
+      "limitations": [
+        "Editable annotation preservation and renderer/UI round trips need additional fixtures before public parity claims."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "comments",
+      "family": "annotations-comments",
+      "public_claim": "Review comments stay local-first and plan-only until the packet workflow is fully proven.",
+      "support_level": "plan_only",
+      "evidence": [
+        "docs/offline-collaboration-review-packets.md",
+        "docs/collaboration-local-first.md"
+      ],
+      "oracle_requirements": [],
+      "fixtures": [],
+      "limitations": [
+        "Comment round-trips do not imply mutating import is permitted."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "forms-acroform",
+      "family": "forms-active-content",
+      "public_claim": "Plan AcroForm fill and flatten operations with policy-visible write modes.",
+      "support_level": "plan_only",
+      "evidence": [
+        "scripts/forms_contract_smoke.sh",
+        "docs/forms-js-xfa-strategy.md"
+      ],
+      "oracle_requirements": [],
+      "fixtures": [],
+      "limitations": [
+        "XFA and JavaScript execution remain disabled or warning-only until separately approved."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "active-content-warnings",
+      "family": "forms-active-content",
+      "public_claim": "JavaScript, launch actions, RichMedia and embedded executables are warned on or blocked by default.",
+      "support_level": "blocked",
+      "evidence": [
+        "docs/security-review-track-o.md",
+        "docs/forms-js-xfa-strategy.md",
+        "scripts/security_policy_check.sh"
+      ],
+      "oracle_requirements": [],
+      "fixtures": [],
+      "limitations": [
+        "Unsafe active content is not a public capability target."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "signed-documents",
+      "family": "signatures-encryption-permissions",
+      "public_claim": "Signed-document compatibility is tracked as a documented limitation.",
+      "support_level": "documented_limitation",
+      "evidence": [
+        "docs/pdf-repair-recovery.md",
+        "docs/reproducible-builds-provenance.md"
+      ],
+      "oracle_requirements": [
+        "qpdf",
+        "veraPDF"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Signature preservation, validation and signing are not public baseline claims yet."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "encryption-permissions",
+      "family": "signatures-encryption-permissions",
+      "public_claim": "Encryption, permission bits and policy-aware opening remain tracked without overclaiming support.",
+      "support_level": "documented_limitation",
+      "evidence": [
+        "docs/pdf-repair-recovery.md",
+        "docs/enterprise-deployment-policy.md"
+      ],
+      "oracle_requirements": [
+        "qpdf",
+        "Ghostscript"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Permission enforcement and cryptographic compatibility depend on adapter/runtime evidence."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "portfolio-attachments",
+      "family": "attachments-portfolios-layers-multimedia",
+      "public_claim": "Portfolio and attachment workflows remain documented limitations.",
+      "support_level": "documented_limitation",
+      "evidence": [
+        "docs/compatibility-corpus-governance.md",
+        "docs/killer-features.md"
+      ],
+      "oracle_requirements": [],
+      "fixtures": [],
+      "limitations": [
+        "Portfolio extraction, attachment preservation and embedded-file mutation are not public parity claims yet."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "layers-multimedia",
+      "family": "attachments-portfolios-layers-multimedia",
+      "public_claim": "Optional content groups and rich media are tracked as compatibility gaps, not as stable support claims.",
+      "support_level": "documented_limitation",
+      "evidence": [
+        "docs/killer-features.md",
+        "docs/compatibility-corpus-governance.md"
+      ],
+      "oracle_requirements": [],
+      "fixtures": [],
+      "limitations": [
+        "Layer and multimedia workflows require separate corpus and policy evidence."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "tagged-accessibility",
+      "family": "tagged-accessibility-standards",
+      "public_claim": "Tagged PDFs, accessibility and reading-order evidence stay bound to explicit fixtures and audits.",
+      "support_level": "preview",
+      "evidence": [
+        "docs/ux-accessibility-human-factors.md",
+        "docs/pdf-engineering-lab.md",
+        "scripts/quality_dashboard_smoke.py"
+      ],
+      "oracle_requirements": [
+        "veraPDF",
+        "PDFium"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Accessibility claims need surface-specific audit evidence before they can be called mature."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "standards-pdfa-pdfua-pdfx-pdf2",
+      "family": "tagged-accessibility-standards",
+      "public_claim": "PDF/A, PDF/UA, PDF/X and PDF 2.0 remain oracle-backed standards claims.",
+      "support_level": "oracle_only",
+      "evidence": [
+        "docs/color-prepress-fonts-advanced.md",
+        "docs/compatibility-corpus-governance.md",
+        "scripts/prepress_smoke.sh"
+      ],
+      "oracle_requirements": [
+        "veraPDF",
+        "Ghostscript",
+        "qpdf"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Standards-grade conformance claims require external oracle reports before public parity claims."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "secure-redaction",
+      "family": "redaction",
+      "public_claim": "Secure redaction requires sanitizing rewrite and verification receipts.",
+      "support_level": "preview",
+      "evidence": [
+        "fixtures/corpus/redaction/secure-redaction-smoke.recipe.json",
+        "scripts/redaction_verification_smoke.sh",
+        "scripts/pdf_lab_redaction_scan_smoke.sh",
+        "docs/adr/0004-secure-redaction-full-rewrite.json"
+      ],
+      "oracle_requirements": [
+        "qpdf",
+        "PDFium",
+        "Ghostscript"
+      ],
+      "fixtures": [
+        "fixtures/corpus/redaction/secure-redaction-smoke.recipe.json"
+      ],
+      "limitations": [
+        "No public claim should imply applied redaction is complete until rewritten output is verified."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "page-organization",
+      "family": "page-organization",
+      "public_claim": "Page operations are planned through the mutation pipeline without auto-approval.",
+      "support_level": "plan_only",
+      "evidence": [
+        "scripts/page_ops_contract_check.py",
+        "crates/fe_reader_core/src/lib.rs"
+      ],
+      "oracle_requirements": [],
+      "fixtures": [],
+      "limitations": [
+        "Apply/save paths and UI page organization remain gated until transaction apply and audit receipts are end-to-end verified."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "optimization-linearization",
+      "family": "optimization-linearization",
+      "public_claim": "Optimization, compression and linearization stay oracle-backed and review-gated.",
+      "support_level": "oracle_only",
+      "evidence": [
+        "docs/pdf-optimization-linearization-compression.md",
+        "scripts/optimization_oracle_smoke.sh"
+      ],
+      "oracle_requirements": [
+        "qpdf",
+        "Ghostscript",
+        "PDFium"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Optimization claims require before/after receipts and differential evidence."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "repair-incremental-updates",
+      "family": "repair-incremental-updates",
+      "public_claim": "Repair planning and incremental update handling stay inside the safe-open and recovery model.",
+      "support_level": "preview",
+      "evidence": [
+        "docs/pdf-repair-recovery.md",
+        "scripts/pdf_repair_smoke.sh",
+        "scripts/pdf_lab_timeline_smoke.sh"
+      ],
+      "oracle_requirements": [
+        "qpdf",
+        "veraPDF"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Repair output must preserve receipts and may invalidate signatures."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "scanned-ocr",
+      "family": "ocr-searchable-pdfs",
+      "public_claim": "OCR and searchable-PDF workflows remain provider-gated and opt-in.",
+      "support_level": "documented_limitation",
+      "evidence": [
+        "fixtures/corpus/scanned-ocr/README.md",
+        "scripts/ocr_searchable_pdf_contract_smoke.py",
+        "docs/compatibility-corpus-governance.md"
+      ],
+      "oracle_requirements": [
+        "PDFium",
+        "Poppler",
+        "OCR engine adapter"
+      ],
+      "fixtures": [
+        "fixtures/corpus/scanned-ocr/README.md"
+      ],
+      "limitations": [
+        "OCR remains provider-gated and should not be marketed as a baseline feature."
+      ],
+      "requires_mutation_pipeline": false
+    },
+    {
+      "id": "conversion-source-pipelines",
+      "family": "conversion-printing-export",
+      "public_claim": "Conversion and source-pipeline planning expose capability discovery and clear failure modes.",
+      "support_level": "plan_only",
+      "evidence": [
+        "scripts/conversion_contract_smoke.sh",
+        "scripts/source_linked_smoke.sh",
+        "docs/source-linked-authoring-workflows.md"
+      ],
+      "oracle_requirements": [
+        "Pandoc",
+        "LibreOffice",
+        "Tectonic"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "External converters require provider discovery, policy approval and fixtures before output fidelity claims."
+      ],
+      "requires_mutation_pipeline": true
+    },
+    {
+      "id": "printing-export",
+      "family": "conversion-printing-export",
+      "public_claim": "Printing and export remain adapter-owned claims tied to platform and release evidence.",
+      "support_level": "preview",
+      "evidence": [
+        "docs/platform-integration-plan.md",
+        "docs/product-strategy.md",
+        "docs/desktop-release-packaging.md"
+      ],
+      "oracle_requirements": [
+        "PDFium",
+        "Ghostscript"
+      ],
+      "fixtures": [],
+      "limitations": [
+        "Print/export behavior varies by adapter and platform capability."
+      ],
+      "requires_mutation_pipeline": true
+    }
+  ]
+}

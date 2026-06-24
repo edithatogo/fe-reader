@@ -205,7 +205,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Exhaustive PDF Parity Taxonomy and Contracts**
+- [x] **Track: Exhaustive PDF Parity Taxonomy and Contracts**
 *Link: [./tracks/track-BH-exhaustive-pdf-parity-taxonomy-contracts/](./tracks/track-BH-exhaustive-pdf-parity-taxonomy-contracts/)*
 
 ---

@@ -8,6 +8,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 MATRIX = ROOT / "docs" / "pdf-baseline-parity-matrix.json"
 DOC = ROOT / "docs" / "pdf-baseline-parity-matrix.md"
+REGISTRY = ROOT / "docs" / "pdf-parity-registry.json"
 OUT = ROOT / "target" / "pdf-baseline-parity-check.json"
 
 REQUIRED_FAMILIES = {
@@ -27,6 +28,7 @@ REQUIRED_FAMILIES = {
 REQUIRED_DOC_TOKENS = [
     "does not block desktop stable launch",
     "advanced_pdf_baseline",
+    "pdf-parity-registry.md",
     "OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt",
     "documented limitation",
 ]
@@ -52,6 +54,21 @@ def rel(path: pathlib.Path) -> str:
 
 def main() -> int:
     failures: list[str] = []
+    registry_claim_ids: set[str] = set()
+    if not REGISTRY.exists():
+        failures.append(f"missing {rel(REGISTRY)}")
+    else:
+        registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
+        claims = registry.get("claims", [])
+        if isinstance(claims, list):
+            registry_claim_ids = {
+                claim.get("id")
+                for claim in claims
+                if isinstance(claim, dict) and isinstance(claim.get("id"), str)
+            }
+        if registry.get("feature_gate") != "pdf_parity_registry":
+            failures.append("registry feature_gate must be pdf_parity_registry")
+
     if not MATRIX.exists():
         failures.append(f"missing {rel(MATRIX)}")
         data = {}
@@ -72,6 +89,8 @@ def main() -> int:
     governance = data.get("governance", {})
     if "OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt" not in governance.get("mutation_pipeline", ""):
         failures.append("governance must cite the mutation pipeline")
+    if governance.get("registry_source") != "docs/pdf-parity-registry.json":
+        failures.append("governance must point to the exhaustive pdf parity registry")
 
     claims = data.get("claims", [])
     if not isinstance(claims, list) or not claims:
@@ -120,6 +139,8 @@ def main() -> int:
             failures.append(f"{claim_id} must require mutation pipeline")
         if claim_id and claim_id not in doc_text:
             failures.append(f"{rel(DOC)} should mention claim id {claim_id}")
+        if claim_id and registry_claim_ids and claim_id not in registry_claim_ids:
+            failures.append(f"{rel(MATRIX)} claim {claim_id} must exist in {rel(REGISTRY)}")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(

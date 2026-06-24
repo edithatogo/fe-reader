@@ -30,9 +30,10 @@ Capability claims must point to at least one of:
 - performance scenario budgets;
 - documented limitations.
 
-Post-launch PDF baseline parity is tracked in `docs/pdf-baseline-parity-matrix.md` and validated by:
+Post-launch PDF parity is tracked in `docs/pdf-parity-registry.md` and the nested `docs/pdf-baseline-parity-matrix.md`, and validated by:
 
 ```bash
+python3 scripts/pdf_parity_registry_check.py
 python3 scripts/pdf_baseline_parity_check.py
 ```
 

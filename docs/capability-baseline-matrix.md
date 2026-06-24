@@ -2,7 +2,7 @@
 
 This matrix tracks broad industry baseline parity without framing Fe Reader as a copy of any specific product.
 
-Track AY turns these broad families into a post-launch, evidence-gated public claim boundary in `docs/pdf-baseline-parity-matrix.md`. That matrix is controlled by the `advanced_pdf_baseline` feature gate and does not block desktop stable launch.
+Track AY turns these broad families into a post-launch, evidence-gated public claim boundary in `docs/pdf-baseline-parity-matrix.md`. That matrix is nested under the exhaustive registry in `docs/pdf-parity-registry.md`, is controlled by the `advanced_pdf_baseline` feature gate and does not block desktop stable launch.
 
 | Capability family | Wave | Contract owner | Notes |
 |---|---:|---|---|

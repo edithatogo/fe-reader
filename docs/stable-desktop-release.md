@@ -73,7 +73,7 @@ The command writes `target/release-evidence/launch-qa.json` and summarizes deskt
 
 ## PDF Capability Claims
 
-Post-launch PDF baseline parity is governed by `advanced_pdf_baseline` and does not block desktop stable launch. Capability claims must stay aligned with `docs/pdf-baseline-parity-matrix.md` and `docs/pdf-baseline-parity-matrix.json`.
+Post-launch PDF parity is governed by `advanced_pdf_baseline` and does not block desktop stable launch. Capability claims must stay aligned with `docs/pdf-parity-registry.md`, `docs/pdf-parity-registry.json`, `docs/pdf-baseline-parity-matrix.md` and `docs/pdf-baseline-parity-matrix.json`.
 
 Validate the claim boundary with:
 

@@ -47,9 +47,9 @@ audit evidence.
 ## What Works Today
 
 - Rust workspace builds and tests.
-- `fe-reader doctor` reports core/pdf/security identities.
-- `fe-reader inspect fixtures/minimal/minimal.pdf --json` emits a read-only
-  intent, patch plan and PDF summary.
+- `fe-reader doctor` reports core/pdf/security identities and stays within the
+  registry claim boundary in `docs/pdf-parity-registry.md`.
+- `fe-reader inspect fixtures/minimal/minimal.pdf --json` emits a read-only intent, patch plan and PDF summary. See `docs/pdf-parity-registry.md`.
 - An unsigned local macOS preview bundle can be built and launched with
   `./script/build_and_run.sh`.
 - The launcher also writes a local preview snapshot to
@@ -69,7 +69,7 @@ cargo metadata --format-version=1
 cargo fmt --all -- --check
 cargo test --workspace --all-targets
 cargo run -p fe_reader_cli -- doctor
-cargo run -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json
+cargo run -p fe_reader_cli -- inspect fixtures/minimal/minimal.pdf --json # See docs/pdf-parity-registry.md for the claim boundary for inspect/read.
 python3 scripts/validate_schemas.py
 bash scripts/wave0_bootstrap_check.sh
 ```
@@ -129,10 +129,12 @@ Known launch limitations and support routes are documented in
 [`docs/launch-limitations-support.md`](docs/launch-limitations-support.md),
 [`SUPPORT.md`](SUPPORT.md) and [`SECURITY.md`](SECURITY.md).
 
-Post-launch PDF baseline parity claims are evidence-gated in
+Post-launch PDF capability claims are governed by the exhaustive parity
+registry in [`docs/pdf-parity-registry.md`](docs/pdf-parity-registry.md) and
+the nested baseline matrix in
 [`docs/pdf-baseline-parity-matrix.md`](docs/pdf-baseline-parity-matrix.md).
-Run `python3 scripts/pdf_baseline_parity_check.py` before expanding public
-PDF capability claims.
+Run `python3 scripts/pdf_parity_registry_check.py` before expanding public PDF
+capability claims.
 
 Run `python3 scripts/stable_reader_readiness_check.py` before broad marketing
 claims about the reader baseline.

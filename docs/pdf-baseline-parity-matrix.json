@@ -4,6 +4,7 @@
   "launch_blocking": false,
   "governance": {
     "mutation_pipeline": "OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt",
+    "registry_source": "docs/pdf-parity-registry.json",
     "rollback": "Remove unsupported claims from release docs and disable incomplete workflow packs.",
     "exit_criteria": "Every baseline capability claim has a fixture, contract smoke, differential oracle, visual regression report or documented limitation."
   },
