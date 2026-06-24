@@ -21,7 +21,20 @@
         "inspect_succeeds": true,
         "parser_error": true,
         "page_count": null
-      }
+      },
+      "parity_family": "reading-navigation",
+      "privacy_status": "public-fixture",
+      "provenance": {
+        "source_kind": "generated_pdf",
+        "generated_by": "generated_pdf",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "generated_only"
+      },
+      "notes": "Adversarial truncated catalog fixture for safe-open and parser diagnostics.",
+      "oracle_expectations": [
+        "qpdf",
+        "veraPDF"
+      ]
     },
     {
       "id": "text-search-fixture",
@@ -47,7 +60,19 @@
         "search_query": "Reader",
         "search_hits": 1
       },
-      "expected_search_index": "fixtures/expected/search/text-search-fixture.search-index.json"
+      "expected_search_index": "fixtures/expected/search/text-search-fixture.search-index.json",
+      "parity_family": "search-text-extraction",
+      "privacy_status": "public-fixture",
+      "provenance": {
+        "source_kind": "generated_pdf",
+        "generated_by": "generated_pdf",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "generated_only"
+      },
+      "notes": "Generated text fixture for deterministic search and extraction coverage.",
+      "oracle_expectations": [
+        "qpdf"
+      ]
     },
     {
       "id": "minimal-v1_0",
@@ -73,7 +98,18 @@
         "page_count": 1,
         "header_version": "1.0"
       },
-      "notes": "Header version coverage fixture derived from the minimal baseline PDF."
+      "notes": "Generated baseline PDF 1.0 smoke fixture.",
+      "parity_family": "reading-navigation",
+      "privacy_status": "public-fixture",
+      "provenance": {
+        "source_kind": "generated_pdf",
+        "generated_by": "generated_pdf",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "generated_only"
+      },
+      "oracle_expectations": [
+        "qpdf"
+      ]
     },
     {
       "id": "minimal-v2_0",
@@ -99,7 +135,18 @@
         "page_count": 1,
         "header_version": "2.0"
       },
-      "notes": "Header version coverage fixture derived from the minimal baseline PDF."
+      "notes": "Generated baseline PDF 2.0 smoke fixture.",
+      "parity_family": "reading-navigation",
+      "privacy_status": "public-fixture",
+      "provenance": {
+        "source_kind": "generated_pdf",
+        "generated_by": "generated_pdf",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "generated_only"
+      },
+      "oracle_expectations": [
+        "qpdf"
+      ]
     },
     {
       "id": "arabic-rtl-placeholder",
@@ -122,7 +169,16 @@
         "pdf_generation_required_before_capability_claim": true,
         "prepress_font_fallback_finding": true
       },
-      "notes": "Arabic RTL placeholder text for manifest and font-fallback diagnostics."
+      "notes": "Arabic RTL placeholder text for manifest and font-fallback diagnostics.",
+      "parity_family": "tagged-accessibility-standards",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": []
     },
     {
       "id": "hebrew-rtl-placeholder",
@@ -145,7 +201,16 @@
         "pdf_generation_required_before_capability_claim": true,
         "prepress_font_fallback_finding": true
       },
-      "notes": "Hebrew RTL placeholder text for manifest and font-fallback diagnostics."
+      "notes": "Hebrew RTL placeholder text for manifest and font-fallback diagnostics.",
+      "parity_family": "tagged-accessibility-standards",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": []
     },
     {
       "id": "japanese-vertical-placeholder",
@@ -170,7 +235,16 @@
         "pdf_generation_required_before_capability_claim": true,
         "prepress_font_fallback_finding": true
       },
-      "notes": "Japanese vertical-writing placeholder text for manifest coverage."
+      "notes": "Japanese vertical-writing placeholder text for manifest coverage.",
+      "parity_family": "tagged-accessibility-standards",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": []
     },
     {
       "id": "chinese-cjk-placeholder",
@@ -193,7 +267,16 @@
         "pdf_generation_required_before_capability_claim": true,
         "prepress_font_fallback_finding": true
       },
-      "notes": "Chinese CJK placeholder text for manifest and font-fallback diagnostics."
+      "notes": "Chinese CJK placeholder text for manifest and font-fallback diagnostics.",
+      "parity_family": "tagged-accessibility-standards",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": []
     },
     {
       "id": "devanagari-combining-placeholder",
@@ -216,7 +299,16 @@
         "pdf_generation_required_before_capability_claim": true,
         "prepress_font_fallback_finding": true
       },
-      "notes": "Devanagari combining-mark placeholder text for manifest coverage."
+      "notes": "Devanagari combining-mark placeholder text for manifest coverage.",
+      "parity_family": "tagged-accessibility-standards",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": []
     },
     {
       "id": "ligatures-placeholder",
@@ -239,7 +331,16 @@
         "pdf_generation_required_before_capability_claim": true,
         "prepress_font_fallback_finding": true
       },
-      "notes": "Ligature placeholder text for manifest and font-fallback diagnostics."
+      "notes": "Ligature placeholder text for manifest and font-fallback diagnostics.",
+      "parity_family": "tagged-accessibility-standards",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": []
     },
     {
       "id": "emoji-placeholder",
@@ -262,7 +363,16 @@
         "pdf_generation_required_before_capability_claim": true,
         "prepress_font_fallback_finding": true
       },
-      "notes": "Emoji placeholder text for manifest and font-fallback diagnostics."
+      "notes": "Emoji placeholder text for manifest and font-fallback diagnostics.",
+      "parity_family": "tagged-accessibility-standards",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": []
     },
     {
       "id": "missing-tounicode-placeholder",
@@ -285,7 +395,18 @@
         "pdf_generation_required_before_capability_claim": true,
         "prepress_font_fallback_finding": true
       },
-      "notes": "Missing-ToUnicode placeholder text for manifest coverage only."
+      "notes": "Placeholder text for ToUnicode coverage gaps.",
+      "parity_family": "search-text-extraction",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": [
+        "qpdf"
+      ]
     },
     {
       "id": "secure-redaction-smoke-recipe",
@@ -308,7 +429,16 @@
         "requires_sanitizing_rewrite": true,
         "reject_incremental_append": true,
         "requires_human_review": true
-      }
+      },
+      "parity_family": "redaction",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "json_recipe",
+        "generated_by": "json_recipe",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": []
     },
     {
       "id": "signed-document-placeholder",
@@ -328,7 +458,19 @@
       "expected_behavior": {
         "signature_capability_claim_allowed": false
       },
-      "notes": "Placeholder only; real signed PDFs require accepted provenance and oracle expectations."
+      "notes": "Signed-document placeholder for signatures/encryption corpus governance.",
+      "parity_family": "signatures-encryption-permissions",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "placeholder",
+        "generated_by": "placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": [
+        "qpdf",
+        "veraPDF"
+      ]
     },
     {
       "id": "incremental-update-placeholder",
@@ -350,7 +492,16 @@
         "timeline_manifest_coverage": true,
         "rewrite_claims_not_supported": true
       },
-      "notes": "Incremental-update placeholder text for manifest coverage only."
+      "notes": "Incremental-update placeholder text for manifest coverage only.",
+      "parity_family": "incremental-updates",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": []
     },
     {
       "id": "attachments-portfolios-placeholder",
@@ -372,7 +523,18 @@
         "portfolio_capability_claim_allowed": false,
         "attachment_mutation_claim_allowed": false
       },
-      "notes": "Placeholder only; portfolio and attachment parity require accepted fixtures and oracle expectations."
+      "notes": "Documentation placeholder for attachment and portfolio corpus governance.",
+      "parity_family": "attachments-portfolios-layers-multimedia",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "placeholder_readme",
+        "generated_by": "placeholder_readme",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": [
+        "qpdf"
+      ]
     },
     {
       "id": "scanned-ocr-placeholder",
@@ -395,7 +557,470 @@
         "ocr_enabled_by_default": false,
         "searchable_pdf_claim_allowed": false
       },
-      "notes": "Placeholder only; OCR/searchable PDF parity requires fixtures, provider discovery and oracle expectations."
+      "notes": "Documentation placeholder for OCR/searchable-PDF corpus governance.",
+      "parity_family": "ocr-searchable-pdfs",
+      "privacy_status": "public-placeholder",
+      "provenance": {
+        "source_kind": "placeholder_readme",
+        "generated_by": "placeholder_readme",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "oracle_expectations": [
+        "OCR engine adapter",
+        "Poppler"
+      ]
+    },
+    {
+      "id": "forms-acroform-placeholder",
+      "fixture_id": "forms-acroform-placeholder",
+      "path": "fixtures/corpus/forms-acroform/.gitkeep",
+      "category": "forms-acroform",
+      "parity_family": "forms-active-content",
+      "source_kind": "placeholder_dir",
+      "provenance": {
+        "source_kind": "placeholder_dir",
+        "generated_by": "placeholder_dir",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf"
+      ],
+      "expected_features": [
+        "acroform_manifest_coverage",
+        "mutation_pipeline_placeholder"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "forms"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Placeholder directory to keep AcroForm coverage explicit without committing private PDFs."
+    },
+    {
+      "id": "forms-xfa-placeholder",
+      "fixture_id": "forms-xfa-placeholder",
+      "path": "fixtures/corpus/forms-xfa/.gitkeep",
+      "category": "forms-xfa",
+      "parity_family": "forms-active-content",
+      "source_kind": "placeholder_dir",
+      "provenance": {
+        "source_kind": "placeholder_dir",
+        "generated_by": "placeholder_dir",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf",
+        "veraPDF"
+      ],
+      "expected_features": [
+        "xfa_manifest_coverage",
+        "mutation_pipeline_placeholder"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "forms",
+        "xfa"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Placeholder directory to keep XFA coverage explicit without enabling runtime execution."
+    },
+    {
+      "id": "annotation-placeholder",
+      "fixture_id": "annotation-placeholder",
+      "path": "fixtures/corpus/annotations/.gitkeep",
+      "category": "annotations",
+      "parity_family": "annotations-comments",
+      "source_kind": "placeholder_dir",
+      "provenance": {
+        "source_kind": "placeholder_dir",
+        "generated_by": "placeholder_dir",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf"
+      ],
+      "expected_features": [
+        "annotation_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "annotations"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Placeholder directory for annotation/comment corpus governance."
+    },
+    {
+      "id": "encrypted-placeholder",
+      "fixture_id": "encrypted-placeholder",
+      "path": "fixtures/corpus/encrypted/.gitkeep",
+      "category": "encrypted",
+      "parity_family": "signatures-encryption-permissions",
+      "source_kind": "placeholder_dir",
+      "provenance": {
+        "source_kind": "placeholder_dir",
+        "generated_by": "placeholder_dir",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf"
+      ],
+      "expected_features": [
+        "encryption_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "encrypted"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Placeholder directory for encrypted-document coverage."
+    },
+    {
+      "id": "layers-placeholder",
+      "fixture_id": "layers-placeholder",
+      "path": "fixtures/corpus/layers-ocg/.gitkeep",
+      "category": "layers-ocg",
+      "parity_family": "attachments-portfolios-layers-multimedia",
+      "source_kind": "placeholder_dir",
+      "provenance": {
+        "source_kind": "placeholder_dir",
+        "generated_by": "placeholder_dir",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf"
+      ],
+      "expected_features": [
+        "layers_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "layers"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Placeholder directory for optional-content-group and layer coverage."
+    },
+    {
+      "id": "signed-placeholder",
+      "fixture_id": "signed-placeholder",
+      "path": "fixtures/corpus/signed/README.md",
+      "category": "signed",
+      "parity_family": "signatures-encryption-permissions",
+      "source_kind": "placeholder_readme",
+      "provenance": {
+        "source_kind": "placeholder_readme",
+        "generated_by": "placeholder_readme",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf",
+        "veraPDF"
+      ],
+      "expected_features": [
+        "signature_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "signed"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Documentation placeholder for signed-document corpus governance."
+    },
+    {
+      "id": "incremental-updates-placeholder",
+      "fixture_id": "incremental-updates-placeholder",
+      "path": "fixtures/corpus/incremental-updates/incremental-update-smoke.txt",
+      "category": "incremental-updates",
+      "parity_family": "repair-incremental-updates",
+      "source_kind": "utf8_text_placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "utf8_text_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf"
+      ],
+      "expected_features": [
+        "incremental_update_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "incremental-updates"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Text placeholder that keeps incremental-update corpus coverage explicit."
+    },
+    {
+      "id": "tagged-accessibility-placeholder",
+      "fixture_id": "tagged-accessibility-placeholder",
+      "path": "fixtures/corpus/tagged-accessibility/.gitkeep",
+      "category": "tagged-accessibility",
+      "parity_family": "tagged-accessibility-standards",
+      "source_kind": "placeholder_dir",
+      "provenance": {
+        "source_kind": "placeholder_dir",
+        "generated_by": "placeholder_dir",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "veraPDF",
+        "qpdf"
+      ],
+      "expected_features": [
+        "tagged_pdf_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "tagged-pdf"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Placeholder directory for tagged-PDF and accessibility corpus governance."
+    },
+    {
+      "id": "optimization-placeholder",
+      "fixture_id": "optimization-placeholder",
+      "path": "docs/pdf-optimization-linearization-compression.md",
+      "category": "optimization-linearization",
+      "parity_family": "optimization-linearization",
+      "source_kind": "documentation_placeholder",
+      "provenance": {
+        "source_kind": "documentation_placeholder",
+        "generated_by": "documentation_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf",
+        "Ghostscript"
+      ],
+      "expected_features": [
+        "optimization_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "optimization"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Documentation placeholder for optimisation and linearisation evidence."
+    },
+    {
+      "id": "metadata-preflight-placeholder",
+      "fixture_id": "metadata-preflight-placeholder",
+      "path": "docs/color-prepress-fonts-advanced.md",
+      "category": "metadata-preflight",
+      "parity_family": "metadata-preflight",
+      "source_kind": "documentation_placeholder",
+      "provenance": {
+        "source_kind": "documentation_placeholder",
+        "generated_by": "documentation_placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "commit_allowed"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "veraPDF",
+        "Ghostscript"
+      ],
+      "expected_features": [
+        "metadata_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "metadata"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Documentation placeholder for metadata and preflight corpus governance."
+    },
+    {
+      "id": "rendering-images-placeholder",
+      "fixture_id": "rendering-images-placeholder",
+      "path": "fixtures/corpus/basic/text-search-fixture.pdf",
+      "category": "rendering-images",
+      "parity_family": "rendering-images",
+      "source_kind": "generated_pdf",
+      "provenance": {
+        "source_kind": "generated_pdf",
+        "generated_by": "fixtures/corpus/basic/text-search-fixture.pdf",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "redistributable generated baseline image/render fixture"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "generated_only",
+      "privacy_status": "public-fixture",
+      "oracle_expectations": [
+        "PDFium",
+        "Poppler",
+        "MuPDF"
+      ],
+      "expected_features": [
+        "rendering_manifest_coverage"
+      ],
+      "risk_tags": [
+        "generated",
+        "rendering",
+        "images"
+      ],
+      "expected_behavior": {
+        "inspect_succeeds": true,
+        "parser_error": false
+      },
+      "notes": "Generated baseline PDF reused for image/render oracle coverage."
+    },
+    {
+      "id": "fonts-color-placeholder",
+      "fixture_id": "fonts-color-placeholder",
+      "path": "docs/color-prepress-fonts-advanced.md",
+      "category": "fonts-color",
+      "parity_family": "fonts-color",
+      "source_kind": "documentation_placeholder",
+      "provenance": {
+        "source_kind": "documentation_placeholder",
+        "generated_by": "conductor placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "documentation placeholder for font/color oracle coverage"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "veraPDF",
+        "Ghostscript"
+      ],
+      "expected_features": [
+        "font_color_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "fonts",
+        "color"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Documentation placeholder for font and color corpus governance."
+    },
+    {
+      "id": "page-organization-placeholder",
+      "fixture_id": "page-organization-placeholder",
+      "path": "fixtures/corpus/incremental-updates/incremental-update-smoke.txt",
+      "category": "page-organization",
+      "parity_family": "page-organization",
+      "source_kind": "utf8_text_placeholder",
+      "provenance": {
+        "source_kind": "utf8_text_placeholder",
+        "generated_by": "conductor placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "text placeholder for page-operation corpus coverage"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf"
+      ],
+      "expected_features": [
+        "page_operation_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "page-organization"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Text placeholder to keep page-organization corpus coverage explicit."
+    },
+    {
+      "id": "conversion-printing-export-placeholder",
+      "fixture_id": "conversion-printing-export-placeholder",
+      "path": "fixtures/minimal/README.md",
+      "category": "conversion-printing-export",
+      "parity_family": "conversion-printing-export",
+      "source_kind": "documentation_placeholder",
+      "provenance": {
+        "source_kind": "documentation_placeholder",
+        "generated_by": "conductor placeholder",
+        "license_spdx": "CC0-1.0",
+        "redistribution_notes": "documentation placeholder for conversion and export corpus coverage"
+      },
+      "license": "CC0-1.0",
+      "redistribution": "commit_allowed",
+      "privacy_status": "public-placeholder",
+      "oracle_expectations": [
+        "qpdf",
+        "Ghostscript"
+      ],
+      "expected_features": [
+        "conversion_manifest_coverage"
+      ],
+      "risk_tags": [
+        "placeholder-not-pdf",
+        "conversion",
+        "printing",
+        "export"
+      ],
+      "expected_behavior": {
+        "pdf_generation_required_before_capability_claim": true
+      },
+      "notes": "Documentation placeholder for conversion, printing and export coverage."
     }
   ]
 }

@@ -7,6 +7,7 @@ import sys
 
 ROOT = pathlib.Path.cwd()
 MANIFEST = ROOT / "fixtures" / "corpus" / "manifest.json"
+REGISTRY = ROOT / "docs" / "pdf-parity-registry.json"
 FIXTURE_SCHEMA = ROOT / "schemas" / "test-fixture.schema.json"
 
 
@@ -37,6 +38,11 @@ try:
 except Exception as exc:
     fail(f"invalid fixture schema: {exc}")
 
+try:
+    registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
+except Exception as exc:
+    fail(f"invalid parity registry: {exc}")
+
 required = set(fixture_schema.get("required", []))
 allowed = set(fixture_schema.get("properties", {}).keys()) | {
     "id",
@@ -45,6 +51,12 @@ allowed = set(fixture_schema.get("properties", {}).keys()) | {
     "expected_behavior",
     "expected_search_index",
 }
+required_families = {
+    family.get("id")
+    for family in registry.get("families", [])
+    if isinstance(family, dict) and family.get("id")
+}
+covered_families = set()
 
 for item in fixtures:
     if not isinstance(item, dict):
@@ -71,5 +83,13 @@ for item in fixtures:
         extra = sorted(set(item) - allowed)
         if extra:
             fail(f"fixture {fixture_id} has unexpected fields: {', '.join(extra)}")
+        parity_family = item.get("parity_family")
+        if not parity_family:
+            fail(f"fixture {fixture_id} must declare parity_family")
+        covered_families.add(str(parity_family))
+
+missing_families = sorted(required_families - covered_families)
+if missing_families:
+    fail(f"corpus manifest missing parity-family coverage for: {', '.join(missing_families)}")
 
 print("corpus manifest check passed")

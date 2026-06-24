@@ -42,6 +42,7 @@ python3 scripts/wave0_acceptance_check.py
 python3 scripts/strict_mutation_contract_check.py
 python3 scripts/architecture_compliance_check.py --workspace-root .
 python3 scripts/corpus_manifest_validate.py
+python3 scripts/compatibility_corpus_report.py
 bash scripts/security_policy_check.sh
 python3 scripts/job_contract_smoke.py
 if [[ -x scripts/optimization_oracle_smoke.sh ]]; then scripts/optimization_oracle_smoke.sh; fi

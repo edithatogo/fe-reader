@@ -205,11 +205,6 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: PDF Corpus and Oracle Factory**
-*Link: [./tracks/track-BI-pdf-corpus-oracle-factory/](./tracks/track-BI-pdf-corpus-oracle-factory/)*
-
----
-
 - [ ] **Track: Reader, Render, Search and Accessibility Parity**
 *Link: [./tracks/track-BJ-reader-render-search-accessibility-parity/](./tracks/track-BJ-reader-render-search-accessibility-parity/)*
 

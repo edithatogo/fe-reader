@@ -34,6 +34,8 @@ jobs:
       - run: python3 scripts/rendering_performance_promotion_check.py
       - run: python3 scripts/ecosystem_integrations_marketplace_check.py
       - run: python3 scripts/pdf_parity_registry_check.py
+      - run: python3 scripts/corpus_manifest_validate.py
+      - run: python3 scripts/compatibility_corpus_report.py
       - run: python3 scripts/ci_policy_check.py
       - run: python3 scripts/version_consistency_check.py
       - run: python3 scripts/enterprise_operations_readiness_check.py

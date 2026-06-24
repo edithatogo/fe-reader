@@ -30,6 +30,26 @@
     "pdf_version": {
       "type": "string"
     },
+    "parity_family": {
+      "type": "string"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_kind": { "type": "string" },
+        "generated_by": { "type": "string" },
+        "license_spdx": { "type": "string" },
+        "redistribution_notes": { "type": "string" }
+      }
+    },
+    "privacy_status": {
+      "type": "string"
+    },
+    "oracle_expectations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "standard_profiles": {
       "type": "array",
       "items": {
