@@ -25,3 +25,4 @@ OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt
 
 Any public doc, release note or homepage claim about PDF capability should link
 back to this registry or use the exact claim ids defined here.
+The corpus/oracle evidence factory contract is documented in `docs/corpus-oracle-evidence-factory-contract.md`.

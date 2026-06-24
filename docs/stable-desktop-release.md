@@ -6,6 +6,7 @@ The usable stable bleeding-edge PDF reader contract is documented in `docs/usabl
 The macOS public-quality signed/notarized launch contract is documented in `docs/macos-public-quality-signed-notarized-launch-contract.md`.
 The Windows/Linux beta installers contract is documented in `docs/windows-linux-beta-installers-contract.md`.
 The exhaustive PDF parity taxonomy and contracts are documented in `docs/exhaustive-pdf-parity-taxonomy-contract.md`.
+The corpus/oracle evidence factory is documented in `docs/corpus-oracle-evidence-factory-contract.md`.
 
 ## Release Index
 
@@ -101,3 +102,4 @@ python3 scripts/pdf_baseline_parity_check.py
 - `docs/macos-public-quality-signed-notarized-launch-contract.md`
 - `docs/windows-linux-beta-installers-contract.md`
 - `docs/exhaustive-pdf-parity-taxonomy-contract.md`
+- `docs/corpus-oracle-evidence-factory-contract.md`

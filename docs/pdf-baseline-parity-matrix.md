@@ -9,6 +9,7 @@ OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt
 ```
 
 The machine-readable source is [`pdf-baseline-parity-matrix.json`](pdf-baseline-parity-matrix.json). The exhaustive registry lives in [`pdf-parity-registry.json`](pdf-parity-registry.json). Validate the nested claim boundary with:
+The corpus/oracle evidence factory contract is documented in `docs/corpus-oracle-evidence-factory-contract.md`.
 
 ```bash
 python3 scripts/pdf_parity_registry_check.py

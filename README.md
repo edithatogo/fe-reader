@@ -122,6 +122,9 @@ The contract is enforced by `scripts/windows_linux_beta_installers_check.py`.
 The exhaustive PDF parity taxonomy and contracts are documented in
 [`docs/exhaustive-pdf-parity-taxonomy-contract.md`](docs/exhaustive-pdf-parity-taxonomy-contract.md).
 The contract is enforced by `scripts/exhaustive_pdf_parity_taxonomy_check.py`.
+The corpus/oracle evidence factory is documented in
+[`docs/corpus-oracle-evidence-factory-contract.md`](docs/corpus-oracle-evidence-factory-contract.md).
+The contract is enforced by `scripts/corpus_oracle_evidence_factory_check.py`.
 
 Marketing readiness levels and claim boundaries are documented in
 [`docs/marketing-readiness.md`](docs/marketing-readiness.md) and validated by
