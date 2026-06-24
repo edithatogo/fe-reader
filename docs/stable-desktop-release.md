@@ -8,6 +8,7 @@ The Windows/Linux beta installers contract is documented in `docs/windows-linux-
 The exhaustive PDF parity taxonomy and contracts are documented in `docs/exhaustive-pdf-parity-taxonomy-contract.md`.
 The corpus/oracle evidence factory is documented in `docs/corpus-oracle-evidence-factory-contract.md`.
 The reader/render/search/accessibility parity contract is documented in `docs/reader-render-search-accessibility-parity-contract.md`.
+The advanced PDF family parity contract is documented in `docs/advanced-pdf-family-parity-contract.md`.
 
 ## Release Index
 

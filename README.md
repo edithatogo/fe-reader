@@ -131,6 +131,9 @@ The contract is enforced by `scripts/reader_render_search_accessibility_parity_c
 The professional workflow parity contract is documented in
 [`docs/professional-workflow-parity-contract.md`](docs/professional-workflow-parity-contract.md).
 The contract is enforced by `scripts/professional_workflow_parity_check.py`.
+The advanced PDF family parity contract is documented in
+[`docs/advanced-pdf-family-parity-contract.md`](docs/advanced-pdf-family-parity-contract.md).
+The contract is enforced by `scripts/advanced_pdf_family_parity_check.py`.
 
 Marketing readiness levels and claim boundaries are documented in
 [`docs/marketing-readiness.md`](docs/marketing-readiness.md) and validated by

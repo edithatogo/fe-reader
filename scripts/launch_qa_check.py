@@ -51,6 +51,7 @@ EVIDENCE_CHECKS = {
     "exhaustive_pdf_parity_taxonomy_contract": "docs/exhaustive-pdf-parity-taxonomy-contract.md",
     "corpus_oracle_evidence_factory_contract": "docs/corpus-oracle-evidence-factory-contract.md",
     "reader_render_search_accessibility_parity_contract": "docs/reader-render-search-accessibility-parity-contract.md",
+    "advanced_pdf_family_parity_contract": "docs/advanced-pdf-family-parity-contract.md",
     "desktop_distribution_publication": "target/release-evidence/desktop-distribution-publication.json",
     "enterprise_operations_readiness": "target/release-evidence/enterprise-operations-readiness.json",
     "mobile_public_launch": "target/release-evidence/mobile-public-launch.json",
@@ -74,6 +75,7 @@ DOC_TOKENS = {
         "docs/exhaustive-pdf-parity-taxonomy-contract.md",
         "docs/corpus-oracle-evidence-factory-contract.md",
         "docs/reader-render-search-accessibility-parity-contract.md",
+        "docs/advanced-pdf-family-parity-contract.md",
         "docs/launch-limitations-support.md",
         "SHA256SUMS",
         "SECURITY.md",
@@ -95,6 +97,7 @@ DOC_TOKENS = {
         "docs/exhaustive-pdf-parity-taxonomy-contract.md",
         "docs/corpus-oracle-evidence-factory-contract.md",
         "docs/reader-render-search-accessibility-parity-contract.md",
+        "docs/advanced-pdf-family-parity-contract.md",
         "docs/marketing-readiness.md",
     ],
     "docs/launch-limitations-support.md": [
@@ -119,6 +122,7 @@ DOC_TOKENS = {
         "docs/exhaustive-pdf-parity-taxonomy-contract.md",
         "docs/corpus-oracle-evidence-factory-contract.md",
         "docs/reader-render-search-accessibility-parity-contract.md",
+        "docs/advanced-pdf-family-parity-contract.md",
         "docs/marketing-readiness.md",
     ],
 }
