@@ -10,6 +10,7 @@ This document keeps public launch claims aligned with implemented evidence and `
 - The exhaustive PDF parity taxonomy and contracts are documented in `docs/exhaustive-pdf-parity-taxonomy-contract.md`.
 - The corpus/oracle evidence factory is documented in `docs/corpus-oracle-evidence-factory-contract.md`.
 - The marketing claim governance contract is documented in `docs/marketing-claim-governance-contract.md`.
+- The stable release cutover and registries contract is documented in `docs/stable-release-cutover-registries-contract.md`.
 - Mobile support is advisory: Android emulator and iOS simulator/binding checks exist, but mobile store packages are not launch-ready. The `mobile_public_launch` feature gate and [`docs/mobile-public-launch-readiness.md`](mobile-public-launch-readiness.md) track this status separately from desktop release readiness.
 - ML/RAG features are deferred. Early waves intentionally keep local ML, RAG and local LLM features disabled. The `frontier_intelligence_preview` gate and [`docs/frontier-intelligence-governance.md`](frontier-intelligence-governance.md) define the future opt-in, privacy and promotion rules.
 - cloud collaboration is deferred. Fe Reader remains local-first and must not silently upload, sync or collect analytics. The `opt_in_collaboration_sync` gate and [`docs/opt-in-collaboration-sync.md`](opt-in-collaboration-sync.md) define the future explicit opt-in, provider discovery, rollback and support-bundle exclusion rules.

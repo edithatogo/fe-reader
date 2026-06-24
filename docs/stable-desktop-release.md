@@ -10,6 +10,7 @@ The corpus/oracle evidence factory is documented in `docs/corpus-oracle-evidence
 The reader/render/search/accessibility parity contract is documented in `docs/reader-render-search-accessibility-parity-contract.md`.
 The advanced PDF family parity contract is documented in `docs/advanced-pdf-family-parity-contract.md`.
 The marketing claim governance contract is documented in `docs/marketing-claim-governance-contract.md`.
+The stable release cutover and registries contract is documented in `docs/stable-release-cutover-registries-contract.md`.
 
 ## Release Index
 
