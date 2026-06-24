@@ -13,6 +13,7 @@ Each desktop release should publish:
 - platform artifacts for macOS, Windows and Linux;
 - `SHA256SUMS` and signatures for every artifact;
 - `target/release-evidence/release-artifact-inventory.json` proving expected artifacts and checksums exist;
+- `target/release-evidence/stable-reader-readiness.json` proving the reader baseline matches the release claims;
 - release notes;
 - the `release-evidence` bundle from GitHub Actions.
 
@@ -65,9 +66,10 @@ Run the launch QA aggregator before stable publication:
 
 ```bash
 python3 scripts/launch_qa_check.py
+python3 scripts/stable_reader_readiness_check.py
 ```
 
-The command writes `target/release-evidence/launch-qa.json` and summarizes desktop packaging, registry publication state, enterprise operations readiness, release matrix checks, release readiness, accessibility smoke evidence and public documentation alignment.
+The command writes `target/release-evidence/launch-qa.json` and summarizes desktop packaging, registry publication state, enterprise operations readiness, release matrix checks, release readiness, accessibility smoke evidence, stable-reader readiness and public documentation alignment.
 
 ## PDF Capability Claims
 
@@ -88,5 +90,6 @@ python3 scripts/pdf_baseline_parity_check.py
 - `packaging/registry-status.yaml`
 - `packaging/desktop-distribution.yaml`
 - `target/release-evidence/release-artifact-inventory.json`
+- `target/release-evidence/stable-reader-readiness.json`
 - `target/release-evidence/release-readiness.json`
 - `target/release-evidence/launch-qa.json`

@@ -109,6 +109,10 @@ release should publish platform artifacts, `SHA256SUMS`, signatures, release
 notes and the GitHub Actions `release-evidence` bundle before registry or
 homepage claims are treated as authoritative.
 
+Stable reader readiness is tracked separately in
+[`docs/stable-reader-readiness.md`](docs/stable-reader-readiness.md) and
+validated by `scripts/stable_reader_readiness_check.py`.
+
 Desktop distribution gates are documented in
 [`docs/desktop-distribution-publication.md`](docs/desktop-distribution-publication.md),
 with machine-readable state in
@@ -129,6 +133,9 @@ Post-launch PDF baseline parity claims are evidence-gated in
 [`docs/pdf-baseline-parity-matrix.md`](docs/pdf-baseline-parity-matrix.md).
 Run `python3 scripts/pdf_baseline_parity_check.py` before expanding public
 PDF capability claims.
+
+Run `python3 scripts/stable_reader_readiness_check.py` before broad marketing
+claims about the reader baseline.
 
 Mobile public launch readiness is tracked separately behind the
 `mobile_public_launch` feature gate in

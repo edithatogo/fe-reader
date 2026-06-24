@@ -4,6 +4,7 @@ This document keeps public launch claims aligned with implemented evidence.
 
 ## Known Launch Limitations
 
+- Stable reader marketing remains gated by `scripts/stable_reader_readiness_check.py`; broad marketing claims must not outrun reader, accessibility, search and release evidence.
 - Stable desktop release remains blocked until signed artifacts, checksums and release evidence exist for each target platform.
 - Mobile support is advisory: Android emulator and iOS simulator/binding checks exist, but mobile store packages are not launch-ready. The `mobile_public_launch` feature gate and [`docs/mobile-public-launch-readiness.md`](mobile-public-launch-readiness.md) track this status separately from desktop release readiness.
 - ML/RAG features are deferred. Early waves intentionally keep local ML, RAG and local LLM features disabled. The `frontier_intelligence_preview` gate and [`docs/frontier-intelligence-governance.md`](frontier-intelligence-governance.md) define the future opt-in, privacy and promotion rules.
@@ -34,6 +35,14 @@ Post-launch PDF baseline parity is tracked in `docs/pdf-baseline-parity-matrix.m
 ```bash
 python3 scripts/pdf_baseline_parity_check.py
 ```
+
+Stable reader readiness is tracked in `docs/stable-reader-readiness.md` and validated by:
+
+```bash
+python3 scripts/stable_reader_readiness_check.py
+```
+
+The stable-reader readiness gate is the reader baseline checkpoint for public release claims.
 
 Opt-in collaboration and sync governance is checked with:
 

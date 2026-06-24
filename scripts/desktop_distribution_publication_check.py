@@ -252,6 +252,9 @@ if release_channel in PUBLIC_CHANNELS:
     stable_evidence = EVIDENCE_DIR / "stable-release-evidence.json"
     if not stable_evidence.exists():
         fail("public release channel missing stable release evidence")
+    stable_reader = EVIDENCE_DIR / "stable-reader-readiness.json"
+    if not stable_reader.exists():
+        fail("public release channel missing stable reader readiness evidence")
 
 report = {
     "check": "desktop_distribution_publication",

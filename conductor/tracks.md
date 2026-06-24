@@ -195,3 +195,54 @@ Native UX refinement rules:
 
 - [x] **Track: Ecosystem Integrations and Marketplace**
 *Link: [./tracks/track-BD-ecosystem-integrations-marketplace/](./tracks/track-BD-ecosystem-integrations-marketplace/)*
+
+---
+
+
+- [ ] **Track: macOS Public Quality Release**
+*Link: [./tracks/track-BF-macos-public-quality-release/](./tracks/track-BF-macos-public-quality-release/)*
+
+---
+
+- [ ] **Track: Windows and Linux Beta Installers**
+*Link: [./tracks/track-BG-windows-linux-beta-installers/](./tracks/track-BG-windows-linux-beta-installers/)*
+
+---
+
+- [ ] **Track: Exhaustive PDF Parity Taxonomy and Contracts**
+*Link: [./tracks/track-BH-exhaustive-pdf-parity-taxonomy-contracts/](./tracks/track-BH-exhaustive-pdf-parity-taxonomy-contracts/)*
+
+---
+
+- [ ] **Track: PDF Corpus and Oracle Factory**
+*Link: [./tracks/track-BI-pdf-corpus-oracle-factory/](./tracks/track-BI-pdf-corpus-oracle-factory/)*
+
+---
+
+- [ ] **Track: Reader, Render, Search and Accessibility Parity**
+*Link: [./tracks/track-BJ-reader-render-search-accessibility-parity/](./tracks/track-BJ-reader-render-search-accessibility-parity/)*
+
+---
+
+- [ ] **Track: Professional Workflow Parity**
+*Link: [./tracks/track-BK-professional-workflows-parity/](./tracks/track-BK-professional-workflows-parity/)*
+
+---
+
+- [ ] **Track: Advanced PDF Family Parity**
+*Link: [./tracks/track-BL-advanced-pdf-family-parity/](./tracks/track-BL-advanced-pdf-family-parity/)*
+
+---
+
+- [ ] **Track: Marketing Claim Evidence Governance**
+*Link: [./tracks/track-BM-marketing-claim-evidence-governance/](./tracks/track-BM-marketing-claim-evidence-governance/)*
+
+---
+
+- [ ] **Track: Stable Launch Cutover and Registries**
+*Link: [./tracks/track-BN-stable-launch-cutover-registries/](./tracks/track-BN-stable-launch-cutover-registries/)*
+
+---
+
+- [ ] **Track: v2 Roadmap Implementation Foundation**
+*Link: [./tracks/track-BO-v2-roadmap-implementation-foundation/](./tracks/track-BO-v2-roadmap-implementation-foundation/)*

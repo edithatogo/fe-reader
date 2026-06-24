@@ -65,6 +65,22 @@ elif [[ "$CHANNEL" == "stable" || "$CHANNEL" == "lts" ]]; then
   echo "missing desktop packaging/signing evidence for release channel: $CHANNEL" >&2
   exit 1
 fi
+STABLE_READER_STATUS="advisory"
+if [[ -f target/release-evidence/stable-reader-readiness.json ]]; then
+  STABLE_READER_STATUS="$(python3 - <<'PY'
+import json
+from pathlib import Path
+print(json.loads(Path("target/release-evidence/stable-reader-readiness.json").read_text()).get("status", "unknown"))
+PY
+)"
+  if [[ "$STABLE_READER_STATUS" == "fail" && ( "$CHANNEL" == "stable" || "$CHANNEL" == "lts" || "$CHANNEL" == "store_submission" ) ]]; then
+    echo "stable reader readiness blocked for release channel: $CHANNEL" >&2
+    exit 1
+  fi
+elif [[ "$CHANNEL" == "stable" || "$CHANNEL" == "lts" || "$CHANNEL" == "store_submission" ]]; then
+  echo "missing stable reader readiness report for release channel: $CHANNEL" >&2
+  exit 1
+fi
 STABLE_EVIDENCE_STATUS="advisory"
 if [[ -f target/release-evidence/stable-release-evidence.json ]]; then
   STABLE_EVIDENCE_STATUS="$(python3 - <<'PY'
@@ -113,7 +129,7 @@ elif [[ "$CHANNEL" == "stable" || "$CHANNEL" == "lts" || "$CHANNEL" == "store_su
   echo "missing enterprise operations readiness report for release channel: $CHANNEL" >&2
   exit 1
 fi
-python3 - "$CHANNEL" "$SBOM_STATUS" "$SBOM_DETAIL" "$PROVENANCE_STATUS" "$SIGNING_STATUS" "$DESKTOP_PACKAGING_STATUS" "$STABLE_EVIDENCE_STATUS" "$DESKTOP_DISTRIBUTION_STATUS" "$ENTERPRISE_OPS_STATUS" "${REQUIRED[@]}" <<'PY'
+python3 - "$CHANNEL" "$SBOM_STATUS" "$SBOM_DETAIL" "$PROVENANCE_STATUS" "$SIGNING_STATUS" "$DESKTOP_PACKAGING_STATUS" "$STABLE_READER_STATUS" "$STABLE_EVIDENCE_STATUS" "$DESKTOP_DISTRIBUTION_STATUS" "$ENTERPRISE_OPS_STATUS" "${REQUIRED[@]}" <<'PY'
 import hashlib
 import json
 import sys
@@ -121,7 +137,7 @@ from pathlib import Path
 
 import yaml
 
-channel, sbom_status, sbom_detail, provenance_status, signing_status, desktop_packaging_status, stable_evidence_status, desktop_distribution_status, enterprise_ops_status, *required = sys.argv[1:]
+channel, sbom_status, sbom_detail, provenance_status, signing_status, desktop_packaging_status, stable_reader_status, stable_evidence_status, desktop_distribution_status, enterprise_ops_status, *required = sys.argv[1:]
 files = []
 for rel in required:
     path = Path(rel)
@@ -149,6 +165,7 @@ report = {
         {"name": "provenance_attestation", "status": provenance_status, "detail": "target/release-evidence/provenance.json"},
         {"name": "signing_readiness", "status": signing_status, "detail": "target/release-evidence/signing-readiness.json"},
         {"name": "desktop_packaging_signing", "status": desktop_packaging_status, "detail": "target/release-evidence/desktop-packaging-signing.json"},
+        {"name": "stable_reader_readiness", "status": stable_reader_status, "detail": "target/release-evidence/stable-reader-readiness.json"},
         {"name": "stable_release_evidence", "status": stable_evidence_status, "detail": "target/release-evidence/stable-release-evidence.json"},
         {"name": "desktop_distribution_publication", "status": desktop_distribution_status, "detail": "target/release-evidence/desktop-distribution-publication.json"},
         {"name": "enterprise_operations_readiness", "status": enterprise_ops_status, "detail": "target/release-evidence/enterprise-operations-readiness.json"},

@@ -3,7 +3,7 @@ title: Stable Desktop Release
 description: Install, verification, launch QA and known limitation guidance for desktop releases.
 ---
 
-Fe Reader stable desktop releases are evidence-gated. A release is not stable-ready until signed artifacts, checksums, release evidence and maintainer approval exist for each target platform.
+Fe Reader stable desktop releases are evidence-gated. A release is not stable-ready until signed artifacts, checksums, release evidence, stable-reader readiness evidence and maintainer approval exist for each target platform.
 
 ## Install Sources
 
@@ -20,6 +20,7 @@ Every desktop release should include `SHA256SUMS`, signatures and a `release-evi
 ```bash
 sha256sum -c SHA256SUMS
 python3 scripts/launch_qa_check.py
+python3 scripts/stable_reader_readiness_check.py
 ```
 
 macOS releases also require Developer ID signing and notarization evidence. Windows releases require Authenticode evidence. Linux package channels require the relevant artifact checksum and repository or store review evidence.
@@ -29,6 +30,7 @@ macOS releases also require Developer ID signing and notarization evidence. Wind
 - Mobile store packages are deferred.
 - ML/RAG features are deferred.
 - Cloud collaboration is deferred.
+- Reader baseline launch claims require `target/release-evidence/stable-reader-readiness.json`.
 - Registry publication remains blocked until signed artifacts, checksums, credentials and maintainer approval are available.
 
 ## Support and Security

@@ -1,0 +1,8 @@
+{
+  "track_id": "track-BK-professional-workflows-parity",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-06-23T17:18:58Z",
+  "updated_at": "2026-06-23T17:18:58Z",
+  "description": "Implement annotations, forms, page organization, metadata, redaction and audit workflows to professional PDF parity."
+}

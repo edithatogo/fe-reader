@@ -33,6 +33,7 @@ if workflow:
         "python3 scripts/release_matrix_check.py",
         "bash scripts/release_readiness_check.sh",
         "python3 scripts/launch_qa_check.py",
+        "python3 scripts/stable_reader_readiness_check.py",
     ]:
         if command not in workflow:
             failures.append(f"release workflow missing provenance command: {command}")
@@ -51,6 +52,7 @@ for script in [
     "scripts/release_evidence_check.sh",
     "scripts/release_readiness_check.sh",
     "scripts/launch_qa_check.py",
+    "scripts/stable_reader_readiness_check.py",
 ]:
     text = read(script)
     if text and "target/release-evidence" not in text:

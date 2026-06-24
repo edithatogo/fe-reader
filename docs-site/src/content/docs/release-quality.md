@@ -12,6 +12,7 @@ The current release evidence scaffold records:
 - provenance attestation scaffold
 - signing readiness evidence
 - release matrix and readiness reports
+- stable reader readiness report
 - schema and CI policy validation
 - docs-site build and dependency-audit evidence for the public Starlight documentation surface
 - release pipeline documentation that enumerates the explicit evidence artifacts

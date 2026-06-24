@@ -23,6 +23,7 @@ Each release produces:
 - performance report
 - accessibility report
 - security/dependency report
+- stable-reader readiness report for stable and store-submission channels
 
 ## Signed update contract
 
@@ -57,6 +58,7 @@ A release is not ready unless:
 - critical supply-chain checks pass
 - P0/P1 performance budgets pass or have accepted waivers
 - accepted corpus compatibility has no untriaged regression
+- stable-reader readiness passes for stable, LTS and store-submission channels
 
 ## Wave 0 evidence definition
 
@@ -72,6 +74,7 @@ release readiness check passes.
 - `scripts/wave7_release_hardening_smoke.py` validates the release evidence bundle, packaging templates and compatibility snapshots.
 - `scripts/release_evidence_check.sh` validates the release evidence bundle shape, update-manifest schema and contract-input digests.
 - `scripts/release_readiness_check.sh` validates the release readiness bundle against the release evidence schema and packaging/channel definitions.
+- `scripts/stable_reader_readiness_check.py` validates the stable-reader baseline, launch QA evidence and reader-facing release claims.
 - `scripts/stable_release_evidence_check.py` validates stable-only evidence classes and release-waiver shape.
 - `scripts/desktop_distribution_publication_check.py` validates GitHub Release inputs, desktop registry manifests, public links and publication blockers.
 - `scripts/enterprise_operations_readiness_check.py` validates offline install modes, managed policy templates, signed update/rollback fixtures and privacy-safe support bundle defaults.

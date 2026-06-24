@@ -24,6 +24,7 @@ Fe Reader release work is evidence-first. The pipeline is designed to make every
 - `target/release-evidence/signing-readiness.json`
 - `target/release-evidence/desktop-distribution-publication.json`
 - `target/release-evidence/enterprise-operations-readiness.json`
+- `target/release-evidence/stable-reader-readiness.json`
 - `target/release-evidence/launch-qa.json`
 
 The GitHub release workflow uploads the complete `target/release-evidence/**` tree as the `release-evidence` artifact, so the release record stays inspectable after the job completes.

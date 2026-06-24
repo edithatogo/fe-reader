@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/stable-reader-readiness.schema.json",
+  "title": "StableReaderReadinessReport",
+  "type": "object",
+  "required": ["check", "status", "channel", "claims", "evidence"],
+  "properties": {
+    "check": {
+      "const": "stable_reader_readiness"
+    },
+    "status": {
+      "enum": ["pass", "fail"]
+    },
+    "channel": {
+      "type": "string"
+    },
+    "marketing_ready": {
+      "type": "boolean"
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence_item"
+      }
+    },
+    "docs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "claim": {
+      "type": "object",
+      "required": ["id", "support_level", "evidence"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "support_level": {
+          "enum": ["supported-preview", "plan-only", "documented-limitation"]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limitation": {
+          "type": "string"
+        }
+      }
+    },
+    "evidence_item": {
+      "type": "object",
+      "required": ["path", "status"],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "details": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

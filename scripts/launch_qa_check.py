@@ -17,6 +17,7 @@ STRICT_CHANNELS = {"stable", "lts", "store_submission"}
 
 COMMANDS: list[list[str]] = [
     ["bash", "scripts/smoke_cli_contract.sh"],
+    ["python3", "scripts/stable_reader_readiness_check.py"],
     ["python3", "scripts/desktop_packaging_signing_check.py"],
     ["python3", "scripts/release_artifact_inventory_check.py"],
     ["python3", "scripts/stable_release_evidence_check.py"],
@@ -37,6 +38,7 @@ EVIDENCE_CHECKS = {
     "release_matrix": "target/release-evidence/release-matrix.json",
     "desktop_packaging_signing": "target/release-evidence/desktop-packaging-signing.json",
     "release_artifact_inventory": "target/release-evidence/release-artifact-inventory.json",
+    "stable_reader_readiness": "target/release-evidence/stable-reader-readiness.json",
     "desktop_distribution_publication": "target/release-evidence/desktop-distribution-publication.json",
     "enterprise_operations_readiness": "target/release-evidence/enterprise-operations-readiness.json",
     "mobile_public_launch": "target/release-evidence/mobile-public-launch.json",
@@ -49,7 +51,9 @@ EVIDENCE_CHECKS = {
 DOC_TOKENS = {
     "README.md": [
         "scripts/launch_qa_check.py",
+        "scripts/stable_reader_readiness_check.py",
         "docs/stable-desktop-release.md",
+        "docs/stable-reader-readiness.md",
         "docs/launch-limitations-support.md",
         "SHA256SUMS",
         "SECURITY.md",
@@ -62,6 +66,7 @@ DOC_TOKENS = {
         "GitHub Releases",
         "SHA256SUMS",
         "scripts/launch_qa_check.py",
+        "scripts/stable_reader_readiness_check.py",
     ],
     "docs/launch-limitations-support.md": [
         "mobile",
@@ -76,6 +81,8 @@ DOC_TOKENS = {
         "GitHub Releases",
         "SHA256SUMS",
         "Known launch limitations",
+        "stable-reader readiness",
+        "scripts/stable_reader_readiness_check.py",
     ],
 }
 
