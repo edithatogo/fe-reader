@@ -2,6 +2,7 @@
 
 Desktop publication is intentionally manual-gated. The repository can validate the release inputs and registry manifests, but it must not publish to GitHub Releases or third-party registries without maintainer approval.
 The macOS public-quality signed/notarized launch contract is documented in `docs/macos-public-quality-signed-notarized-launch-contract.md`.
+The Windows/Linux beta installers contract is documented in `docs/windows-linux-beta-installers-contract.md`.
 
 ## Release Gate
 
