@@ -98,3 +98,12 @@ Your first task is not to add features. Your first task is to make the v8 Wave 0
 - Never make a mutating automation surface skip transaction journaling or user/policy approval.
 - Keep GitHub Actions permissions minimal and explicit.
 - When creating CI workflows, include `timeout-minutes`, `concurrency`, and explicit `permissions`.
+
+## v10 Conductor lifecycle rules
+
+- Push completed local work to the remote before starting additional launch-track work when `main` is ahead of `origin/main`.
+- Every Conductor task must end with validation, `conductor-review`, a commit with Conductor trailers, and a `refs/notes/conductor` git note for the commit.
+- Every phase must run `conductor-review`, apply high-confidence fixes automatically, rerun focused validation, and push commits plus `refs/notes/conductor`.
+- Every track must finish with `conductor-review`, all fixes applied, local validation passing, automatic archiving, pushed commits, pushed notes, and GitHub Actions green for the final SHA.
+- Do not mark a track complete or archived while its active plan has unchecked implementation tasks. If a task is an external gate such as signing, notarization, registry review, credentials, or maintainer approval, record it as a deferred external gate with evidence instead of pretending it was completed.
+- Use `python3 scripts/conductor_lifecycle_check.py` before track closeout and after archive cleanup.

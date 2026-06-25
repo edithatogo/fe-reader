@@ -1,8 +1,44 @@
-version: 0.5
+version: 0.6
 kind: fe-reader-project-owned-conductor-automation
 phase_gate:
   command: scripts/conductor_phase_gate.sh --phase ${PHASE_ID} --auto-fix
-review_skill: .agents/skills/fe-reader-review-skill/SKILL.md
+review_skill: conductor-review
+review_skill_path: .agents/skills/fe-reader-review-skill/SKILL.md
+lifecycle:
+  note_ref: refs/notes/conductor
+  task_commit_required: true
+  task_git_note_required: true
+  task_push_required: true
+  phase_review_required: true
+  phase_push_required: true
+  track_review_required: true
+  track_archive_after_review: automatic
+  track_push_required: true
+  track_actions_green_required: true
+  local_check: python3 scripts/conductor_lifecycle_check.py
+  local_closeout_check: python3 scripts/conductor_lifecycle_check.py --require-git-note
+  required_workflows:
+    - PR Contracts
+    - Rust Stable
+    - Security Supply Chain
+    - Cross Platform Smoke
+    - API Compatibility
+    - Docs Site
+    - Platform Tests
+  commit_trailers:
+    - Conductor-Track
+    - Conductor-Phase
+    - Conductor-Task
+    - Review
+    - Validation
+  external_gate_policy:
+    allowed:
+      - signing
+      - notarization
+      - registry_review
+      - credentials
+      - maintainer_approval
+    requirement: record_as_deferred_external_gate_without_claiming_completion
 parallelisation:
   max_parallel_tracks: 8
   rules:
