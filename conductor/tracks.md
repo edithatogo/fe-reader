@@ -213,7 +213,7 @@ Native UX refinement rules:
 ---
 
 - [ ] **Track: Advanced PDF Family Parity**
-*Link: [./tracks/track-BL-advanced-pdf-family-parity/](./tracks/track-BL-advanced-pdf-family-parity/)*
+*Link: [./archive/track-BL-advanced-pdf-family-parity/](./archive/track-BL-advanced-pdf-family-parity/)*
 
 ---
 
