@@ -60,7 +60,7 @@ jobs:
           api-level: 35
           arch: x86_64
           profile: pixel_6
-          disable-animations: true
+          disable-animations: false
           script: FE_ANDROID_EMULATOR_MANAGED=1 FE_ANDROID_TARGET=x86_64-linux-android bash scripts/android_emulator_smoke.sh
 
   ios-simulator:
