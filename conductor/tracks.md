@@ -229,3 +229,8 @@ Native UX refinement rules:
 
 - [x] **Track: v2 Roadmap Implementation Foundation**
 *Link: [./tracks/track-BO-v2-roadmap-implementation-foundation/](./tracks/track-BO-v2-roadmap-implementation-foundation/)*
+
+---
+
+- [~] **Track: macOS Native Functional Reader Parity**
+*Link: [./tracks/track-BP-macos-native-functional-reader-parity/](./tracks/track-BP-macos-native-functional-reader-parity/)*
