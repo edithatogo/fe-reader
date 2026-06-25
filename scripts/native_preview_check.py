@@ -71,6 +71,8 @@ def paeth(left: int, up: int, up_left: int) -> int:
 
 
 def load_rgba_png(path: Path) -> tuple[int, int, list[tuple[int, int, int, int]]]:
+    if not path.exists():
+        fail(f"{path} does not exist")
     raw = path.read_bytes()
     if not raw.startswith(b"\x89PNG\r\n\x1a\n"):
         fail(f"{path} is not a PNG")
@@ -134,9 +136,15 @@ def black_ratio(sample: list[tuple[int, int, int, int]]) -> float:
     return black / max(len(sample), 1)
 
 
+def white_ratio(sample: list[tuple[int, int, int, int]]) -> float:
+    white = sum(1 for r, g, b, _ in sample if r > 220 and g > 220 and b > 220)
+    return white / max(len(sample), 1)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("image", type=Path)
+    parser.add_argument("--mode", choices=["empty", "open"], default="empty")
     args = parser.parse_args()
 
     width, height, pixels = load_rgba_png(args.image)
@@ -154,8 +162,15 @@ def main() -> None:
         fail("sidebar lacks selected-row accent color")
 
     canvas = region(pixels, width, int(width * 0.35), int(height * 0.25), int(width * 0.7), int(height * 0.75))
-    if dark_ratio(canvas) < 0.002:
-        fail("canvas lacks visible empty-state content")
+    if args.mode == "empty":
+        if dark_ratio(canvas) < 0.002:
+            fail("canvas lacks visible empty-state content")
+    else:
+        if white_ratio(canvas) < 0.45:
+            fail("open-document canvas lacks a visible PDF page surface")
+        inspector = region(pixels, width, int(width * 0.73), int(height * 0.18), int(width * 0.96), int(height * 0.65))
+        if dark_ratio(inspector) < 0.01:
+            fail("open-document inspector lacks visible document evidence")
 
     print(f"native preview check passed: {args.image} ({width}x{height})")
 

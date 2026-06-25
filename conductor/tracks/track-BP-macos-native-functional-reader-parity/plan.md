@@ -9,29 +9,29 @@
 
 ## Phase BP2 - Native reader canvas and command wiring
 
-- [ ] Task: Replace preview-only canvas with a PDFKit reader surface.
-    - [ ] Render opened PDFs with `PDFView`.
-    - [ ] Add page navigation, current page display, zoom controls, fit width, and actual size.
-    - [ ] Preserve keyboard paths for open, close, inspect, validate, search, zoom, and page navigation.
-- [ ] Task: Wire core/CLI-backed reader actions.
-    - [ ] Bundle or resolve the `fe-reader` CLI.
-    - [ ] Connect Inspect, Metadata, Search, Accessibility, and Validate to deterministic CLI JSON when available.
-    - [ ] Show clear fallback status when the CLI is unavailable.
-- [ ] Task: Keep mutation and frontier boundaries intact.
-    - [ ] Keep Redact disabled or plan-only.
-    - [ ] Do not enable ML, RAG, telemetry, cloud sync, or hidden network behavior.
-    - [ ] Keep all native behavior outside `fe_reader_core`.
+- [x] Task: Replace preview-only canvas with a PDFKit reader surface.
+    - [x] Render opened PDFs with `PDFView`.
+    - [x] Add page navigation, current page display, zoom controls, fit width, and actual size.
+    - [x] Preserve keyboard paths for open, close, inspect, validate, search, zoom, and page navigation.
+- [x] Task: Wire core/CLI-backed reader actions.
+    - [x] Bundle or resolve the `fe-reader` CLI.
+    - [x] Connect Inspect, Metadata, Search, Accessibility, and Validate to deterministic CLI JSON when available.
+    - [x] Show clear fallback status when the CLI is unavailable.
+- [x] Task: Keep mutation and frontier boundaries intact.
+    - [x] Keep Redact disabled or plan-only.
+    - [x] Do not enable ML, RAG, telemetry, cloud sync, or hidden network behavior.
+    - [x] Keep all native behavior outside `fe_reader_core`.
 
 ## Phase BP3 - macOS verification and evidence
 
-- [ ] Task: Harden native verification mode.
-    - [ ] Write screenshots to `target/native-preview/` by default.
-    - [ ] Add `--fixture` support for open-document smoke.
-    - [ ] Avoid overwriting tracked screenshots unless explicitly requested.
-- [ ] Task: Validate and review.
-    - [ ] Run empty-state and fixture-open native UI smoke.
-    - [ ] Run lifecycle, launch QA, stable reader readiness, and PDF parity checks.
-    - [ ] Run `conductor-review` and apply fixes.
+- [x] Task: Harden native verification mode.
+    - [x] Write screenshots to `target/native-preview/` by default.
+    - [x] Add `--fixture` support for open-document smoke.
+    - [x] Avoid overwriting tracked screenshots unless explicitly requested.
+- [x] Task: Validate and review.
+    - [x] Run empty-state and fixture-open native UI smoke.
+    - [x] Run lifecycle, launch QA, stable reader readiness, and PDF parity checks.
+    - [x] Run `conductor-review` and apply fixes.
 
 ## Phase BP4 - Archive and closeout
 
