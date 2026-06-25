@@ -201,7 +201,7 @@ Native UX refinement rules:
 
 
 - [ ] **Track: Windows and Linux Beta Installers**
-*Link: [./tracks/track-BG-windows-linux-beta-installers/](./tracks/track-BG-windows-linux-beta-installers/)*
+*Link: [./archive/track-BG-windows-linux-beta-installers/](./archive/track-BG-windows-linux-beta-installers/)*
 
 ---
 
