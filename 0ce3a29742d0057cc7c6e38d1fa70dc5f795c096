@@ -1,0 +1,6 @@
+Conductor-Track: track-BP-macos-native-functional-reader-parity
+Conductor-Phase: BP2-BP3
+Conductor-Task: implement-native-reader-and-verification
+Review: conductor-review passed; fixed scoped file access lifetime
+Validation: swiftc -typecheck; empty and fixture-open native smoke; lifecycle; launch QA; stable reader readiness; PDF parity registry; PDF baseline parity
+CI: pending push for native implementation
