@@ -1,0 +1,13 @@
+{
+  "track_id": "track-AY-post-launch-pdf-baseline-parity",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T23:59:02Z",
+  "updated_at": "2026-06-14T00:10:58Z",
+  "description": "Post-launch PDF baseline parity evidence across reading, rendering, editing, forms, metadata, redaction and conversion.",
+  "launch_blocking": false,
+  "feature_gate": "advanced_pdf_baseline",
+  "owner": "release-maintainers",
+  "rollback_plan": "Keep advanced parity claims out of stable release notes and disable incomplete workflow packs.",
+  "exit_criteria": "Every baseline capability claim has a corpus fixture, contract smoke, differential oracle or documented limitation."
+}
