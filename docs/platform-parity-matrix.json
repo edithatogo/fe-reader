@@ -1,0 +1,285 @@
+{
+  "matrix_version": "0.1.0",
+  "feature_gate": "cross_platform_full_workflow_parity",
+  "launch_blocking": false,
+  "platforms": [
+    "macos",
+    "windows",
+    "linux",
+    "android",
+    "ios",
+    "web_local_pwa",
+    "browser_extension"
+  ],
+  "governance": {
+    "mutation_pipeline": "OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt",
+    "adapter_boundary": "fe_reader_core remains pure; platform, UI, renderer, MCP, plugin and web surfaces use adapters.",
+    "release_policy": "Signing, notarization, store submission and external registry publication are evidence-gated external gates.",
+    "claim_policy": "A platform parity claim is allowed only when this matrix records supported evidence or an explicit limitation."
+  },
+  "capabilities": [
+    {
+      "id": "open-local-pdf",
+      "family": "reader",
+      "summary": "Open a user-granted local PDF without uploading document bytes.",
+      "target_status": "supported",
+      "mutating": false,
+      "support_by_platform": {
+        "macos": {
+          "status": "supported",
+          "evidence": ["native/macos/FeReaderNativeApp.swift", "script/build_and_run.sh", "scripts/native_preview_check.py"]
+        },
+        "windows": {
+          "status": "plan-only",
+          "evidence": ["scripts/install_windows.ps1", "packaging/windows/nsis/installer-notes.md"],
+          "limitation": "Windows has CLI install and packaging surfaces, but no public-quality reader shell yet."
+        },
+        "linux": {
+          "status": "plan-only",
+          "evidence": ["scripts/linux_container_smoke.sh", "packaging/linux/appimage/appimage-notes.md"],
+          "limitation": "Linux has container/package evidence, but no public-quality reader shell yet."
+        },
+        "android": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/android-intents/AndroidManifest.contract.xml", "scripts/android_emulator_smoke.sh"],
+          "limitation": "Android has intent and UniFFI smoke coverage, but no shipped reader shell yet."
+        },
+        "ios": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/ios-appintents/FeReaderAppIntents.swift", "scripts/mobile_smoke_bindings_check.py"],
+          "limitation": "iOS has App Intents and UniFFI smoke coverage, but no shipped reader shell yet."
+        },
+        "web_local_pwa": {
+          "status": "plan-only",
+          "evidence": ["contracts/web/postmessage-contract.md", "scripts/web_postmessage_contract_smoke.py"],
+          "limitation": "Web local file access remains contract-only until a PWA shell lands."
+        },
+        "browser_extension": {
+          "status": "plan-only",
+          "evidence": ["contracts/web/postmessage-contract.md", "scripts/browser_extension_contract_smoke.py"],
+          "limitation": "Browser extension handoff remains contract-only until an extension shell lands."
+        }
+      }
+    },
+    {
+      "id": "navigate-zoom-search",
+      "family": "reader",
+      "summary": "Navigate pages, zoom or fit, and run deterministic in-document search.",
+      "target_status": "supported",
+      "mutating": false,
+      "support_by_platform": {
+        "macos": {
+          "status": "supported",
+          "evidence": ["native/macos/FeReaderNativeApp.swift", "docs/stable-reader-readiness.md"]
+        },
+        "windows": {
+          "status": "plan-only",
+          "evidence": ["docs/platform-integration-plan.md", "scripts/platform_search_contract_smoke.py"],
+          "limitation": "Windows navigation/search needs desktop shell implementation."
+        },
+        "linux": {
+          "status": "plan-only",
+          "evidence": ["docs/platform-integration-plan.md", "scripts/platform_search_contract_smoke.py"],
+          "limitation": "Linux navigation/search needs desktop shell implementation."
+        },
+        "android": {
+          "status": "plan-only",
+          "evidence": ["scripts/mobile_smoke_bindings_check.py", "scripts/android_emulator_smoke.sh"],
+          "limitation": "Android navigation/search needs native wrapper implementation."
+        },
+        "ios": {
+          "status": "plan-only",
+          "evidence": ["scripts/mobile_smoke_bindings_check.py", "contracts/platform/ios-appintents/FeReaderAppIntents.swift"],
+          "limitation": "iOS navigation/search needs native wrapper implementation."
+        },
+        "web_local_pwa": {
+          "status": "plan-only",
+          "evidence": ["contracts/web/postmessage-contract.md", "scripts/web_postmessage_contract_smoke.py"],
+          "limitation": "PWA navigation/search needs web shell implementation."
+        },
+        "browser_extension": {
+          "status": "documented-limitation",
+          "evidence": ["docs/external-application-integrations.md", "scripts/browser_extension_contract_smoke.py"],
+          "limitation": "Browser extension should inspect or hand off PDFs, not become the full reader by default."
+        }
+      }
+    },
+    {
+      "id": "inspect-validate-accessibility",
+      "family": "diagnostics",
+      "summary": "Expose metadata/hash inspection, validation, and accessibility diagnostics.",
+      "target_status": "supported",
+      "mutating": false,
+      "support_by_platform": {
+        "macos": {
+          "status": "supported",
+          "evidence": ["native/macos/FeReaderNativeApp.swift", "scripts/accessibility_audit_smoke.py"]
+        },
+        "windows": {
+          "status": "plan-only",
+          "evidence": ["scripts/accessibility_audit_smoke.py", "docs/platform-test-workflows.md"],
+          "limitation": "Windows diagnostics need desktop shell wiring."
+        },
+        "linux": {
+          "status": "plan-only",
+          "evidence": ["scripts/accessibility_audit_smoke.py", "docs/platform-test-workflows.md"],
+          "limitation": "Linux diagnostics need desktop shell wiring."
+        },
+        "android": {
+          "status": "plan-only",
+          "evidence": ["scripts/mobile_public_launch_check.py", "scripts/mobile_smoke_bindings_check.py"],
+          "limitation": "Android diagnostics need native wrapper UI evidence."
+        },
+        "ios": {
+          "status": "plan-only",
+          "evidence": ["scripts/mobile_public_launch_check.py", "scripts/mobile_smoke_bindings_check.py"],
+          "limitation": "iOS diagnostics need native wrapper UI evidence."
+        },
+        "web_local_pwa": {
+          "status": "plan-only",
+          "evidence": ["scripts/web_postmessage_contract_smoke.py", "contracts/web/postmessage-contract.md"],
+          "limitation": "PWA diagnostics remain postMessage-contract only."
+        },
+        "browser_extension": {
+          "status": "plan-only",
+          "evidence": ["scripts/browser_extension_contract_smoke.py", "docs/external-application-integrations.md"],
+          "limitation": "Browser extension diagnostics are limited to inspect/handoff."
+        }
+      }
+    },
+    {
+      "id": "workflow-planning-surfaces",
+      "family": "workflows",
+      "summary": "Expose annotations, forms, page organization, redaction, and conversion as plan-only workflows.",
+      "target_status": "plan-only",
+      "mutating": true,
+      "mutation_pipeline_required": true,
+      "support_by_platform": {
+        "macos": {
+          "status": "plan-only",
+          "evidence": ["native/macos/FeReaderNativeApp.swift", "docs/pdf-baseline-parity-matrix.md"],
+          "limitation": "macOS exposes workflow planning boundaries but not direct apply shortcuts."
+        },
+        "windows": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/windows-com/FeReaderAutomation.idl", "scripts/platform_recent_smoke.sh"],
+          "limitation": "Windows workflow planning needs shell and COM adapter wiring."
+        },
+        "linux": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/linux-dbus/org.fereader.FeReader1.xml", "scripts/platform_recent_smoke.sh"],
+          "limitation": "Linux workflow planning needs shell and D-Bus adapter wiring."
+        },
+        "android": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/android-intents/AndroidManifest.contract.xml", "scripts/mobile_smoke_bindings_check.py"],
+          "limitation": "Android workflow planning needs native wrapper UI evidence."
+        },
+        "ios": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/ios-appintents/FeReaderAppIntents.swift", "scripts/mobile_smoke_bindings_check.py"],
+          "limitation": "iOS workflow planning needs native wrapper UI evidence."
+        },
+        "web_local_pwa": {
+          "status": "plan-only",
+          "evidence": ["contracts/web/postmessage-contract.md", "scripts/web_postmessage_contract_smoke.py"],
+          "limitation": "PWA workflow planning must remain user-granted and plan-only until approval UI lands."
+        },
+        "browser_extension": {
+          "status": "plan-only",
+          "evidence": ["contracts/web/postmessage-contract.md", "scripts/browser_extension_contract_smoke.py"],
+          "limitation": "Browser extension workflow planning must not mutate local files directly."
+        }
+      }
+    },
+    {
+      "id": "approved-mutation-apply",
+      "family": "mutation",
+      "summary": "Apply one approved low-risk workflow through the full mutation pipeline with audit receipt evidence.",
+      "target_status": "supported",
+      "mutating": true,
+      "mutation_pipeline_required": true,
+      "support_by_platform": {
+        "macos": {
+          "status": "plan-only",
+          "evidence": ["docs/pdf-baseline-parity-matrix.md", "crates/fe_reader_core/src/lib.rs"],
+          "limitation": "Apply/save is intentionally gated until end-to-end receipts are verified."
+        },
+        "windows": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/windows-com/FeReaderAutomation.idl", "crates/fe_reader_core/src/lib.rs"],
+          "limitation": "Windows apply must wait for shared approved-plan facade and receipt wiring."
+        },
+        "linux": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/linux-dbus/org.fereader.FeReader1.xml", "crates/fe_reader_core/src/lib.rs"],
+          "limitation": "Linux apply must wait for shared approved-plan facade and receipt wiring."
+        },
+        "android": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/android-intents/AndroidManifest.contract.xml", "crates/fe_reader_uniffi/src/lib.rs"],
+          "limitation": "Android apply must wait for shared approved-plan facade and receipt wiring."
+        },
+        "ios": {
+          "status": "plan-only",
+          "evidence": ["contracts/platform/ios-appintents/FeReaderAppIntents.swift", "crates/fe_reader_uniffi/src/lib.rs"],
+          "limitation": "iOS apply must wait for shared approved-plan facade and receipt wiring."
+        },
+        "web_local_pwa": {
+          "status": "plan-only",
+          "evidence": ["contracts/web/postmessage-contract.md", "docs/web-version.md"],
+          "limitation": "Web apply requires explicit user approval and no hidden persistence."
+        },
+        "browser_extension": {
+          "status": "documented-limitation",
+          "evidence": ["contracts/web/postmessage-contract.md", "docs/external-application-integrations.md"],
+          "limitation": "Browser extension direct apply remains out of scope; it may hand off approved plans."
+        }
+      }
+    },
+    {
+      "id": "buildable-release-artifact",
+      "family": "release",
+      "summary": "Produce buildable platform artifacts and checksums where credentials are unavailable.",
+      "target_status": "supported",
+      "mutating": false,
+      "support_by_platform": {
+        "macos": {
+          "status": "external-gate",
+          "evidence": ["packaging/macos/notarization.md", "packaging/desktop-distribution.yaml"],
+          "external_gate": "Signed and notarized DMG or app bundle required for public release."
+        },
+        "windows": {
+          "status": "external-gate",
+          "evidence": ["packaging/windows/msix/AppxManifest.contract.xml", "packaging/desktop-distribution.yaml"],
+          "external_gate": "Signed MSI/MSIX or portable artifact plus checksum required."
+        },
+        "linux": {
+          "status": "external-gate",
+          "evidence": ["packaging/linux/appimage/appimage-notes.md", "packaging/desktop-distribution.yaml"],
+          "external_gate": "Built AppImage, Flatpak, Snap or distro artifact plus review required."
+        },
+        "android": {
+          "status": "external-gate",
+          "evidence": ["packaging/android/play/play-publishing-checklist.md", "packaging/mobile-public-launch.json"],
+          "external_gate": "Signed AAB/APK and Play or F-Droid evidence required."
+        },
+        "ios": {
+          "status": "external-gate",
+          "evidence": ["packaging/ios/appstore/app-store-checklist.md", "packaging/mobile-public-launch.json"],
+          "external_gate": "Apple Developer Program, signed archive, TestFlight or App Store evidence required."
+        },
+        "web_local_pwa": {
+          "status": "plan-only",
+          "evidence": ["docs/web-version.md", "contracts/web/postmessage-contract.md"],
+          "limitation": "PWA artifact build and hosting evidence are not present yet."
+        },
+        "browser_extension": {
+          "status": "plan-only",
+          "evidence": ["docs/external-application-integrations.md", "scripts/browser_extension_contract_smoke.py"],
+          "limitation": "Extension package and store evidence are not present yet."
+        }
+      }
+    }
+  ]
+}

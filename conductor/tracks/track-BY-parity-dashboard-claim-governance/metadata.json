@@ -1,0 +1,8 @@
+{
+  "track_id": "track-BY-parity-dashboard-claim-governance",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-06-25T14:39:33Z",
+  "updated_at": "2026-06-25T14:39:33Z",
+  "description": "Local parity dashboard and claim governance gate."
+}

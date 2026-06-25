@@ -1,0 +1,8 @@
+{
+  "track_id": "track-BQ-cross-platform-parity-matrix-gap-ledger",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-06-25T14:39:33Z",
+  "updated_at": "2026-06-25T14:39:33Z",
+  "description": "Cross-platform parity matrix and gap ledger for full workflow parity."
+}

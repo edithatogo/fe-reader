@@ -234,3 +234,48 @@ Native UX refinement rules:
 
 - [x] **Track: macOS Native Functional Reader Parity**
 *Link: [./archive/track-BP-macos-native-functional-reader-parity/](./archive/track-BP-macos-native-functional-reader-parity/)*
+
+---
+
+- [ ] **Track: Cross-Platform Parity Matrix and Gap Ledger**
+*Link: [./tracks/track-BQ-cross-platform-parity-matrix-gap-ledger/](./tracks/track-BQ-cross-platform-parity-matrix-gap-ledger/)*
+
+---
+
+- [ ] **Track: Shared Workflow Surface Facade**
+*Link: [./tracks/track-BR-shared-workflow-surface-facade/](./tracks/track-BR-shared-workflow-surface-facade/)*
+
+---
+
+- [ ] **Track: Desktop Shell Parity**
+*Link: [./tracks/track-BS-desktop-shell-parity/](./tracks/track-BS-desktop-shell-parity/)*
+
+---
+
+- [ ] **Track: Mobile Shell Parity**
+*Link: [./tracks/track-BT-mobile-shell-parity/](./tracks/track-BT-mobile-shell-parity/)*
+
+---
+
+- [ ] **Track: Web/PWA and Browser Extension Parity**
+*Link: [./tracks/track-BU-web-pwa-browser-extension-parity/](./tracks/track-BU-web-pwa-browser-extension-parity/)*
+
+---
+
+- [ ] **Track: Full Workflow Mutation Pipeline Parity**
+*Link: [./tracks/track-BV-full-workflow-mutation-pipeline-parity/](./tracks/track-BV-full-workflow-mutation-pipeline-parity/)*
+
+---
+
+- [ ] **Track: Cross-Platform Corpus, UI, Accessibility and Performance QA**
+*Link: [./tracks/track-BW-cross-platform-corpus-ui-accessibility-performance-qa/](./tracks/track-BW-cross-platform-corpus-ui-accessibility-performance-qa/)*
+
+---
+
+- [ ] **Track: Buildable Release Artifacts and Registry Evidence**
+*Link: [./tracks/track-BX-buildable-release-artifacts-registry-evidence/](./tracks/track-BX-buildable-release-artifacts-registry-evidence/)*
+
+---
+
+- [ ] **Track: Parity Dashboard and Claim Governance**
+*Link: [./tracks/track-BY-parity-dashboard-claim-governance/](./tracks/track-BY-parity-dashboard-claim-governance/)*

@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fereader.org/platform-parity-matrix.schema.json",
+  "title": "Fe Reader Platform Parity Matrix",
+  "type": "object",
+  "required": [
+    "matrix_version",
+    "feature_gate",
+    "launch_blocking",
+    "platforms",
+    "governance",
+    "capabilities"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "matrix_version": {
+      "type": "string"
+    },
+    "feature_gate": {
+      "const": "cross_platform_full_workflow_parity"
+    },
+    "launch_blocking": {
+      "const": false
+    },
+    "platforms": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "enum": [
+          "macos",
+          "windows",
+          "linux",
+          "android",
+          "ios",
+          "web_local_pwa",
+          "browser_extension"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "mutation_pipeline",
+        "adapter_boundary",
+        "release_policy",
+        "claim_policy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mutation_pipeline": {
+          "const": "OperationIntent -> PatchPlan -> Review/Policy -> Apply -> Verify -> AuditReceipt"
+        },
+        "adapter_boundary": {
+          "type": "string"
+        },
+        "release_policy": {
+          "type": "string"
+        },
+        "claim_policy": {
+          "type": "string"
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/capability"
+      }
+    }
+  },
+  "$defs": {
+    "capability": {
+      "type": "object",
+      "required": [
+        "id",
+        "family",
+        "summary",
+        "target_status",
+        "mutating",
+        "support_by_platform"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "family": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "target_status": {
+          "enum": ["supported", "plan-only"]
+        },
+        "mutating": {
+          "type": "boolean"
+        },
+        "mutation_pipeline_required": {
+          "type": "boolean"
+        },
+        "support_by_platform": {
+          "type": "object",
+          "required": [
+            "macos",
+            "windows",
+            "linux",
+            "android",
+            "ios",
+            "web_local_pwa",
+            "browser_extension"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "macos": {
+              "$ref": "#/$defs/platform_support"
+            },
+            "windows": {
+              "$ref": "#/$defs/platform_support"
+            },
+            "linux": {
+              "$ref": "#/$defs/platform_support"
+            },
+            "android": {
+              "$ref": "#/$defs/platform_support"
+            },
+            "ios": {
+              "$ref": "#/$defs/platform_support"
+            },
+            "web_local_pwa": {
+              "$ref": "#/$defs/platform_support"
+            },
+            "browser_extension": {
+              "$ref": "#/$defs/platform_support"
+            }
+          }
+        }
+      }
+    },
+    "platform_support": {
+      "type": "object",
+      "required": ["status", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "supported",
+            "plan-only",
+            "documented-limitation",
+            "external-gate"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limitation": {
+          "type": "string"
+        },
+        "external_gate": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

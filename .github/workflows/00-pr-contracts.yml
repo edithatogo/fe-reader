@@ -36,6 +36,7 @@ jobs:
       - run: python3 scripts/accessibility_audit_smoke.py
       - run: python3 scripts/conductor_lifecycle_check.py
       - run: python3 scripts/pdf_parity_registry_check.py
+      - run: python3 scripts/platform_parity_matrix_check.py
       - run: python3 scripts/corpus_manifest_validate.py
       - run: python3 scripts/compatibility_corpus_report.py
       - run: python3 scripts/ci_policy_check.py
