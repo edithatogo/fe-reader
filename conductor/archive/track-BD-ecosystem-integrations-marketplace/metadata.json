@@ -1,0 +1,13 @@
+{
+  "track_id": "track-BD-ecosystem-integrations-marketplace",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T23:59:02Z",
+  "updated_at": "2026-06-14T01:35:00Z",
+  "description": "Post-launch SDK, plugin, workflow-pack and marketplace integration expansion with automation safety intact.",
+  "launch_blocking": false,
+  "feature_gate": "ecosystem_integrations_marketplace",
+  "owner": "ecosystem-maintainers",
+  "rollback_plan": "Disable plugin/runtime publication, keep integrations read-only or plan-only and remove marketplace claims.",
+  "exit_criteria": "SDK, plugin and integration surfaces have compatibility snapshots, safety gates and publication evidence."
+}
