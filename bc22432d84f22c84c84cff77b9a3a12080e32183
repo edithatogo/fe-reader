@@ -1,0 +1,6 @@
+Conductor-Track: track-BP-macos-native-functional-reader-parity
+Conductor-Phase: BP4
+Conductor-Task: archive-track-closeout
+Review: conductor-review passed
+Validation: python3 scripts/conductor_lifecycle_check.py
+CI: pending final SHA push
