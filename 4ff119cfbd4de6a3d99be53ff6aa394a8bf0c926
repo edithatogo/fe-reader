@@ -1,0 +1,6 @@
+Conductor-Track: track-BQ-cross-platform-parity-matrix-gap-ledger..track-BY-parity-dashboard-claim-governance
+Conductor-Phase: ci-remediation
+Conductor-Task: fix-android-emulator-runner-flake
+Review: conductor-review passed
+Validation: python3 scripts/ci_policy_check.py; python3 scripts/repository_ci_cd_check.py; python3 scripts/mobile_smoke_bindings_check.py; python3 scripts/platform_parity_matrix_check.py; python3 scripts/conductor_lifecycle_check.py --require-git-note
+CI: pending final SHA push
