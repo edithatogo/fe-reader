@@ -1,0 +1,13 @@
+{
+  "track_id": "track-BB-opt-in-collaboration-sync",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-06-13T23:59:02Z",
+  "updated_at": "2026-06-14T01:06:00Z",
+  "description": "Opt-in local-first collaboration and sync follow-up after desktop stable launch.",
+  "launch_blocking": false,
+  "feature_gate": "opt_in_collaboration_sync",
+  "owner": "collaboration-maintainers",
+  "rollback_plan": "Disable sync providers, retain local-only workspaces and remove collaboration claims.",
+  "exit_criteria": "All collaboration packets, cache entries and sync metadata are privacy-reviewed, opt-in and reversible."
+}
