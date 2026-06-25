@@ -1,0 +1,6 @@
+Conductor-Track: conductor-lifecycle-enforcement
+Conductor-Phase: lifecycle-hardening
+Conductor-Task: enforce-review-notes-push-ci-archive-rules
+Review: conductor-review passed
+Validation: python3 scripts/conductor_lifecycle_check.py; python3 scripts/accessibility_audit_smoke.py; python3 scripts/pdf_parity_registry_check.py; python3 scripts/pdf_baseline_parity_check.py; PR contract chain through wave0_acceptance_check
+CI: pending push for c5f41ef
