@@ -200,7 +200,7 @@ Native UX refinement rules:
 
 
 
-- [ ] **Track: Windows and Linux Beta Installers**
+- [x] **Track: Windows and Linux Beta Installers**
 *Link: [./archive/track-BG-windows-linux-beta-installers/](./archive/track-BG-windows-linux-beta-installers/)*
 
 ---
@@ -212,7 +212,7 @@ Native UX refinement rules:
 
 ---
 
-- [ ] **Track: Advanced PDF Family Parity**
+- [x] **Track: Advanced PDF Family Parity**
 *Link: [./archive/track-BL-advanced-pdf-family-parity/](./archive/track-BL-advanced-pdf-family-parity/)*
 
 ---
@@ -222,7 +222,7 @@ Native UX refinement rules:
 
 ---
 
-- [~] **Track: Stable Launch Cutover and Registries**
+- [x] **Track: Stable Launch Cutover and Registries**
 *Link: [./archive/track-BN-stable-launch-cutover-registries/](./archive/track-BN-stable-launch-cutover-registries/)*
 
 ---

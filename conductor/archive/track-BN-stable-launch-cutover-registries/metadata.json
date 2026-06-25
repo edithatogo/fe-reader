@@ -1,8 +1,8 @@
 {
   "track_id": "track-BN-stable-launch-cutover-registries",
   "type": "feature",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-06-23T17:18:58Z",
-  "updated_at": "2026-06-23T17:18:58Z",
+  "updated_at": "2026-06-25T08:10:58Z",
   "description": "Cut over from prerelease placeholders to real stable release artifacts and registry submissions."
 }

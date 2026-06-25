@@ -1,8 +1,8 @@
 {
   "track_id": "track-BL-advanced-pdf-family-parity",
   "type": "feature",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-06-23T17:18:58Z",
-  "updated_at": "2026-06-23T17:18:58Z",
+  "updated_at": "2026-06-25T08:10:58Z",
   "description": "Implement advanced PDF family parity for standards, attachments, portfolios, layers, multimedia, encryption and prepress."
 }
