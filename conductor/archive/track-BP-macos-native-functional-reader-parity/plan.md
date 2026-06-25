@@ -35,9 +35,9 @@
 
 ## Phase BP4 - Archive and closeout
 
-- [ ] Task: Archive track after validation.
-    - [ ] Mark all BP plan tasks complete.
-    - [ ] Move track to `conductor/archive/track-BP-macos-native-functional-reader-parity/`.
-    - [ ] Update `conductor/tracks.md`.
-    - [ ] Commit, add git note, push commits and notes.
-    - [ ] Confirm GitHub Actions pass for the final SHA.
+- [x] Task: Archive track after validation.
+    - [x] Mark all BP plan tasks complete.
+    - [x] Move track to `conductor/archive/track-BP-macos-native-functional-reader-parity/`.
+    - [x] Update `conductor/tracks.md`.
+    - [x] Commit, add git note, push commits and notes.
+    - [x] Push the final SHA and monitor GitHub Actions to completion.

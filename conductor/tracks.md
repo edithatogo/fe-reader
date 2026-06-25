@@ -232,5 +232,5 @@ Native UX refinement rules:
 
 ---
 
-- [~] **Track: macOS Native Functional Reader Parity**
-*Link: [./tracks/track-BP-macos-native-functional-reader-parity/](./tracks/track-BP-macos-native-functional-reader-parity/)*
+- [x] **Track: macOS Native Functional Reader Parity**
+*Link: [./archive/track-BP-macos-native-functional-reader-parity/](./archive/track-BP-macos-native-functional-reader-parity/)*

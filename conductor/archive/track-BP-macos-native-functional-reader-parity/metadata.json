@@ -1,8 +1,8 @@
 {
   "track_id": "track-BP-macos-native-functional-reader-parity",
   "type": "feature",
-  "status": "in_progress",
+  "status": "completed",
   "created_at": "2026-06-25T11:33:52Z",
-  "updated_at": "2026-06-25T12:04:00Z",
+  "updated_at": "2026-06-25T12:08:00Z",
   "description": "Make the native macOS shell a functional local PDF reader with PDFKit rendering, keyboard navigation, CLI-backed inspect/search/validate actions, and UI smoke evidence."
 }
