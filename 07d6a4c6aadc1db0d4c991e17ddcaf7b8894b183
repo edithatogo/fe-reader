@@ -1,0 +1,6 @@
+Conductor-Track: track-BQ-cross-platform-parity-matrix-gap-ledger..track-BY-parity-dashboard-claim-governance
+Conductor-Phase: track-family-initialization
+Conductor-Task: create-cross-platform-parity-tracks
+Review: conductor-review passed
+Validation: python3 scripts/platform_parity_matrix_check.py; python3 scripts/validate_schemas.py; python3 scripts/pdf_parity_registry_check.py; python3 scripts/pdf_baseline_parity_check.py; python3 scripts/stable_reader_readiness_check.py; python3 scripts/conductor_lifecycle_check.py; PR Contracts command chain
+CI: pending final SHA push
