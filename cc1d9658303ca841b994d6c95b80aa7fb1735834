@@ -1,0 +1,6 @@
+Conductor-Track: remote-sync
+Conductor-Phase: initial-remote-sync
+Conductor-Task: push-local-main-backlog
+Review: pre-push clean status verified
+Validation: git status -sb; git log --left-right HEAD...origin/main
+CI: push-triggered workflows queued for cc1d965
