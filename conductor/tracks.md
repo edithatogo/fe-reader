@@ -223,7 +223,7 @@ Native UX refinement rules:
 ---
 
 - [~] **Track: Stable Launch Cutover and Registries**
-*Link: [./tracks/track-BN-stable-launch-cutover-registries/](./tracks/track-BN-stable-launch-cutover-registries/)*
+*Link: [./archive/track-BN-stable-launch-cutover-registries/](./archive/track-BN-stable-launch-cutover-registries/)*
 
 ---
 
