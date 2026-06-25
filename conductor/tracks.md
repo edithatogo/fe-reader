@@ -174,7 +174,7 @@ Native UX refinement rules:
 ---
 
 - [x] **Track: Mobile Public Launch**
-*Link: [./tracks/track-AZ-mobile-public-launch/](./tracks/track-AZ-mobile-public-launch/)*
+*Link: [./archive/track-AZ-mobile-public-launch/](./archive/track-AZ-mobile-public-launch/)*
 
 ---
 
