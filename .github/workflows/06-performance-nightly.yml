@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 60
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v6 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+      - uses: actions/checkout@v7 # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - uses: dtolnay/rust-toolchain@stable # ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
       - run: bash scripts/perf_smoke.sh
       - run: bash scripts/toolchain_experiment_smoke.sh
