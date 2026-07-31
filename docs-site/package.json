@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
-    "@astrojs/starlight": "^0.40.0",
-    "astro": "^6.4.6",
+    "@astrojs/starlight": "^0.41.5",
+    "astro": "^7.1.6",
     "typescript": "^5.9.3"
   },
   "overrides": {
