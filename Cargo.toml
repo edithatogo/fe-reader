@@ -53,7 +53,7 @@ tokio = { version = "1.51.0", features = ["rt-multi-thread", "macros", "sync", "
 camino = "1.1.11"
 
 # PDF engine and generation
-lopdf = "0.40.0"
+lopdf = "0.42.0"
 pdf-writer = "0.14.0"
 pdfium-render = "0.9.1"
 
