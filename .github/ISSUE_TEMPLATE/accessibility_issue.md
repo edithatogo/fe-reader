@@ -1,3 +1,8 @@
+---
+name: Accessibility issue
+about: Report keyboard, screen reader, contrast, PDF/UA, or assistive technology problems.
+---
+
 # Accessibility Issue
 
 ## Affected path

@@ -1,3 +1,8 @@
+---
+name: Performance regression
+about: Report a benchmark, fixture, or command regression with baseline and platform evidence.
+---
+
 # Performance Regression
 
 ## Scenario

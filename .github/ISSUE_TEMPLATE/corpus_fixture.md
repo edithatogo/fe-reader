@@ -1,3 +1,8 @@
+---
+name: Corpus fixture request
+about: Propose a redistributable or synthetic PDF fixture to verify a capability or compatibility case.
+---
+
 # Corpus Fixture Request
 
 ## Fixture class
