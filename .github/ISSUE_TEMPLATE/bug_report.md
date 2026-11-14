@@ -1,3 +1,8 @@
+---
+name: Bug report
+about: Report a reproducible failure in a PDF command, workflow, or user interface.
+---
+
 # Bug Report
 
 ## What happened?

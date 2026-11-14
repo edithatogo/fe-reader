@@ -1,3 +1,8 @@
+---
+name: Feature request
+about: Describe a user workflow or integration need, its contract impact, and non-goals.
+---
+
 # Feature Request
 
 ## User workflow
