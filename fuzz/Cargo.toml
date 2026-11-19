@@ -1,0 +1,27 @@
+[package]
+name = "fe-reader-boundary-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[workspace]
+members = ["."]
+resolver = "3"
+
+[dependencies]
+libfuzzer-sys = "=0.4.13"
+fe_reader_pdf_model = { path = "../crates/fe_reader_pdf_model" }
+
+[[bin]]
+name = "pdf_bytes"
+path = "fuzz_targets/pdf_bytes.rs"
+test = false
+doc = false
+bench = false
+
+[profile.release]
+opt-level = 1
+codegen-units = 16

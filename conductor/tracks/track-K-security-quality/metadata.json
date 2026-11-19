@@ -10,5 +10,11 @@
     "crates/fe_reader_redaction/src/lib.rs",
     "scripts/conductor_phase_gate.sh",
     "docs/security-and-quality.md"
-  ]
+  ],
+  "runtime_fuzz_followup": {
+    "date": "2026-11-20",
+    "status": "native_tests_passed_sanitizer_and_hosted_ci_pending",
+    "scope": "real lopdf byte parser and honest execution status; advisory coverage-guided CI",
+    "plan": "runtime-fuzz-followup-20261120.md"
+  }
 }

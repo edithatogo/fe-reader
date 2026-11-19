@@ -43,3 +43,7 @@ This track may proceed when its wave dependencies in `conductor/waves.yaml` are 
 - Any blocked/forked dependency is recorded in `third_party/fork-policy.yaml`.
 
 Track K completed after K1-K5 phase gates passed on 2026-06-12.
+
+The subsequent [runtime fuzzing follow-up](runtime-fuzz-followup-20261120.md)
+records additional work and open admission gates separately from that historical
+contract-skeleton completion.
