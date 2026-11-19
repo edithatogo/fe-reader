@@ -279,3 +279,10 @@ Native UX refinement rules:
 
 - [ ] **Track: Parity Dashboard and Claim Governance**
 *Link: [./tracks/track-BY-parity-dashboard-claim-governance/](./tracks/track-BY-parity-dashboard-claim-governance/)*
+
+---
+
+- [ ] **Track: Serde/YAML boundary qualification (18 November 2026)**
+*Link: [./tracks/serde_yaml_qualification_20261118/](./tracks/serde_yaml_qualification_20261118/)*
+
+Evaluate an xtask-only maintained YAML parser replacement with typed `BudgetFile` differential fixtures; retain existing Serde contracts and unrelated format parsers. Planning only; no dependency change or runtime acceptance.

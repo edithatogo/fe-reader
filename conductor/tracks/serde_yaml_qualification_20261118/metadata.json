@@ -1,0 +1,19 @@
+{
+  "track_id": "serde_yaml_qualification_20261118",
+  "type": "maintenance",
+  "status": "new",
+  "created_at": "2026-11-18T00:00:00Z",
+  "updated_at": "2026-11-18T00:00:00Z",
+  "description": "Evidence-gated YAML parser substitution in Rust xtask; retain existing Serde-based typed contracts and specialised PDF parsers",
+  "deliverables": [
+    "Cargo/feature and parser dependency decision",
+    "Differential YAML fixture corpus",
+    "Exact-head Cargo and xtask validation",
+    "Integrator-owned migration or documented no-go"
+  ],
+  "verification": {
+    "status": "not_run",
+    "commands": []
+  },
+  "capability_status": "planned"
+}
