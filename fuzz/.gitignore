@@ -1,0 +1,6 @@
+/target/
+/artifacts/
+/coverage/
+!Cargo.lock
+/*.log
+!/corpus/pdf_bytes/*.pdf
