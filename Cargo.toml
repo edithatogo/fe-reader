@@ -78,7 +78,7 @@ image = "0.25"
 # Platform/application integration helper crates. Keep in adapters only.
 keyring = "4.0.1"
 notify-rust = "4.17.0"
-zbus = "5.15.0"
+zbus = "6.0.0"
 tauri-plugin-updater = "2.10.1"
 
 # Benchmarking/profiling
