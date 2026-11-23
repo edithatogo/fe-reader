@@ -8,8 +8,12 @@ cargo audit
 
 # Dependency audit coverage remains advisory until a signed-off vet ledger exists.
 mkdir -p target/release-evidence
-if cargo vet check --store-path supply-chain --output-format=json > target/release-evidence/cargo-vet-report.json; then
-  echo 'cargo-vet audit ledger accepted'
+if cargo vet --version >/dev/null 2>&1; then
+  if cargo vet check --store-path supply-chain --output-format=json > target/release-evidence/cargo-vet-report.json; then
+    echo 'cargo-vet audit ledger accepted'
+  else
+    echo '::warning::cargo-vet ledger incomplete; no dependency-audit clearance claimed' >&2
+  fi
 else
-  echo '::warning::cargo-vet audit ledger incomplete; no dependency-audit clearance claimed' >&2
+  echo '::warning::cargo-vet not installed; dependency-audit coverage unverified' >&2
 fi
