@@ -24,6 +24,13 @@ jobs:
         with:
           python-version: "3.x"
       - run: python3 -m pip install -r requirements-ci.txt
+      - name: Install pinned Rust security tools (no application dependencies)
+        uses: taiki-e/install-action@86f7a0ffb25f40114606501a311ebcfaf882ea32 # v2.88.0 ALLOW_VERSION_TAGS_DURING_BOOTSTRAP
+        with:
+          tool: |
+            cargo-deny@0.20.2
+            cargo-audit@0.22.2
+          fallback: none
       - run: bash scripts/security_policy_check.sh
       - run: bash scripts/actions_security_gate.sh
       - run: bash scripts/supply_chain_gate.sh
